@@ -1723,7 +1723,69 @@ function Library:NewWindow(ConfigWindow)
 			local ControlsLayout = Instance.new("UIListLayout")
 			ControlsLayout.Parent = ControlsContainer
 			ControlsLayout.SortOrder = Enum.SortOrder.LayoutOrder
-			ControlsLayout.Padding = UDim.new(0, 5)
+			ControlsLayout.Padding = UDim.new(0, 4)
+
+			local gapLines = {}
+			local controlOrder = 0
+			local gapNeonConn
+
+			local function AddNeonGapLine()
+				local gapLine = Instance.new("Frame")
+				gapLine.Name = "NeonGapLine"
+				gapLine.BackgroundColor3 = Color3.fromRGB(40, 30, 55)
+				gapLine.BorderSizePixel = 0
+				gapLine.Size = UDim2.new(1, 0, 0, 1)
+				gapLine.LayoutOrder = controlOrder * 2 - 1
+				gapLine.ZIndex = 1
+				gapLine.Parent = ControlsContainer
+
+				local gapGradient = Instance.new("UIGradient")
+				gapGradient.Name = "MovingNeonTrace"
+				gapGradient.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 30, 55)),
+					ColorSequenceKeypoint.new(0.42, Color3.fromRGB(40, 30, 55)),
+					ColorSequenceKeypoint.new(0.49, Color3.fromRGB(168, 85, 247)),
+					ColorSequenceKeypoint.new(0.50, Color3.fromRGB(235, 210, 255)),
+					ColorSequenceKeypoint.new(0.51, Color3.fromRGB(168, 85, 247)),
+					ColorSequenceKeypoint.new(0.58, Color3.fromRGB(40, 30, 55)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 30, 55)),
+				})
+				gapGradient.Transparency = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 0.8),
+					NumberSequenceKeypoint.new(0.42, 0.8),
+					NumberSequenceKeypoint.new(0.49, 0.12),
+					NumberSequenceKeypoint.new(0.50, 0),
+					NumberSequenceKeypoint.new(0.51, 0.12),
+					NumberSequenceKeypoint.new(0.58, 0.8),
+					NumberSequenceKeypoint.new(1, 0.8),
+				})
+				gapGradient.Parent = gapLine
+				table.insert(gapLines, gapGradient)
+			end
+
+			ControlsContainer.ChildAdded:Connect(function(child)
+				if not child:IsA("GuiObject") or child.Name == "NeonGapLine" then return end
+				controlOrder += 1
+				child.LayoutOrder = controlOrder * 2
+				if controlOrder > 1 then
+					AddNeonGapLine()
+				end
+			end)
+
+			gapNeonConn = RunService.RenderStepped:Connect(function(dt)
+				if not ControlsContainer.Parent then
+					gapNeonConn:Disconnect()
+					return
+				end
+				for index = #gapLines, 1, -1 do
+					local gradient = gapLines[index]
+					if gradient.Parent then
+						gradient.Rotation = (gradient.Rotation + dt * 70) % 360
+					else
+						table.remove(gapLines, index)
+					end
+				end
+			end)
 
 			local isCollapsed = false
 			local function UpdateSectionSize()
