@@ -1591,7 +1591,7 @@ function Library:NewWindow(ConfigWindow)
 		local function AddSectionGapLine()
 			local gapLine = Instance.new("Frame")
 			gapLine.Name = "SectionNeonGapLine"
-			gapLine.BackgroundColor3 = Color3.fromRGB(110, 55, 170)
+			gapLine.BackgroundColor3 = Color3.fromRGB(150, 70, 230)
 			gapLine.BorderSizePixel = 0
 			gapLine.Size = UDim2.new(1, -18, 0, 2)
 			gapLine.Position = UDim2.new(0, 9, 0, 0)
@@ -1602,22 +1602,22 @@ function Library:NewWindow(ConfigWindow)
 			local gapGradient = Instance.new("UIGradient")
 			gapGradient.Name = "MovingNeonTrace"
 			gapGradient.Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 35, 115)),
-				ColorSequenceKeypoint.new(0.42, Color3.fromRGB(75, 35, 115)),
-				ColorSequenceKeypoint.new(0.49, Color3.fromRGB(168, 85, 247)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(235, 210, 255)),
-				ColorSequenceKeypoint.new(0.51, Color3.fromRGB(168, 85, 247)),
-				ColorSequenceKeypoint.new(0.58, Color3.fromRGB(75, 35, 115)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(75, 35, 115)),
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(105, 45, 175)),
+				ColorSequenceKeypoint.new(0.38, Color3.fromRGB(105, 45, 175)),
+				ColorSequenceKeypoint.new(0.48, Color3.fromRGB(198, 110, 255)),
+				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 235, 255)),
+				ColorSequenceKeypoint.new(0.52, Color3.fromRGB(198, 110, 255)),
+				ColorSequenceKeypoint.new(0.62, Color3.fromRGB(105, 45, 175)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(105, 45, 175)),
 			})
 			gapGradient.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.35),
-				NumberSequenceKeypoint.new(0.42, 0.35),
-				NumberSequenceKeypoint.new(0.49, 0.05),
+				NumberSequenceKeypoint.new(0, 0.12),
+				NumberSequenceKeypoint.new(0.38, 0.12),
+				NumberSequenceKeypoint.new(0.48, 0.02),
 				NumberSequenceKeypoint.new(0.50, 0),
-				NumberSequenceKeypoint.new(0.51, 0.05),
-				NumberSequenceKeypoint.new(0.58, 0.35),
-				NumberSequenceKeypoint.new(1, 0.35),
+				NumberSequenceKeypoint.new(0.52, 0.02),
+				NumberSequenceKeypoint.new(0.62, 0.12),
+				NumberSequenceKeypoint.new(1, 0.12),
 			})
 			gapGradient.Parent = gapLine
 			table.insert(sectionGapLines, gapGradient)
@@ -1640,7 +1640,8 @@ function Library:NewWindow(ConfigWindow)
 			for index = #sectionGapLines, 1, -1 do
 				local gradient = sectionGapLines[index]
 				if gradient.Parent then
-					gradient.Rotation = (gradient.Rotation + dt * 70) % 360
+					local sweep = (os.clock() * 0.32) % 2 - 1
+					gradient.Offset = Vector2.new(sweep, 0)
 				else
 					table.remove(sectionGapLines, index)
 				end
@@ -1795,7 +1796,7 @@ function Library:NewWindow(ConfigWindow)
 			local function AddNeonGapLine()
 				local gapLine = Instance.new("Frame")
 				gapLine.Name = "NeonGapLine"
-				gapLine.BackgroundColor3 = Color3.fromRGB(40, 30, 55)
+				gapLine.BackgroundColor3 = Color3.fromRGB(125, 55, 205)
 				gapLine.BorderSizePixel = 0
 				gapLine.Size = UDim2.new(1, 0, 0, 1)
 				gapLine.LayoutOrder = controlOrder * 2 - 1
@@ -1805,22 +1806,22 @@ function Library:NewWindow(ConfigWindow)
 				local gapGradient = Instance.new("UIGradient")
 				gapGradient.Name = "MovingNeonTrace"
 				gapGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 30, 55)),
-					ColorSequenceKeypoint.new(0.42, Color3.fromRGB(40, 30, 55)),
-					ColorSequenceKeypoint.new(0.49, Color3.fromRGB(168, 85, 247)),
-					ColorSequenceKeypoint.new(0.50, Color3.fromRGB(235, 210, 255)),
-					ColorSequenceKeypoint.new(0.51, Color3.fromRGB(168, 85, 247)),
-					ColorSequenceKeypoint.new(0.58, Color3.fromRGB(40, 30, 55)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 30, 55)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 40, 155)),
+					ColorSequenceKeypoint.new(0.38, Color3.fromRGB(90, 40, 155)),
+					ColorSequenceKeypoint.new(0.48, Color3.fromRGB(190, 95, 255)),
+					ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 235, 255)),
+					ColorSequenceKeypoint.new(0.52, Color3.fromRGB(190, 95, 255)),
+					ColorSequenceKeypoint.new(0.62, Color3.fromRGB(90, 40, 155)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(90, 40, 155)),
 				})
 				gapGradient.Transparency = NumberSequence.new({
-					NumberSequenceKeypoint.new(0, 0.8),
-					NumberSequenceKeypoint.new(0.42, 0.8),
-					NumberSequenceKeypoint.new(0.49, 0.12),
+					NumberSequenceKeypoint.new(0, 0.2),
+					NumberSequenceKeypoint.new(0.38, 0.2),
+					NumberSequenceKeypoint.new(0.48, 0.03),
 					NumberSequenceKeypoint.new(0.50, 0),
-					NumberSequenceKeypoint.new(0.51, 0.12),
-					NumberSequenceKeypoint.new(0.58, 0.8),
-					NumberSequenceKeypoint.new(1, 0.8),
+					NumberSequenceKeypoint.new(0.52, 0.03),
+					NumberSequenceKeypoint.new(0.62, 0.2),
+					NumberSequenceKeypoint.new(1, 0.2),
 				})
 				gapGradient.Parent = gapLine
 				table.insert(gapLines, gapGradient)
@@ -1843,7 +1844,8 @@ function Library:NewWindow(ConfigWindow)
 				for index = #gapLines, 1, -1 do
 					local gradient = gapLines[index]
 					if gradient.Parent then
-						gradient.Rotation = (gradient.Rotation + dt * 70) % 360
+						local sweep = (os.clock() * 0.32) % 2 - 1
+						gradient.Offset = Vector2.new(sweep, 0)
 					else
 						table.remove(gapLines, index)
 					end
