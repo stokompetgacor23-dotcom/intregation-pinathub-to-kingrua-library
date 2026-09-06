@@ -1,9 +1,9 @@
--- ==============================================================================
--- PINATHUB X KINGRUA UI LIBRARY — PinatHub MODERN EDITION
+-- -----------------------------------------------------------------------------
+-- PINATHUB UI LIBRARY — OFFICIAL EDITION
 -- Official Pinathub Neon Identity & PinatHub Glassmorphism Theme System
 -- Full Topbar/Menu Overlay Capability (IgnoreGuiInset = true, DisplayOrder = 999999)
--- Ultra-Smooth Micro-Animations, Rich Elements & Complete KingRua Compatibility
--- ==============================================================================
+-- Ultra-Smooth Micro-Animations, Rich Elements & Complete PinatHub Compatibility
+-- -----------------------------------------------------------------------------
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -11,9 +11,9 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 -- 1. BRANDING & ASSETS
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 local PINATHUB_LOGO = "rbxassetid://118264723961739"
 
 local TabIcons = {
@@ -70,6 +70,29 @@ local TabIcons = {
 	["youtube"] = "rbxassetid://10747374938",
 	["globe"] = "rbxassetid://10723404337",
 	["clipboard-check"] = "rbxassetid://10709783474",
+	["zap"] = "rbxassetid://10747361761",
+	["lightning"] = "rbxassetid://10747361761",
+	["sparkles"] = "rbxassetid://10734973351",
+	["star"] = "rbxassetid://10734973351",
+	["box"] = "rbxassetid://10734954201",
+	["package"] = "rbxassetid://10734954201",
+	["compass"] = "rbxassetid://10709789310",
+	["gem"] = "rbxassetid://10723387847",
+	["diamond"] = "rbxassetid://10723387847",
+	["trophy"] = "rbxassetid://10747372167",
+	["cart"] = "rbxassetid://10734954483",
+	["shopping-cart"] = "rbxassetid://10734954483",
+	["lock"] = "rbxassetid://10734920623",
+	["unlock"] = "rbxassetid://10734920832",
+	["terminal"] = "rbxassetid://10709787610",
+	["code"] = "rbxassetid://10709787610",
+	["folder"] = "rbxassetid://10723387563",
+	["refresh"] = "rbxassetid://10734940608",
+	["play"] = "rbxassetid://10734923549",
+	["check"] = "rbxassetid://10709782497",
+	["info"] = "rbxassetid://10723415903",
+	["alert"] = "rbxassetid://10709752906",
+
 
 	-- General Navigation & UI Icons
 	Main = "rbxassetid://10723407389",
@@ -114,9 +137,9 @@ local function DetectExecutor()
 	return "Vortex"
 end
 
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 -- 2. COLOR PALETTE: PinatHub DARK OBSIDIAN & AMETHYST PURPLE
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 local Theme = {
 	Background = Color3.fromRGB(15, 14, 20),
 	Header = Color3.fromRGB(20, 18, 28),
@@ -148,9 +171,9 @@ local TweenInfoFast = TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDire
 local TweenInfoSmooth = TweenInfo.new(0.28, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 local TweenInfoSpring = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 -- 3. LIBRARY CORE & UTILITIES
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 local Library = {
 	Theme = Theme,
 	Logo = PINATHUB_LOGO,
@@ -226,9 +249,9 @@ function Library:UpdateScrolling(scrollFrame, uiLayout)
 	task.defer(update)
 end
 
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 -- 4. CUSTOM GLASS TOAST NOTIFICATION SYSTEM
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 function Library:Notify(config)
 	local cfg = self:MakeConfig({
 		Title = "Pinathub",
@@ -358,9 +381,9 @@ function Library:Notify(config)
 	end)
 end
 
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 -- 5. WINDOW CREATION (PinatHub COMPACT DIMENSIONS & MODERN STYLING)
--- ==============================================================================
+-- -----------------------------------------------------------------------------
 function Library:NewWindow(ConfigWindow)
 	local Config = self:MakeConfig({
 		Title = "Pinathub",
@@ -379,7 +402,7 @@ function Library:NewWindow(ConfigWindow)
 	pcall(function()
 		local pg = LocalPlayer:FindFirstChild("PlayerGui")
 		SafeCleanup(pg, "PinathubGui")
-		SafeCleanup(pg, "KingRuaUI_Premium")
+		SafeCleanup(pg, "PinatHubUI_Premium")
 		SafeCleanup(pg, "PinatHubLogo")
 	end)
 
@@ -561,11 +584,11 @@ function Library:NewWindow(ConfigWindow)
 	Corner.Parent = ToggleButton
 	Corner.CornerRadius = UDim.new(1, 0)
 
-	-- Tambahkan stroke outline hijau
+	-- Stroke outline putih
 	local Stroke = Instance.new("UIStroke")
 	Stroke.Parent = ToggleButton
 	Stroke.Thickness = 2
-	Stroke.Color = Color3.fromRGB(0, 255, 0)
+	Stroke.Color = Color3.fromRGB(255, 255, 255)
 
 	-- Variable untuk tracking status window
 	local WindowOpen = true
@@ -1339,9 +1362,9 @@ function Library:NewWindow(ConfigWindow)
 			task.defer(SelectThisTab)
 		end
 
-		-- ==============================================================================
+		-- -----------------------------------------------------------------------------
 		-- 11. SECTION CREATION (PinatHub Style: Accent Title + Right Chevron)
-		-- ==============================================================================
+		-- -----------------------------------------------------------------------------
 		local TabObj = {}
 
 		function TabObj:AddSection(sectionNameOrConfig)
@@ -1450,9 +1473,9 @@ function Library:NewWindow(ConfigWindow)
 			}
 			table.insert(tabData.Sections, secData)
 
-			-- ==============================================================================
+			-- -----------------------------------------------------------------------------
 			-- 12. SECTION CONTROLS (PinatHub MODERN DESIGN)
-			-- ==============================================================================
+			-- -----------------------------------------------------------------------------
 			local SecObj = {}
 
 			-- 12.1 TOGGLE SWITCH (PinatHub Style: Optional Inline Keybind [None] + Elastic Switch)
@@ -1792,7 +1815,7 @@ function Library:NewWindow(ConfigWindow)
 				TitleLabel.TextColor3 = Theme.NeonWhite
 				TitleLabel.TextSize = 12
 				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-				TitleLabel.RichText = true  -- Allow <font color='...'> tags in title
+				TitleLabel.RichText = true  -- RichText enabled
 
 				local ContentLabel = Instance.new("TextLabel")
 				ContentLabel.Name = "Content"
@@ -1807,7 +1830,7 @@ function Library:NewWindow(ConfigWindow)
 				ContentLabel.TextWrapped = true
 				ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
 				ContentLabel.TextYAlignment = Enum.TextYAlignment.Top
-				ContentLabel.RichText = true  -- CRITICAL: Allow <font color='#...'> tags to render
+				ContentLabel.RichText = true  -- RichText enabled for tags
 
 				local function ResizePara()
 					ContentLabel.Size = UDim2.new(1, -24, 0, 1000)
@@ -1991,6 +2014,292 @@ function Library:NewWindow(ConfigWindow)
 				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
 				return GraphObj
 			end
+
+			-- Sub-Toggle (indented secondary toggle)
+			function SecObj:AddSubToggle(toggleConfig)
+				local cfg = Library:MakeConfig({
+					Title = "Sub Toggle",
+					Default = false,
+					Callback = function() end
+				}, toggleConfig or {})
+
+				local ItemFrame = Instance.new("Frame")
+				ItemFrame.Name = "SubToggle_" .. cfg.Title
+				ItemFrame.Parent = ControlsContainer
+				ItemFrame.BackgroundColor3 = Theme.SurfaceHover
+				ItemFrame.BackgroundTransparency = 0.8
+				ItemFrame.BorderSizePixel = 0
+				ItemFrame.Size = UDim2.new(1, 0, 0, 32)
+				ItemFrame.ClipsDescendants = true
+
+				local ItemCorner = Instance.new("UICorner")
+				ItemCorner.CornerRadius = UDim.new(0, 6)
+				ItemCorner.Parent = ItemFrame
+
+				-- Indent bar
+				local IndentLine = Instance.new("Frame")
+				IndentLine.Name = "Indent"
+				IndentLine.Parent = ItemFrame
+				IndentLine.Position = UDim2.new(0, 10, 0.25, 0)
+				IndentLine.Size = UDim2.new(0, 2, 0.5, 0)
+				IndentLine.BackgroundColor3 = Theme.BorderSoft
+				IndentLine.BorderSizePixel = 0
+
+				local TitleLabel = Instance.new("TextLabel")
+				TitleLabel.Name = "Title"
+				TitleLabel.Parent = ItemFrame
+				TitleLabel.BackgroundTransparency = 1
+				TitleLabel.Position = UDim2.new(0, 20, 0, 0)
+				TitleLabel.Size = UDim2.new(1, -70, 1, 0)
+				TitleLabel.Font = Enum.Font.Gotham
+				TitleLabel.Text = cfg.Title
+				TitleLabel.TextColor3 = Theme.TextSecondary
+				TitleLabel.TextSize = 11
+				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+				local SwitchTrack = Instance.new("TextButton")
+				SwitchTrack.Name = "Switch"
+				SwitchTrack.Parent = ItemFrame
+				SwitchTrack.AnchorPoint = Vector2.new(1, 0.5)
+				SwitchTrack.Position = UDim2.new(1, -10, 0.5, 0)
+				SwitchTrack.Size = UDim2.new(0, 32, 0, 18)
+				SwitchTrack.BackgroundColor3 = Theme.SurfaceActive
+				SwitchTrack.BorderSizePixel = 0
+				SwitchTrack.AutoButtonColor = false
+				SwitchTrack.Text = ""
+
+				local SwCorner = Instance.new("UICorner")
+				SwCorner.CornerRadius = UDim.new(1, 0)
+				SwCorner.Parent = SwitchTrack
+
+				local SwThumb = Instance.new("Frame")
+				SwThumb.Name = "Thumb"
+				SwThumb.Parent = SwitchTrack
+				SwThumb.AnchorPoint = Vector2.new(0, 0.5)
+				SwThumb.Position = UDim2.new(0, 2, 0.5, 0)
+				SwThumb.Size = UDim2.new(0, 14, 0, 14)
+				SwThumb.BackgroundColor3 = Theme.TextMuted
+				SwThumb.BorderSizePixel = 0
+
+				local ThumbCorner = Instance.new("UICorner")
+				ThumbCorner.CornerRadius = UDim.new(1, 0)
+				ThumbCorner.Parent = SwThumb
+
+				local state = cfg.Default or false
+
+				local function UpdateSwitch(instant)
+					local ti = instant and TweenInfo.new(0) or TweenInfoFast
+					if state then
+						TweenService:Create(SwitchTrack, ti, { BackgroundColor3 = Theme.Accent }):Play()
+						TweenService:Create(SwThumb, ti, { Position = UDim2.new(1, -16, 0.5, 0), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }):Play()
+						TweenService:Create(TitleLabel, ti, { TextColor3 = Theme.Text }):Play()
+					else
+						TweenService:Create(SwitchTrack, ti, { BackgroundColor3 = Theme.SurfaceActive }):Play()
+						TweenService:Create(SwThumb, ti, { Position = UDim2.new(0, 2, 0.5, 0), BackgroundColor3 = Theme.TextMuted }):Play()
+						TweenService:Create(TitleLabel, ti, { TextColor3 = Theme.TextSecondary }):Play()
+					end
+				end
+				UpdateSwitch(true)
+
+				SwitchTrack.MouseButton1Click:Connect(function()
+					state = not state
+					UpdateSwitch(false)
+					pcall(cfg.Callback, state)
+				end)
+
+				local SubObj = {}
+				function SubObj:Set(v)
+					state = not not v
+					UpdateSwitch(false)
+					pcall(cfg.Callback, state)
+				end
+				function SubObj:Get()
+					return state
+				end
+
+				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
+				return SubObj
+			end
+
+			-- Combined Toggle + Slider in single row
+			function SecObj:AddToggleSlider(tsConfig)
+				local cfg = Library:MakeConfig({
+					Title = "Toggle & Slider",
+					DefaultToggle = false,
+					Min = 1,
+					Max = 100,
+					DefaultSlider = 16,
+					Suffix = "",
+					Callback = function() end
+				}, tsConfig or {})
+
+				local ItemFrame = Instance.new("Frame")
+				ItemFrame.Name = "TS_" .. cfg.Title
+				ItemFrame.Parent = ControlsContainer
+				ItemFrame.BackgroundColor3 = Theme.SurfaceHover
+				ItemFrame.BackgroundTransparency = 0.65
+				ItemFrame.BorderSizePixel = 0
+				ItemFrame.Size = UDim2.new(1, 0, 0, 48)
+				ItemFrame.ClipsDescendants = true
+
+				local ItemCorner = Instance.new("UICorner")
+				ItemCorner.CornerRadius = UDim.new(0, 8)
+				ItemCorner.Parent = ItemFrame
+
+				local ItemStroke = Instance.new("UIStroke")
+				ItemStroke.Color = Theme.BorderSoft
+				ItemStroke.Thickness = 1
+				ItemStroke.Transparency = 0.5
+				ItemStroke.Parent = ItemFrame
+
+				local TitleLabel = Instance.new("TextLabel")
+				TitleLabel.Name = "Title"
+				TitleLabel.Parent = ItemFrame
+				TitleLabel.BackgroundTransparency = 1
+				TitleLabel.Position = UDim2.new(0, 12, 0, 6)
+				TitleLabel.Size = UDim2.new(1, -90, 0, 16)
+				TitleLabel.Font = Enum.Font.GothamBold
+				TitleLabel.Text = cfg.Title
+				TitleLabel.TextColor3 = Theme.Text
+				TitleLabel.TextSize = 12
+				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+				local ValLabel = Instance.new("TextLabel")
+				ValLabel.Name = "Value"
+				ValLabel.Parent = ItemFrame
+				ValLabel.AnchorPoint = Vector2.new(1, 0)
+				ValLabel.Position = UDim2.new(1, -52, 0, 6)
+				ValLabel.Size = UDim2.new(0, 50, 0, 16)
+				ValLabel.BackgroundTransparency = 1
+				ValLabel.Font = Enum.Font.Gotham
+				ValLabel.Text = tostring(cfg.DefaultSlider) .. cfg.Suffix
+				ValLabel.TextColor3 = Theme.TextSecondary
+				ValLabel.TextSize = 11
+				ValLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+				-- Toggle switch
+				local Switch = Instance.new("TextButton")
+				Switch.Name = "Switch"
+				Switch.Parent = ItemFrame
+				Switch.AnchorPoint = Vector2.new(1, 0)
+				Switch.Position = UDim2.new(1, -10, 0, 6)
+				Switch.Size = UDim2.new(0, 34, 0, 16)
+				Switch.BackgroundColor3 = Theme.SurfaceActive
+				Switch.BorderSizePixel = 0
+				Switch.AutoButtonColor = false
+				Switch.Text = ""
+
+				local SwCorner = Instance.new("UICorner")
+				SwCorner.CornerRadius = UDim.new(1, 0)
+				SwCorner.Parent = Switch
+
+				local SwThumb = Instance.new("Frame")
+				SwThumb.Name = "Thumb"
+				SwThumb.Parent = Switch
+				SwThumb.AnchorPoint = Vector2.new(0, 0.5)
+				SwThumb.Position = UDim2.new(0, 2, 0.5, 0)
+				SwThumb.Size = UDim2.new(0, 12, 0, 12)
+				SwThumb.BackgroundColor3 = Theme.TextMuted
+				SwThumb.BorderSizePixel = 0
+
+				local ThCorner = Instance.new("UICorner")
+				ThCorner.CornerRadius = UDim.new(1, 0)
+				ThCorner.Parent = SwThumb
+
+				-- Slider track
+				local Track = Instance.new("Frame")
+				Track.Name = "Track"
+				Track.Parent = ItemFrame
+				Track.Position = UDim2.new(0, 12, 0, 32)
+				Track.Size = UDim2.new(1, -24, 0, 4)
+				Track.BackgroundColor3 = Theme.SurfaceActive
+				Track.BorderSizePixel = 0
+
+				local TrkCorner = Instance.new("UICorner")
+				TrkCorner.CornerRadius = UDim.new(1, 0)
+				TrkCorner.Parent = Track
+
+				local Fill = Instance.new("Frame")
+				Fill.Name = "Fill"
+				Fill.Parent = Track
+				Fill.Size = UDim2.new(0.5, 0, 1, 0)
+				Fill.BackgroundColor3 = Theme.Accent
+				Fill.BorderSizePixel = 0
+
+				local FillCorner = Instance.new("UICorner")
+				FillCorner.CornerRadius = UDim.new(1, 0)
+				FillCorner.Parent = Fill
+
+				local tState = cfg.DefaultToggle or false
+				local sVal = cfg.DefaultSlider or cfg.Min
+
+				local function UpdateT(instant)
+					local ti = instant and TweenInfo.new(0) or TweenInfoFast
+					if tState then
+						TweenService:Create(Switch, ti, { BackgroundColor3 = Theme.Accent }):Play()
+						TweenService:Create(SwThumb, ti, { Position = UDim2.new(1, -14, 0.5, 0), BackgroundColor3 = Color3.fromRGB(255, 255, 255) }):Play()
+					else
+						TweenService:Create(Switch, ti, { BackgroundColor3 = Theme.SurfaceActive }):Play()
+						TweenService:Create(SwThumb, ti, { Position = UDim2.new(0, 2, 0.5, 0), BackgroundColor3 = Theme.TextMuted }):Play()
+					end
+				end
+
+				local function UpdateS(val)
+					sVal = math.clamp(val, cfg.Min, cfg.Max)
+					local pct = (sVal - cfg.Min) / math.max(cfg.Max - cfg.Min, 1)
+					Fill.Size = UDim2.new(pct, 0, 1, 0)
+					ValLabel.Text = tostring(math.floor(sVal)) .. cfg.Suffix
+				end
+
+				UpdateT(true)
+				UpdateS(sVal)
+
+				Switch.MouseButton1Click:Connect(function()
+					tState = not tState
+					UpdateT(false)
+					pcall(cfg.Callback, tState, sVal)
+				end)
+
+				local sDragging = false
+				Track.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						sDragging = true
+						local pct = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
+						UpdateS(cfg.Min + pct * (cfg.Max - cfg.Min))
+						pcall(cfg.Callback, tState, sVal)
+					end
+				end)
+				UserInputService.InputEnded:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						sDragging = false
+					end
+				end)
+				UserInputService.InputChanged:Connect(function(input)
+					if sDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+						local pct = math.clamp((input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
+						UpdateS(cfg.Min + pct * (cfg.Max - cfg.Min))
+						pcall(cfg.Callback, tState, sVal)
+					end
+				end)
+
+				local TSObj = {}
+				function TSObj:SetToggle(v)
+					tState = not not v
+					UpdateT(false)
+					pcall(cfg.Callback, tState, sVal)
+				end
+				function TSObj:SetSlider(v)
+					UpdateS(v)
+					pcall(cfg.Callback, tState, sVal)
+				end
+				function TSObj:Get()
+					return tState, sVal
+				end
+
+				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
+				return TSObj
+			end
+
 
 
 			-- 12.4 DISCORD / COMMUNITY CARD (PinatHub Screenshot 3: Discord card with stats & COPY LINK)
@@ -2674,7 +2983,132 @@ function Library:NewWindow(ConfigWindow)
 					end)
 				end)
 
-				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
+				local Controller = {
+					Set = function(self, newKey)
+						KeyBadge.Text = newKey and newKey.Name or "None"
+						pcall(cfg.Callback, newKey)
+					end,
+					Get = function(self)
+						return cfg.Default
+					end
+				}
+				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame, Controller = Controller })
+				return Controller
+			end
+
+			-- 12.11 COLOR PICKER
+			function SecObj:AddColorPicker(cpConfig)
+				local cfg = Library:MakeConfig({
+					Title = "Color",
+					Description = "",
+					Default = Color3.fromRGB(168, 85, 247),
+					Callback = function() end
+				}, cpConfig or {})
+
+				if cfg.Desc and cfg.Description == "" then cfg.Description = cfg.Desc end
+				local currentColor = cfg.Default or Color3.fromRGB(168, 85, 247)
+
+				local ItemFrame = Instance.new("Frame")
+				ItemFrame.Name = "ColorPicker_" .. cfg.Title
+				ItemFrame.Parent = ControlsContainer
+				ItemFrame.BackgroundColor3 = Theme.SurfaceHover
+				ItemFrame.BackgroundTransparency = 0.55
+				ItemFrame.BorderSizePixel = 0
+				ItemFrame.Size = UDim2.new(1, 0, 0, (cfg.Description ~= "") and 44 or 36)
+
+				local ItemCorner = Instance.new("UICorner")
+				ItemCorner.CornerRadius = UDim.new(0, 7)
+				ItemCorner.Parent = ItemFrame
+
+				local ItemStroke = Instance.new("UIStroke")
+				ItemStroke.Color = Theme.BorderSoft
+				ItemStroke.Thickness = 1
+				ItemStroke.Transparency = 0.4
+				ItemStroke.Parent = ItemFrame
+
+				local TitleLabel = Instance.new("TextLabel")
+				TitleLabel.Name = "Title"
+				TitleLabel.Parent = ItemFrame
+				TitleLabel.BackgroundTransparency = 1
+				TitleLabel.Position = UDim2.new(0, 10, 0, (cfg.Description ~= "") and 5 or 0)
+				TitleLabel.Size = UDim2.new(1, -90, (cfg.Description ~= "") and 0 or 1, (cfg.Description ~= "") and 16 or 0)
+				TitleLabel.Font = Enum.Font.GothamBold
+				TitleLabel.Text = cfg.Title
+				TitleLabel.TextColor3 = Theme.Text
+				TitleLabel.TextSize = 12
+				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+				if cfg.Description ~= "" then
+					local DescLabel = Instance.new("TextLabel")
+					DescLabel.Name = "Desc"
+					DescLabel.Parent = ItemFrame
+					DescLabel.BackgroundTransparency = 1
+					DescLabel.Position = UDim2.new(0, 10, 0, 22)
+					DescLabel.Size = UDim2.new(1, -90, 0, 16)
+					DescLabel.Font = Enum.Font.Gotham
+					DescLabel.Text = cfg.Description
+					DescLabel.TextColor3 = Theme.TextMuted
+					DescLabel.TextSize = 10
+					DescLabel.TextXAlignment = Enum.TextXAlignment.Left
+				end
+
+				local ColorTile = Instance.new("TextButton")
+				ColorTile.Name = "ColorTile"
+				ColorTile.Parent = ItemFrame
+				ColorTile.AnchorPoint = Vector2.new(1, 0.5)
+				ColorTile.Position = UDim2.new(1, -10, 0.5, 0)
+				ColorTile.Size = UDim2.new(0, 48, 0, 22)
+				ColorTile.BackgroundColor3 = currentColor
+				ColorTile.BorderSizePixel = 0
+				ColorTile.AutoButtonColor = false
+				ColorTile.Text = ""
+
+				local TileCorner = Instance.new("UICorner")
+				TileCorner.CornerRadius = UDim.new(0, 5)
+				TileCorner.Parent = ColorTile
+
+				local TileStroke = Instance.new("UIStroke")
+				TileStroke.Color = Color3.fromRGB(255, 255, 255)
+				TileStroke.Thickness = 1
+				TileStroke.Transparency = 0.5
+				TileStroke.Parent = ColorTile
+
+				local Presets = {
+					Color3.fromRGB(168, 85, 247),
+					Color3.fromRGB(59, 130, 246),
+					Color3.fromRGB(74, 222, 128),
+					Color3.fromRGB(251, 191, 36),
+					Color3.fromRGB(248, 113, 113),
+					Color3.fromRGB(236, 72, 153),
+					Color3.fromRGB(45, 212, 191),
+					Color3.fromRGB(255, 255, 255),
+				}
+				local pIdx = 1
+
+				local function SetColor(c)
+					currentColor = c
+					ColorTile.BackgroundColor3 = c
+					pcall(cfg.Callback, c)
+				end
+
+				ColorTile.MouseButton1Click:Connect(function()
+					pIdx = (pIdx % #Presets) + 1
+					SetColor(Presets[pIdx])
+				end)
+
+				local Controller = {
+					Set = function(self, newColor)
+						if typeof(newColor) == "Color3" then
+							SetColor(newColor)
+						end
+					end,
+					Get = function(self)
+						return currentColor
+					end
+				}
+
+				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame, Controller = Controller })
+				return Controller
 			end
 
 			-- 12.10 PROGRESS BAR
@@ -2987,6 +3421,8 @@ function Library:NewWindow(ConfigWindow)
 			SecObj.Button = SecObj.AddButton
 			SecObj.Paragraph = SecObj.AddParagraph
 			SecObj.Graph = SecObj.AddGraph
+			SecObj.SubToggle = SecObj.AddSubToggle
+			SecObj.ToggleSlider = SecObj.AddToggleSlider
 			SecObj.AddGraph = SecObj.AddGraph
 			SecObj.DiscordCard = SecObj.AddDiscordCard
 			SecObj.CommunityCard = SecObj.AddDiscordCard
@@ -3001,6 +3437,9 @@ function Library:NewWindow(ConfigWindow)
 			SecObj.Keybind = SecObj.AddKeybind
 			SecObj.ProgressBar = SecObj.AddProgressBar
 			SecObj.PlayerList = SecObj.AddPlayerList
+			SecObj.ColorPicker = SecObj.AddColorPicker
+			SecObj.AddTextInput = SecObj.AddInput
+			SecObj.TextInput = SecObj.AddInput
 
 			return SecObj
 		end
@@ -3012,6 +3451,9 @@ function Library:NewWindow(ConfigWindow)
 	-- Compatibility stubs for pinathubforintregation.lua (WindUI v2 API)
 	function Window:CreateTopbarButton(...) end
 	function Window:EditOpenButton(...) end
+	function Window:AddTab(...)
+		return self:T(...)
+	end
 	function Window:Minimize()
 		CloseWindow()
 	end
@@ -3021,6 +3463,7 @@ function Library:NewWindow(ConfigWindow)
 		end
 	end
 
+	Window.AddTab = Window.T
 	Window.Tab = Window.T
 	Window.NewTab = Window.T
 	Window.CreateWindow = Window.NewWindow
@@ -3034,15 +3477,15 @@ function Library:SetTheme(...) end
 function Library:AddTheme(...) end
 function Library:SetNotificationLower(...) end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- PINATHUB | DRAIN WATER - COMPLETE EDITION
 -- WindUI v2 | Full Auto Farm + Advanced Features (Independent)
--- ================================================================
+-- ------------------------------------------------------------
 repeat task.wait() until game:IsLoaded()
 
--- ================================================================
+-- ------------------------------------------------------------
 -- ANTI-AFK
--- ================================================================
+-- ------------------------------------------------------------
 local VirtualUser = game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
     warn("anti-afk")
@@ -3050,9 +3493,9 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
--- ================================================================
+-- ------------------------------------------------------------
 -- SERVICES
--- ================================================================
+-- ------------------------------------------------------------
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -3063,29 +3506,29 @@ local TweenService = game:GetService("TweenService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local LocalPlayer = Players.LocalPlayer
 
--- ================================================================
+-- ------------------------------------------------------------
 -- EXECUTOR COMPATIBILITY
--- ================================================================
+-- ------------------------------------------------------------
 local function noop() end
 local set_clipboard = setclipboard or (syn and syn.setclipboard) or noop
 
--- ================================================================
+-- ------------------------------------------------------------
 -- LIGHTING SETUP
--- ================================================================
+-- ------------------------------------------------------------
 Lighting.ClockTime = 14
 Lighting.GlobalShadows = false
 
--- ================================================================
+-- ------------------------------------------------------------
 
 -- GENERATION GUARD
--- ================================================================
+-- ------------------------------------------------------------
 _G.__DRAINWATER = (_G.__DRAINWATER or 0) + 1
 local GEN = _G.__DRAINWATER
 local function alive() return _G.__DRAINWATER == GEN end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- SAFE LOAD CONFIGURATIONS
--- ================================================================
+-- ------------------------------------------------------------
 local function safeRequire(module)
     local success, result = pcall(require, module)
     if success then
@@ -3106,9 +3549,9 @@ pcall(function()
     SpinHelper = require(ReplicatedStorage.Config.SpinHelper)
 end)
 
--- ================================================================
+-- ------------------------------------------------------------
 -- CONFIG
--- ================================================================
+-- ------------------------------------------------------------
 local CONFIG = {
     -- Master Switch
     auto = false,
@@ -3162,9 +3605,9 @@ local CONFIG = {
     spinInterval = 60,
 }
 
--- ================================================================
+-- ------------------------------------------------------------
 -- STATE
--- ================================================================
+-- ------------------------------------------------------------
 local STATE = {
     phase = "idle", note = "",
     stage = 1, remaining = 0, water = 0, cash = 0, level = 0, rebirth = 0,
@@ -3179,9 +3622,9 @@ local STATE = {
     lastSellTime = 0,
 }
 
--- ================================================================
+-- ------------------------------------------------------------
 -- ORIGINAL DRAIN WATER LOGIC
--- ================================================================
+-- ------------------------------------------------------------
 
 local function short(n)
     n = tonumber(n) or 0
@@ -3447,9 +3890,9 @@ local function plotButtons()
     return posOf(PLACE_BUTTON), posOf(COLLECT_BUTTON)
 end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- AUTO SELL FISH (DARI DECOMPILE SCRIPTS)
--- ================================================================
+-- ------------------------------------------------------------
 
 -- Sell all fish function
 local function sellAllFish(force)
@@ -3519,9 +3962,9 @@ local function autoSellLoop()
     end
 end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- PLOT TRIP (DENGAN AUTO SELL)
--- ================================================================
+-- ------------------------------------------------------------
 local function plotTrip()
     local placePos, collectPos = plotButtons()
     if not placePos then note("no plot found") return false end
@@ -3569,9 +4012,9 @@ local function plotTrip()
     return true
 end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- DRAIN LOOP (INDEPENDENT)
--- ================================================================
+-- ------------------------------------------------------------
 local function drainLoop()
     while GEN == _G.__DRAINWATER do
         if not CONFIG.drain then
@@ -3653,9 +4096,9 @@ local function drainLoop()
     end
 end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- ADVANCED FEATURES (INDEPENDENT)
--- ================================================================
+-- ------------------------------------------------------------
 
 local function autoUpgradeTrainingArea()
     if not CONFIG.autoTrainingArea then return end
@@ -3827,9 +4270,9 @@ local function autoClaimOfflineCash()
     end
 end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- SPENDING (INDEPENDENT)
--- ================================================================
+-- ------------------------------------------------------------
 local function configModule(name)
     local root = ReplicatedStorage:FindFirstChild("Config") or ReplicatedStorage
     local module = root:FindFirstChild(name, true)
@@ -4047,9 +4490,9 @@ local function doRebirth()
     return false
 end
 
--- ================================================================
+-- ------------------------------------------------------------
 -- ADVANCED INDEPENDENT LOOPS
--- ================================================================
+-- ------------------------------------------------------------
 
 task.spawn(function()
     while GEN == _G.__DRAINWATER do
@@ -4076,9 +4519,9 @@ task.spawn(function()
     end
 end)
 
--- ================================================================
+-- ------------------------------------------------------------
 -- MAIN FARM LOOP
--- ================================================================
+-- ------------------------------------------------------------
 task.spawn(function()
     while GEN == _G.__DRAINWATER do
         if CONFIG.auto then
@@ -4109,9 +4552,9 @@ task.spawn(function()
     end
 end)
 
--- ================================================================
+-- ------------------------------------------------------------
 -- BACKGROUND LOOPS
--- ================================================================
+-- ------------------------------------------------------------
 
 task.spawn(clickLoop)
 task.spawn(drainLoop)
@@ -4133,9 +4576,9 @@ end
 
 
 
--- ================================================================
+-- ------------------------------------------------------------
 -- MOVEMENT & PLAYER UTILITY HOOKS
--- ================================================================
+-- ------------------------------------------------------------
 RunService.Stepped:Connect(function()
     if CONFIG.noclip then
         local c = LocalPlayer.Character
@@ -4159,9 +4602,9 @@ UserInputService.JumpRequest:Connect(function()
 end)
 
 
--- ================================================================
+-- ------------------------------------------------------------
 -- CREATE WINDOW (PINATHUB BRANDING - PinatHub MODERN STYLE)
--- ================================================================
+-- ------------------------------------------------------------
 local Window = Library:NewWindow({
     Title = "PinatHub | Drain Water",
     Description = "Control Center",
@@ -4196,9 +4639,9 @@ Library:Notify({
     Duration = 4
 })
 
--- ================================================================
+-- ------------------------------------------------------------
 -- CREATE TABS (100% UNIQUE ICONS - NO DUPLICATES, NO BLANKS)
--- ================================================================
+-- ------------------------------------------------------------
 local Tabs = {}
 
 Tabs.Farm = Window:T("Auto Farm", "rbxassetid://10723344432", "Drain Water Controls")
@@ -4209,9 +4652,9 @@ Tabs.Advanced = Window:T("Advanced", "rbxassetid://10747383470", "Advanced & Uti
 Tabs.Stats = Window:T("Live Stats", "rbxassetid://10709770317", "Real-time Telemetry")
 Tabs.Community = Window:T("Community", "rbxassetid://10747373426", "Join PinatHub Community")
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 1. AUTO FARM TAB
--- ================================================================
+-- ------------------------------------------------------------
 local farmSection = Tabs.Farm:AddSection("Auto Farm")
 
 farmSection:AddToggle({
@@ -4352,9 +4795,9 @@ farmSettingsSection:AddButton({
     end
 })
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 2. UPGRADES TAB
--- ================================================================
+-- ------------------------------------------------------------
 local upgradeSection = Tabs.Upgrades:AddSection("Upgrades")
 
 upgradeSection:AddToggle({
@@ -4436,9 +4879,9 @@ upgradeSection:AddSlider({
     Callback = function(v) CONFIG.spendEvery = v end
 })
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 3. FISH & PETS TAB
--- ================================================================
+-- ------------------------------------------------------------
 local fishSection = Tabs.Fish:AddSection("Fish & Pets Settings")
 
 fishSection:AddToggle({
@@ -4507,9 +4950,9 @@ fishSection:AddSlider({
     Callback = function(v) CONFIG.fillRatio = v / 100 end
 })
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 4. AUTO SELL TAB
--- ================================================================
+-- ------------------------------------------------------------
 local sellSection = Tabs.Sell:AddSection("Auto Sell Fish")
 
 sellSection:AddToggle({
@@ -4574,9 +5017,9 @@ sellSection:AddButton({
     end
 })
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 5. ADVANCED TAB & UTILITIES
--- ================================================================
+-- ------------------------------------------------------------
 local advancedSection = Tabs.Advanced:AddSection("Advanced Automation")
 
 advancedSection:AddToggle({
@@ -4758,9 +5201,9 @@ utilSection:AddButton({
     end
 })
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 6. LIVE STATS TAB (MODERN REAL-TIME WEBSITE STATS DASHBOARD)
--- ================================================================
+-- ------------------------------------------------------------
 local statsHeaderSec = Tabs.Stats:AddSection("Telemetry Control Center")
 
 -- Status Header Pill
@@ -4866,9 +5309,9 @@ task.spawn(function()
     end
 end)
 
--- ================================================================
+-- ------------------------------------------------------------
 -- 7. COMMUNITY TAB (ORIGINAL PINATHUB SOCIALS)
--- ================================================================
+-- ------------------------------------------------------------
 local communitySection = Tabs.Community:AddSection("Join PinatHub Community")
 
 communitySection:AddParagraph({

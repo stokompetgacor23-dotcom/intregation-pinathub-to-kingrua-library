@@ -1,4 +1,4 @@
-# 🌟 PinatHub × KingRua UI Library — Dokumentasi Lengkap & Panduan Penggunaan
+# PinatHub UI Library — Dokumentasi & Panduan
 
 > **Versi**: PinatHub Official Edition  
 > **Developer**: vinzee  
@@ -38,10 +38,10 @@
 
 ## 1. Pengenalan & Keunggulan
 
-**PinatHub × KingRua UI Library** adalah framework antarmuka pengguna (UI) modern berkinerja tinggi yang dirancang khusus untuk skrip eksekutor Roblox (Solara, Wave, Delta, Fluxus, Codex, Swift, Synapse Z, Macsploit, dll.). Framework ini memadukan estetika dark obsidian glassmorphism dengan aksen neon khas PinatHub.
+**PinatHub UI Library** adalah framework antarmuka pengguna (UI) modern berkinerja tinggi yang dirancang khusus untuk skrip eksekutor Roblox (Solara, Wave, Delta, Fluxus, Codex, Swift, Synapse Z, Macsploit, dll.). Framework ini memadukan estetika dark obsidian glassmorphism dengan aksen neon khas PinatHub.
 
 ### Fitur Unggulan:
-- **Floating Launcher Button**: Tombol toggle melayang permanen berbentuk bulat (50×50 px) dengan latar putih, outline hijau neon (`rgb(0, 255, 0)`), icon PinatHub permanen, dan dukungan drag & drop halus (Mouse & Touch).
+- **Floating Launcher Button**: Tombol toggle melayang permanen berbentuk bulat (50×50 px) dengan latar putih, outline putih neon (`rgb(0, 255, 0)`), icon PinatHub permanen, dan dukungan drag & drop halus (Mouse & Touch).
 - **CoreGui & Topbar Overlay**: Menggunakan layer rendering tertinggi (`DisplayOrder = 999999`, `IgnoreGuiInset = true`) sehingga mampu menembus menu atas Roblox tanpa terhalang.
 - **RichText Engine Terintegrasi**: Label paragraf mendukung pewarnaan teks dinamis via tag Roblox XML seperti `<font color='#4ade80'>$50M</font>`, `<b>Teks Tebal</b>`, dan `<i>Miring</i>`.
 - **Live Telemetry Bar Graph**: Modul grafik batang real-time dengan animasi tween halus untuk menampilkan performa, throughput data, dan statistik live.
@@ -70,7 +70,7 @@ Project ini menyediakan file lengkap agar Anda dapat menggunakannya berulang kal
 | Nama File | Deskripsi |
 |-----------|-----------|
 | `kingrualibrarysource.lua` | **Full Source UI Library murni**. Berisi seluruh core logika UI, komponen grafis, launcher button, theme engine, dan manajemen event. Gunakan file ini jika ingin meng-host library di GitHub / Pastebin untuk di-`loadstring`. |
-| `kingrualibraryexample.lua` | **Contoh Implementasi Lengkap (Full Script Bundled)**. Menggabungkan library dengan skrip fungsional game Drain Water (Auto Farm, Live Stats Dashboard, Upgrades, Auto Sell, Community). Siap dieksekusi langsung di eksekutor. |
+| `pinathublibraryexample.lua` | **Contoh Implementasi Lengkap (Full Script Bundled)**. Menggabungkan library dengan skrip fungsional game Drain Water (Auto Farm, Live Stats Dashboard, Upgrades, Auto Sell, Community). Siap dieksekusi langsung di eksekutor. |
 | `DOCUMENTATION.md` | **Buku panduan lengkap (file ini)** dengan referensi API setiap fungsi dan contoh kode. |
 
 ---
@@ -80,8 +80,8 @@ Project ini menyediakan file lengkap agar Anda dapat menggunakannya berulang kal
 Jika Anda memuat library via URL mentah (raw loadstring):
 
 ```lua
--- Memuat PinatHub KingRua Library
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/username/repo/main/kingrualibrarysource.lua"))()
+-- Memuat PinatHub Library
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua"))()
 
 -- Membuat Jendela Utama
 local Window = Library:CreateWindow({
@@ -156,7 +156,7 @@ Tombol launcher dibuat secara otomatis saat `Library:CreateWindow` dipanggil. To
 - **Posisi Awal**: Di tengah layar (`UDim2.new(0.5, -25, 0.5, -25)`).
 - **Latar Belakang**: Putih solid (`Color3.fromRGB(255, 255, 255)`), `BackgroundTransparency = 0`.
 - **Bentuk**: Bulat penuh (`UICorner.CornerRadius = UDim.new(1, 0)`).
-- **Outline (UIStroke)**: Hijau neon (`Color3.fromRGB(0, 255, 0)`), ketebalan `2px`.
+- **Outline (UIStroke)**: Hijau neon (`Color3.fromRGB(255, 255, 255)`), ketebalan `2px`.
 - **Icon**: Logo PinatHub permanen (`rbxassetid://118264723961739`).
 - **Draggable**: Dapat digeser bebas di layar via kursor mouse maupun jari di layar sentuh (mobile support).
 - **Fungsi Toggle**:
@@ -249,6 +249,41 @@ local FarmToggle = MySection:AddToggle({
 FarmToggle:Set(true)
 -- Membaca status saat ini:
 local isRunning = FarmToggle:Get()
+```
+
+---
+
+
+### AddSubToggle
+Toggle sekunder dengan posisi sedikit menjorok ke dalam (indented), cocok untuk opsi tambahan di bawah fitur utama (misalnya opsi "Auto Sell" di bawah "Auto Farm").
+
+```lua
+MySection:AddSubToggle({
+    Title = "Auto Sell Saat Tas Penuh",
+    Default = false,
+    Callback = function(state)
+        print("Sub toggle status:", state)
+    end
+})
+```
+
+---
+
+### AddToggleSlider
+Kombinasi toggle switch dan slider dalam satu baris kartu yang ringkas. Sangat efisien untuk fitur seperti Speed Boost, Jump Power, atau Fly Speed.
+
+```lua
+MySection:AddToggleSlider({
+    Title = "WalkSpeed Multiplier",
+    DefaultToggle = false,
+    Min = 16,
+    Max = 150,
+    DefaultSlider = 32,
+    Suffix = " spd",
+    Callback = function(enabled, speed)
+        print("Status:", enabled, "Kecepatan:", speed)
+    end
+})
 ```
 
 ---
@@ -480,18 +515,18 @@ Saat menambahkan tab dengan `Window:AddTab({ Name = "...", Icon = "..." })`, And
 Salin kode di bawah ini sebagai pondasi cepat untuk membuat skrip cheat/utility game Roblox baru:
 
 ```lua
--- ================================================================
+-- ------------------------------------------------------------
 -- PINATHUB SCRIPT TEMPLATE — SIAP PAKAI
 -- Discord: https://discord.gg/ysHZCYFaX7
 -- WhatsApp XploitForce: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp
 -- YouTube: https://www.youtube.com/@viunzee1
--- ================================================================
+-- ------------------------------------------------------------
 
 repeat task.wait() until game:IsLoaded()
 
 -- Memuat Library Source
 -- Ganti RAW_URL dengan tautan mentah file kingrualibrarysource.lua Anda
-local Library = loadstring(game:HttpGet("RAW_URL_HERE"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua"))()
 
 local Window = Library:CreateWindow({
     Title = "PinatHub",
