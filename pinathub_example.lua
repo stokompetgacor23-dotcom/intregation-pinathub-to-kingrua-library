@@ -314,6 +314,41 @@ local function ApplyConfigState()
     end
 end
 
+local function ApplyLoadedControlStates()
+    local controlTitles = {
+        MasterFarm = "Master Farm Switch",
+        AutoCollectDrops = "Auto Collect Floating Drops",
+        AutoSellInventory = "Auto Sell Full Inventory",
+        AutoLevelUp = "Auto Level Up & Rebirth",
+        AutoAttack = "Auto Attack Target",
+        PrioritizeBosses = "Prioritize Boss & Elite Targets",
+        AutoEquipWeapon = "Auto Equip Strongest Weapon",
+        KillAura = "Kill Aura (360° Sphere)",
+        InfiniteJump = "Infinite Air Jump",
+        Noclip = "Noclip (Phase Walls)",
+        AntiAFK = "Anti-AFK Protection",
+        AutoRespawn = "Auto Respawn on Death",
+        GodmodeSimulation = "Godmode Simulation (Auto Heal)",
+        PlayerESPMaster = "Master Player ESP",
+        ESPShowBoxes = "Show Bounding Boxes",
+        ESPShowNames = "Show Display Names & Usernames",
+        ESPShowHealth = "Show Health & Distance Bars",
+        ESPShowTracers = "Show Bottom Screen Tracers",
+        Fullbright = "Fullbright (Maximum Visibility)",
+        DisableShadows = "Disable Map Shadows",
+        ClickToTeleport = "Click to Teleport (Ctrl + Click)",
+        AutoLoadProfile = "Auto Load Profile on Launch",
+        AutoBackup = "Create Automatic Timestamped Backups"
+    }
+
+    for key, title in pairs(controlTitles) do
+        local setter = Library._ControlSetters and Library._ControlSetters[title]
+        if setter and type(CONFIG[key]) == "boolean" then
+            pcall(setter, CONFIG[key])
+        end
+    end
+end
+
 -- =============================================================================
 -- 5. TAB 1: AUTOMATION & COMBAT
 -- =============================================================================
@@ -1045,6 +1080,7 @@ ConfigSec:AddButton({
                     end
                     CONFIG.CurrentProfile = ProfileNameInput
                     ApplyConfigState()
+                    ApplyLoadedControlStates()
                     loaded = true
                 end
             end

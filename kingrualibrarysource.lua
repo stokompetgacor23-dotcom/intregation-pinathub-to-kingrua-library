@@ -217,6 +217,7 @@ local Library = {
 	Logo = PINATHUB_LOGO,
 	CurrentWindow = nil,
 	NotificationHolder = nil,
+	_ControlSetters = {},
 	-- Global registry of all expanded paragraph frames for click-outside-to-close
 	_ActiveParaFrames = {}
 }
@@ -1956,6 +1957,9 @@ function Library:NewWindow(ConfigWindow)
 				end)
 
 				if cfg.Default then AnimateToggle(true) end
+				Library._ControlSetters[cfg.Title] = function(value)
+					ToggleState:Set(value)
+				end
 				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
 				return ToggleState
 			end
@@ -2560,6 +2564,9 @@ function Library:NewWindow(ConfigWindow)
 				function SubObj:Get()
 					return state
 				end
+				Library._ControlSetters[cfg.Title] = function(value)
+					SubObj:Set(value)
+				end
 
 				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
 				return SubObj
@@ -2738,6 +2745,9 @@ function Library:NewWindow(ConfigWindow)
 				end
 				function TSObj:Get()
 					return tState, sVal
+				end
+				Library._ControlSetters[cfg.Title] = function(value)
+					TSObj:SetToggle(value)
 				end
 
 				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
