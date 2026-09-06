@@ -251,7 +251,7 @@ getgenv().VD = getgenv().VD or {
     BEAT_Survivor         = false,
     BEAT_Killer           = false,
     TP_Offset             = 3,
-    VIS_KystKiller        = false,
+    VIS_PinatHubKiller        = false,
     VIS_SpectatorCounter  = false,
     VIS_KillerPerks       = false,
     VIS_PredictMap        = false,
@@ -430,7 +430,7 @@ local VD_DefaultOffFlags = {
     "SPEED_Enabled",
     "NO_Fog",
     "NoCutscene",
-    "VIS_KystKiller",
+    "VIS_PinatHubKiller",
     "CAM_FOVEnabled",
     "CAM_ThirdPerson",
     "CAM_ShiftLock",
@@ -628,7 +628,7 @@ local VD_To_Flag = {
     AUTO_Attack = "Auto Attack",
     BEAT_Survivor = "Beat Survivor (auto exit)",
     SURV_WarnKiller = "Survivor Killer Warning",
-    VIS_KystKiller = "Kyst Killer Display",
+    VIS_PinatHubKiller = "Killer Display",
     VIS_SpectatorCounter = "Enable Spectator Counter",
     VIS_KillerPerks = "Killer Perks Display",
     VIS_PredictMap = "Predict Map",
@@ -1144,7 +1144,7 @@ do
     local KYS_PalletState = setmetatable({}, { __mode = "k" })
     local KYS_WindowState = setmetatable({}, { __mode = "k" })
     local KYS_InstanceIds = setmetatable({}, { __mode = "k" })
-    local KYS_KystId = 0
+    local PinatHub_KillerId = 0
     local KYS_PlayerLoopThread = nil
     local KYS_WorldLoopThread = nil
     local KYS_ESPFolder = nil
@@ -1183,8 +1183,8 @@ do
         if not inst then return "nil" end
         local id = KYS_InstanceIds[inst]
         if id then return id end
-        KYS_KystId = KYS_KystId + 1
-        id = tostring(KYS_KystId)
+        PinatHub_KillerId = PinatHub_KillerId + 1
+        id = tostring(PinatHub_KillerId)
         KYS_InstanceIds[inst] = id
         return id
     end
@@ -5402,15 +5402,15 @@ do
         BoxBorder = true,
         Opened    = true,
     })
-    KYS_AddMainInfoLine(infoPanelSection, "KystKiller", "Kyst Killer Display", "Off")
+    KYS_AddMainInfoLine(infoPanelSection, "PinatHubKiller", "Killer Display", "Off")
     KYS_AddMainInfoLine(infoPanelSection, "KillerPerks", "Spectate Killer Perks", "Off")
     KYS_AddMainInfoLine(infoPanelSection, "PredictMap", "Predict Map", "Off")
-    visualSection:AddToggle({ Default = false, Name = "Kyst Killer Display", Flag = "Kyst Killer Display", Callback = function(v) 
-        VD.VIS_KystKiller = v 
+    visualSection:AddToggle({ Default = false, Name = "Killer Display", Flag = "Killer Display", Callback = function(v) 
+        VD.VIS_PinatHubKiller = v 
         if v then
-            StartKystKiller()
+            StartPinatHubKiller()
         else
-            StopKystKiller()
+            StopPinatHubKiller()
         end
     end })
     visualSection:AddToggle({ Default = false, Name = "Enable Spectator Counter", Flag = "Enable Spectator Counter", Callback = function(v)
@@ -7188,8 +7188,8 @@ function VD_UpdateSurvivorWarnings()
         return
     end
     local now = tick()
-    if VD._WarnKillerKyst and now < VD._WarnKillerKyst then return end
-    VD._WarnKillerKyst = now + 0.15
+    if VD._WarnKillerPinatHub and now < VD._WarnKillerPinatHub then return end
+    VD._WarnKillerPinatHub = now + 0.15
     VD._WarnKillerActive = true
     local killers = {}
     for _, player in ipairs(Players:GetPlayers()) do
@@ -7287,8 +7287,8 @@ function VD_UpdateBypassGate()
         if next(VD_GateOriginal) then VD_RestoreGateParts() end
         return
     end
-    if VD._KystBypassGate and tick() < VD._KystBypassGate then return end
-    VD._KystBypassGate = tick() + 1
+    if VD._PinatHubBypassGate and tick() < VD._PinatHubBypassGate then return end
+    VD._PinatHubBypassGate = tick() + 1
     for _, gate in ipairs(Workspace:GetDescendants()) do
         if gate:IsA("Model") and gate.Name == "Gate" then
             VD_SetPartState(gate:FindFirstChild("LeftGate"), { Transparency = 1, CanCollide = false })
@@ -10069,20 +10069,20 @@ function SetupAntiBlind()
     end)
 end
 pcall(SetupAntiBlind)
-getgenv().KYS_KystKillerGui = nil
-getgenv().KYS_KystKillerRunning = false
-function SetupKystKillerIndicator()
-    if getgenv().KYS_KystKillerGui then pcall(function() getgenv().KYS_KystKillerGui:Destroy() end) end
-    getgenv().KYS_KystKillerGui = nil
-    KYS_SetMainInfoPanelText("KystKiller", "Kyst Killer Display", "Waiting...")
+getgenv().PinatHub_KillerGui = nil
+getgenv().PinatHub_KillerRunning = false
+function SetupPinatHubKillerIndicator()
+    if getgenv().PinatHub_KillerGui then pcall(function() getgenv().PinatHub_KillerGui:Destroy() end) end
+    getgenv().PinatHub_KillerGui = nil
+    KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Waiting...")
 end
-function StartKystKiller()
-    if getgenv().KYS_KystKillerRunning then return end
-    getgenv().KYS_KystKillerRunning = true
-    SetupKystKillerIndicator()
+function StartPinatHubKiller()
+    if getgenv().PinatHub_KillerRunning then return end
+    getgenv().PinatHub_KillerRunning = true
+    SetupPinatHubKillerIndicator()
     task.spawn(function()
         local _genv = getgenv()
-        while _genv.VD and _genv.VD.VIS_KystKiller and _genv.KYS_KystKillerRunning do
+        while _genv.VD and _genv.VD.VIS_PinatHubKiller and _genv.PinatHub_KillerRunning do
             local playersList = Players:GetPlayers()
             table.sort(playersList, function(a, b)
                 local aA = a:GetAttribute("AllowKiller") or false
@@ -10092,21 +10092,21 @@ function StartKystKiller()
             end)
             local nk = playersList[1]
             if nk then
-                KYS_SetMainInfoPanelText("KystKiller", "Kyst Killer Display", "Kyst Killer: " .. (nk == LocalPlayer and "YOU" or nk.DisplayName or nk.Name))
+                KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Killer: " .. (nk == LocalPlayer and "YOU" or nk.DisplayName or nk.Name))
             else
-                KYS_SetMainInfoPanelText("KystKiller", "Kyst Killer Display", "Kyst Killer: None")
+                KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Killer: None")
             end
             task.wait(2)
         end
     end)
 end
-function StopKystKiller()
-    getgenv().KYS_KystKillerRunning = false
-    if getgenv().KYS_KystKillerGui then
-        pcall(function() getgenv().KYS_KystKillerGui:Destroy() end)
-        getgenv().KYS_KystKillerGui = nil
+function StopPinatHubKiller()
+    getgenv().PinatHub_KillerRunning = false
+    if getgenv().PinatHub_KillerGui then
+        pcall(function() getgenv().PinatHub_KillerGui:Destroy() end)
+        getgenv().PinatHub_KillerGui = nil
     end
-    KYS_SetMainInfoPanelText("KystKiller", "Kyst Killer Display", "Off")
+    KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Off")
 end
 if getgenv().KYS_SpectatorCounterGui then
     pcall(function() getgenv().KYS_SpectatorCounterGui:Destroy() end)
@@ -10208,8 +10208,8 @@ local KYS_KillerPerksCollapsed = false
 local KYS_KillerPerksLocked = false
 getgenv().KYS_KillerPerksRunning = false
 local KYS_KillerPerkNames = {
-    KystInLine = "Kyst in Line",
-    ["Kyst in Line"] = "Kyst in Line",
+    PinatHubInLine = "PinatHub in Line",
+    ["PinatHub in Line"] = "PinatHub in Line",
     EchoLocation = "Echo Location",
     ["Echo Location"] = "Echo Location",
     KingsScourge = "King's Scourge",
@@ -10477,7 +10477,7 @@ local function KYS_TryPredictMapRemote()
     local attempts = {
         {},
         { "Current" },
-        { "Kyst" },
+        { "PinatHub" },
         { "Map" },
     }
     for _, args in ipairs(attempts) do
@@ -11143,10 +11143,10 @@ getgenv().KYS_SyncLoadedFeatures = function()
     if type(SetupAntiBlind) == "function" then pcall(SetupAntiBlind) end
     if type(SetupNoPalletStun) == "function" then pcall(SetupNoPalletStun) end
     if type(VD_UpdateCrosshair) == "function" then pcall(VD_UpdateCrosshair) end
-    if VD.VIS_KystKiller then
-        pcall(StartKystKiller)
+    if VD.VIS_PinatHubKiller then
+        pcall(StartPinatHubKiller)
     else
-        pcall(StopKystKiller)
+        pcall(StopPinatHubKiller)
     end
     if VD.VIS_SpectatorCounter then
         pcall(StartSpectatorCounter)
