@@ -290,11 +290,11 @@ function Library:UpdateScrolling(scrollFrame, uiLayout)
 end
 
 -- -----------------------------------------------------------------------------
--- 4. CUSTOM GLASS TOAST NOTIFICATION SYSTEM
+-- 4. MODERN TOAST NOTIFICATION SYSTEM (Top-Right, Slide-In)
 -- -----------------------------------------------------------------------------
 function Library:Notify(config)
 	local cfg = self:MakeConfig({
-		Title = "Pinathub",
+		Title = "PinatHub",
 		Content = "",
 		Duration = 3.5,
 		Type = "Info",
@@ -303,122 +303,227 @@ function Library:Notify(config)
 
 	if not self.NotificationHolder then return end
 
+	-- Type → accent color + icon mapping
 	local typeColor = Theme.Accent
+	local typeIcon  = TabIcons.Info or PINATHUB_LOGO
 	if cfg.Type == "Success" then
 		typeColor = Theme.Success
+		typeIcon  = TabIcons.check or TabIcons["check"] or PINATHUB_LOGO
 	elseif cfg.Type == "Warning" then
 		typeColor = Theme.Warning
+		typeIcon  = TabIcons.alert or TabIcons["alert"] or PINATHUB_LOGO
 	elseif cfg.Type == "Danger" or cfg.Type == "Error" then
 		typeColor = Theme.Danger
+		typeIcon  = TabIcons["skull"] or PINATHUB_LOGO
+	elseif cfg.Type == "Info" then
+		typeColor = Theme.AccentGlow
+		typeIcon  = TabIcons.info or TabIcons["info"] or PINATHUB_LOGO
 	end
+	if cfg.Icon then typeIcon = ResolveIcon(cfg.Icon) or typeIcon end
 
+	-- ── Toast Card ──────────────────────────────────────────────────────────
 	local Toast = Instance.new("Frame")
-	Toast.Name = "Toast"
+	Toast.Name = "Toast_" .. cfg.Title
 	Toast.Parent = self.NotificationHolder
-	Toast.BackgroundColor3 = Theme.Surface
+	Toast.BackgroundColor3 = Theme.Header
+	Toast.BackgroundTransparency = 0.08
 	Toast.BorderSizePixel = 0
-	Toast.Size = UDim2.new(1, 0, 0, 0)
-	Toast.ClipsDescendants = true
-	Toast.BackgroundTransparency = 1
+	Toast.Size = UDim2.new(1, 0, 0, 0)  -- grows in via tween
+	Toast.ClipsDescendants = false
+	-- Start off-screen to the right for slide-in
+	Toast.Position = UDim2.new(1.1, 0, 0, 0)
 
 	local ToastCorner = Instance.new("UICorner")
-	ToastCorner.CornerRadius = UDim.new(0, 8)
+	ToastCorner.CornerRadius = UDim.new(0, 10)
 	ToastCorner.Parent = Toast
 
+	-- Outer glow stroke matching type color
 	local ToastStroke = Instance.new("UIStroke")
-	ToastStroke.Color = Theme.Border
-	ToastStroke.Thickness = 1
-	ToastStroke.Transparency = 1
+	ToastStroke.Color = typeColor
+	ToastStroke.Thickness = 1.2
+	ToastStroke.Transparency = 0.55
 	ToastStroke.Parent = Toast
 
-	local LeftStripe = Instance.new("Frame")
-	LeftStripe.Name = "Stripe"
-	LeftStripe.Parent = Toast
-	LeftStripe.BackgroundColor3 = typeColor
-	LeftStripe.BorderSizePixel = 0
-	LeftStripe.Size = UDim2.new(0, 3, 1, 0)
-	LeftStripe.ZIndex = 2
+	-- Left accent bar
+	local LeftBar = Instance.new("Frame")
+	LeftBar.Name = "AccentBar"
+	LeftBar.Parent = Toast
+	LeftBar.BackgroundColor3 = typeColor
+	LeftBar.BorderSizePixel = 0
+	LeftBar.Position = UDim2.new(0, 0, 0, 8)
+	LeftBar.Size = UDim2.new(0, 3, 1, -16)
+	LeftBar.ZIndex = 3
 
-	local StripeCorner = Instance.new("UICorner")
-	StripeCorner.CornerRadius = UDim.new(0, 2)
-	StripeCorner.Parent = LeftStripe
+	local BarCorner = Instance.new("UICorner")
+	BarCorner.CornerRadius = UDim.new(1, 0)
+	BarCorner.Parent = LeftBar
 
-	local IconLabel = Instance.new("ImageLabel")
-	IconLabel.Name = "Icon"
-	IconLabel.Parent = Toast
-	IconLabel.AnchorPoint = Vector2.new(0, 0.5)
-	IconLabel.Position = UDim2.new(0, 12, 0, 22)
-	IconLabel.Size = UDim2.new(0, 18, 0, 18)
-	IconLabel.BackgroundTransparency = 1
-	IconLabel.Image = cfg.Icon or PINATHUB_LOGO
-	IconLabel.ImageColor3 = typeColor
-	IconLabel.ScaleType = Enum.ScaleType.Fit
-	IconLabel.ZIndex = 2
+	-- Type icon badge
+	local IconCircle = Instance.new("Frame")
+	IconCircle.Name = "IconBadge"
+	IconCircle.Parent = Toast
+	IconCircle.AnchorPoint = Vector2.new(0, 0.5)
+	IconCircle.Position = UDim2.new(0, 14, 0, 0)  -- Y set after height known
+	IconCircle.Size = UDim2.new(0, 28, 0, 28)
+	IconCircle.BackgroundColor3 = typeColor
+	IconCircle.BackgroundTransparency = 0.75
+	IconCircle.BorderSizePixel = 0
+	IconCircle.ZIndex = 3
 
+	local IcCorner = Instance.new("UICorner")
+	IcCorner.CornerRadius = UDim.new(1, 0)
+	IcCorner.Parent = IconCircle
+
+	local IconImg = Instance.new("ImageLabel")
+	IconImg.Name = "Icon"
+	IconImg.Parent = IconCircle
+	IconImg.AnchorPoint = Vector2.new(0.5, 0.5)
+	IconImg.Position = UDim2.fromScale(0.5, 0.5)
+	IconImg.Size = UDim2.new(0, 16, 0, 16)
+	IconImg.BackgroundTransparency = 1
+	IconImg.Image = typeIcon
+	IconImg.ImageColor3 = typeColor
+	IconImg.ScaleType = Enum.ScaleType.Fit
+	IconImg.ZIndex = 4
+
+	-- Title
 	local Title = Instance.new("TextLabel")
 	Title.Name = "Title"
 	Title.Parent = Toast
 	Title.BackgroundTransparency = 1
-	Title.Position = UDim2.new(0, 38, 0, 7)
-	Title.Size = UDim2.new(1, -46, 0, 16)
+	Title.Position = UDim2.new(0, 50, 0, 10)
+	Title.Size = UDim2.new(1, -58, 0, 16)
 	Title.Font = Enum.Font.GothamBold
 	Title.Text = cfg.Title
-	Title.TextColor3 = Theme.Text
+	Title.TextColor3 = Theme.NeonWhite
 	Title.TextSize = 12
 	Title.TextXAlignment = Enum.TextXAlignment.Left
-	Title.ZIndex = 2
+	Title.TextTruncate = Enum.TextTruncate.AtEnd
+	Title.ZIndex = 3
 
+	-- Content
 	local Desc = Instance.new("TextLabel")
 	Desc.Name = "Desc"
 	Desc.Parent = Toast
 	Desc.BackgroundTransparency = 1
-	Desc.Position = UDim2.new(0, 38, 0, 25)
-	Desc.Size = UDim2.new(1, -46, 0, 30)
+	Desc.Position = UDim2.new(0, 50, 0, 27)
+	Desc.Size = UDim2.new(1, -58, 0, 60)  -- temp tall; resized below
 	Desc.Font = Enum.Font.Gotham
 	Desc.Text = cfg.Content
 	Desc.TextColor3 = Theme.TextSecondary
-	Desc.TextSize = 11
+	Desc.TextSize = 10.5
 	Desc.TextWrapped = true
 	Desc.TextXAlignment = Enum.TextXAlignment.Left
 	Desc.TextYAlignment = Enum.TextYAlignment.Top
-	Desc.ZIndex = 2
+	Desc.RichText = true
+	Desc.ZIndex = 3
 
-	local ProgressBar = Instance.new("Frame")
-	ProgressBar.Name = "ProgressBar"
-	ProgressBar.Parent = Toast
-	ProgressBar.AnchorPoint = Vector2.new(0, 1)
-	ProgressBar.Position = UDim2.new(0, 0, 1, 0)
-	ProgressBar.Size = UDim2.new(1, 0, 0, 2)
-	ProgressBar.BackgroundColor3 = typeColor
-	ProgressBar.BackgroundTransparency = 0.2
-	ProgressBar.BorderSizePixel = 0
-	ProgressBar.ZIndex = 3
+	-- Progress bar (shrinks left-to-right as duration passes)
+	local ProgTrack = Instance.new("Frame")
+	ProgTrack.Name = "ProgTrack"
+	ProgTrack.Parent = Toast
+	ProgTrack.AnchorPoint = Vector2.new(0, 1)
+	ProgTrack.Position = UDim2.new(0, 8, 1, -6)
+	ProgTrack.Size = UDim2.new(1, -16, 0, 2)
+	ProgTrack.BackgroundColor3 = Theme.SurfaceActive
+	ProgTrack.BackgroundTransparency = 0.4
+	ProgTrack.BorderSizePixel = 0
+	ProgTrack.ZIndex = 3
 
-	local requiredHeight = math.max(Desc.TextBounds.Y + 36, 58)
+	local PTCorner = Instance.new("UICorner")
+	PTCorner.CornerRadius = UDim.new(1, 0)
+	PTCorner.Parent = ProgTrack
 
-	TweenService:Create(Toast, TweenInfoSpring, {
-		Size = UDim2.new(1, 0, 0, requiredHeight),
-		BackgroundTransparency = 0.1
-	}):Play()
-	TweenService:Create(ToastStroke, TweenInfoSmooth, { Transparency = 0.2 }):Play()
+	local ProgFill = Instance.new("Frame")
+	ProgFill.Name = "Fill"
+	ProgFill.Parent = ProgTrack
+	ProgFill.Size = UDim2.fromScale(1, 1)
+	ProgFill.BackgroundColor3 = typeColor
+	ProgFill.BackgroundTransparency = 0.1
+	ProgFill.BorderSizePixel = 0
+	ProgFill.ZIndex = 4
 
-	TweenService:Create(ProgressBar, TweenInfo.new(cfg.Duration, Enum.EasingStyle.Linear), {
-		Size = UDim2.new(0, 0, 0, 2)
-	}):Play()
+	local PFCorner = Instance.new("UICorner")
+	PFCorner.CornerRadius = UDim.new(1, 0)
+	PFCorner.Parent = ProgFill
 
-	task.delay(cfg.Duration, function()
-		if Toast and Toast.Parent then
-			local exitTween = TweenService:Create(Toast, TweenInfoFast, {
-				Size = UDim2.new(1, 0, 0, 0),
-				BackgroundTransparency = 1
+	-- Dismiss button (X)
+	local DismissBtn = Instance.new("ImageButton")
+	DismissBtn.Name = "Dismiss"
+	DismissBtn.Parent = Toast
+	DismissBtn.AnchorPoint = Vector2.new(1, 0)
+	DismissBtn.Position = UDim2.new(1, -8, 0, 8)
+	DismissBtn.Size = UDim2.new(0, 14, 0, 14)
+	DismissBtn.BackgroundTransparency = 1
+	DismissBtn.Image = "rbxassetid://10747384394"
+	DismissBtn.ImageColor3 = Theme.TextMuted
+	DismissBtn.ScaleType = Enum.ScaleType.Fit
+	DismissBtn.AutoButtonColor = false
+	DismissBtn.ZIndex = 5
+
+	DismissBtn.MouseEnter:Connect(function()
+		TweenService:Create(DismissBtn, TweenInfoFast, { ImageColor3 = Theme.Danger }):Play()
+	end)
+	DismissBtn.MouseLeave:Connect(function()
+		TweenService:Create(DismissBtn, TweenInfoFast, { ImageColor3 = Theme.TextMuted }):Play()
+	end)
+
+	-- ── Compute height & animate in ─────────────────────────────────────────
+	local function ComputeAndAnimate()
+		Desc.Size = UDim2.new(1, -58, 0, 1000)
+		task.wait()  -- allow TextBounds to update
+		local textH = math.max(Desc.TextBounds.Y, 14)
+		Desc.Size = UDim2.new(1, -58, 0, textH)
+
+		local cardH = textH + 44  -- 10 top + 16 title + 1 gap + textH + 8 prog + 9 bottom
+		cardH = math.max(cardH, 62)
+
+		IconCircle.Position = UDim2.new(0, 14, 0, cardH / 2)
+
+		-- Expand height
+		Toast.Size = UDim2.new(1, 0, 0, 0)
+		local growTween = TweenService:Create(Toast, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			Size = UDim2.new(1, 0, 0, cardH)
+		})
+		growTween:Play()
+
+		-- Slide in from right
+		growTween.Completed:Connect(function()
+			TweenService:Create(Toast, TweenInfoSmooth, {
+				Position = UDim2.new(0, 0, 0, 0)
+			}):Play()
+			TweenService:Create(ToastStroke, TweenInfoSmooth, { Transparency = 0.35 }):Play()
+		end)
+
+		-- Progress drain
+		TweenService:Create(ProgFill,
+			TweenInfo.new(cfg.Duration, Enum.EasingStyle.Linear),
+			{ Size = UDim2.fromScale(0, 1) }
+		):Play()
+
+		-- Auto-dismiss
+		local dismissed = false
+		local function Dismiss()
+			if dismissed then return end
+			dismissed = true
+			local exitTween = TweenService:Create(Toast, TweenInfoSmooth, {
+				Position = UDim2.new(1.1, 0, 0, 0),
+				BackgroundTransparency = 0.6
 			})
 			TweenService:Create(ToastStroke, TweenInfoFast, { Transparency = 1 }):Play()
 			exitTween:Play()
 			exitTween.Completed:Connect(function()
-				Toast:Destroy()
+				TweenService:Create(Toast, TweenInfoFast, { Size = UDim2.new(1, 0, 0, 0) }):Play()
+				task.wait(0.2)
+				if Toast and Toast.Parent then Toast:Destroy() end
 			end)
 		end
-	end)
+
+		DismissBtn.MouseButton1Click:Connect(Dismiss)
+		task.delay(cfg.Duration, Dismiss)
+	end
+
+	task.spawn(ComputeAndAnimate)
 end
 
 -- -----------------------------------------------------------------------------
@@ -474,21 +579,23 @@ function Library:NewWindow(ConfigWindow)
 	ScreenGui.DisplayOrder = 999999  -- Render di atas menu dan UI default Roblox
 	ScreenGui.Parent = targetParent
 
-	-- Toast Notification Container (Bottom-Right)
+	-- Toast Notification Container — Top-Right, not flush to edge
 	local NotificationHolder = Instance.new("Frame")
 	NotificationHolder.Name = "NotificationHolder"
 	NotificationHolder.Parent = ScreenGui
-	NotificationHolder.AnchorPoint = Vector2.new(1, 1)
-	NotificationHolder.Position = UDim2.new(1, -20, 1, -20)
-	NotificationHolder.Size = UDim2.new(0, 280, 0, 320)
+	NotificationHolder.AnchorPoint = Vector2.new(1, 0)
+	NotificationHolder.Position = UDim2.new(1, -18, 0, 18)  -- top-right, 18px inset
+	NotificationHolder.Size = UDim2.new(0, 292, 1, -36)     -- tall enough for stacked toasts
 	NotificationHolder.BackgroundTransparency = 1
-	NotificationHolder.ZIndex = 100
+	NotificationHolder.ClipsDescendants = false
+	NotificationHolder.ZIndex = 200
 
 	local NotifLayout = Instance.new("UIListLayout")
 	NotifLayout.Parent = NotificationHolder
 	NotifLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	NotifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-	NotifLayout.Padding = UDim.new(0, 6)
+	NotifLayout.VerticalAlignment = Enum.VerticalAlignment.Top  -- stack downward from top-right
+	NotifLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+	NotifLayout.Padding = UDim.new(0, 7)
 
 	self.NotificationHolder = NotificationHolder
 
@@ -3015,16 +3122,31 @@ function Library:NewWindow(ConfigWindow)
 				UpdatePillDisplay()
 
 				-- Open Popout Drawer (PinatHub Screenshot 2)
+				-- renderedOptions tracks THIS dropdown's rows only for cleanup.
+				-- On open we also nuke ALL stale children in PopoutScroll so options
+				-- from a previously-opened dropdown never bleed through.
 				local renderedOptions = {}
 				local function OpenDrawer()
-					for _, item in ipairs(renderedOptions) do item:Destroy() end
+					-- ── Purge ALL existing option rows from the shared PopoutScroll ──
+					-- This is the fix for cross-dropdown option mixing: every child that
+					-- isn't the UIListLayout is an orphaned row from a prior dropdown.
+					for _, child in ipairs(PopoutScroll:GetChildren()) do
+						if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
+							child:Destroy()
+						end
+					end
 					renderedOptions = {}
 
 					PopoutDrawer.Visible = true
+					PopoutBackdrop.Visible = true
+					PopoutTitle.Text = cfg.Title  -- Show which dropdown is open
 					PopoutSBox.Text = ""
 
 					local function RenderList()
-						for _, item in ipairs(renderedOptions) do item:Destroy() end
+						-- Clear only THIS dropdown's rendered rows (list re-render)
+						for _, item in ipairs(renderedOptions) do
+							if item and item.Parent then item:Destroy() end
+						end
 						renderedOptions = {}
 
 						local query = string.lower(PopoutSBox.Text or "")
@@ -3071,6 +3193,7 @@ function Library:NewWindow(ConfigWindow)
 
 								row.MouseButton1Click:Connect(function()
 									if cfg.Multi then
+										-- Multi-select: toggle item, keep drawer open
 										local idx = table.find(DropdownObj.Selected, strVal)
 										if idx then
 											table.remove(DropdownObj.Selected, idx)
@@ -3081,9 +3204,11 @@ function Library:NewWindow(ConfigWindow)
 										RenderList()
 										pcall(cfg.Callback, DropdownObj.Selected)
 									else
+										-- Single-select: update selection, keep drawer open.
+										-- Drawer closes ONLY via click-outside (UserInputService handler).
 										DropdownObj.Selected = { strVal }
 										UpdatePillDisplay()
-										PopoutDrawer.Visible = false
+										RenderList()
 										pcall(cfg.Callback, strVal)
 									end
 								end)
