@@ -2350,6 +2350,7 @@ function Library:NewWindow(ConfigWindow)
 
 				-- ── ParaObj API ───────────────────────────────────────────────────────
 				local ParaObj = {}
+				ParaObj.Frame = ItemFrame
 				function ParaObj:SetTitle(newTitle)
 					TitleLabel.Text = tostring(newTitle)
 				end
