@@ -40,9 +40,19 @@ Lighting.ClockTime = 14
 Lighting.GlobalShadows = false
 
 -- ================================================================
--- LOAD WINDUI (V2)
+-- LOAD PINATHUB X KINGRUA UI LIBRARY
 -- ================================================================
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+local WindUI
+local ok, lib = pcall(function()
+    if readfile and isfile and isfile("kingrualibrarysource.lua") then
+        return loadstring(readfile("kingrualibrarysource.lua"))()
+    end
+end)
+if ok and lib then
+    WindUI = lib
+else
+    WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/mamafoni281/KingRua-Library/refs/heads/main/Source"))()
+end
 
 -- PINATHUB Themes
 WindUI:AddTheme({
@@ -152,7 +162,7 @@ logoButton.Size = UDim2.new(0, 50, 0, 50)
 logoButton.Position = UDim2.new(0.5, -25, 0.5, -25)
 logoButton.BackgroundTransparency = 1
 logoButton.Image = "rbxassetid://118264723961739"
-logoButton.ImageColor3 = Color3.fromRGB(139, 92, 246)
+logoButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
 logoButton.ScaleType = Enum.ScaleType.Fit
 logoButton.Parent = logoGui
 
