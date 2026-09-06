@@ -1,58 +1,67 @@
-# PinatHub UI Library — Dokumentasi & Panduan
+# PinatHub UI Library — Dokumentasi & Panduan Lengkap
 
-> **Versi**: PinatHub Official Edition  
-> **Developer**: vinzee  
-> **Komunitas Utama (WhatsApp XploitForce)**: [Gabung Komunitas WhatsApp](https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp)  
+> **Versi**: PinatHub Official Edition (Universal Engine 3.1.0)  
+> **Developer**: vinzee (@viunzee1)  
+> **Komunitas Utama WhatsApp (XploitForce)**: [https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp](https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp)  
 > **Discord Official**: [https://discord.gg/ysHZCYFaX7](https://discord.gg/ysHZCYFaX7)  
 > **YouTube Channel**: [https://www.youtube.com/@viunzee1](https://www.youtube.com/@viunzee1)  
+> **TikTok**: [https://tiktok.com/@viunze](https://tiktok.com/@viunze)  
 
 ---
 
 ## 📑 Daftar Isi
+
 1. [Pengenalan & Keunggulan](#1-pengenalan--keunggulan)
 2. [Tautan Komunitas & Dukungan](#2-tautan-komunitas--dukungan)
-3. [Struktur File](#3-struktur-file)
+3. [Struktur File Workspace](#3-struktur-file-workspace)
 4. [Quick Start (Memulai Cepat)](#4-quick-start-memulai-cepat)
 5. [Inisialisasi Window (Library:CreateWindow)](#5-inisialisasi-window-librarycreatewindow)
-6. [Floating Launcher Button (Icon Toggle PinatHub)](#6-floating-launcher-button-icon-toggle-pinathub)
-7. [Metode Window](#7-metode-window)
+6. [Floating Launcher Button (PinatHub Toggle Icon)](#6-floating-launcher-button-pinathub-toggle-icon)
+7. [Metode & Kontrol Window](#7-metode--kontrol-window)
 8. [Sistem Tab & Section](#8-sistem-tab--section)
-9. [Katalog Elemen & Kontrol Interaktif](#9-katalog-elemen--kontrol-interaktif)
-   - [AddToggle](#addtoggle)
-   - [AddButton](#addbutton)
-   - [AddSlider](#addslider)
-   - [AddDropdown](#adddropdown)
-   - [AddTextInput](#addtextinput)
-   - [AddKeybind](#addkeybind)
-   - [AddColorPicker](#addcolorpicker)
-   - [AddParagraph (Dukungan RichText Penuh)](#addparagraph-dukungan-richtext-penuh)
-   - [AddGraph (Grafik Telemetri Real-Time)](#addgraph-grafik-telemetri-real-time)
-   - [AddDiscordCard & AddCommunityCard](#adddiscordcard--addcommunitycard)
-   - [AddDivider](#adddivider)
-10. [Sistem Tema & Warna](#10-sistem-tema--warna)
-11. [Daftar Icon Bawaan](#11-daftar-icon-bawaan)
-12. [Template Boilerplate (Siap Pakai untuk Game Baru)](#12-template-boilerplate-siap-pakai-untuk-game-baru)
-13. [FAQ & Solusi Masalah](#13-faq--solusi-masalah)
+9. [Katalog Lengkap Seluruh 15 Elemen UI](#9-katalog-lengkap-seluruh-15-elemen-ui)
+   - [9.1 AddToggle (Dengan Opsi Keybind & Deskripsi)](#91-addtoggle)
+   - [9.2 AddSubToggle (Sub-Toggle Bercabang / Indented)](#92-addsubtoggle)
+   - [9.3 AddToggleSlider (Kombinasi Toggle + Slider dalam 1 Baris)](#93-addtoggleslider)
+   - [9.4 AddButton (Tombol Interaktif dengan Ikon)](#94-addbutton)
+   - [9.5 AddSlider (Slider Presisi dengan Input Box Langsung)](#95-addslider)
+   - [9.6 AddDropdown (Popout Drawer Kanan + Pencarian Opsi)](#96-adddropdown)
+   - [9.7 AddInput / AddTextInput (Kotak Masukan Teks)](#97-addinput--addtextinput)
+   - [9.8 AddKeybind (Perekam Hotkey Keyboard)](#98-addkeybind)
+   - [9.9 AddColorPicker (Pemilih Warna & Preset Palet)](#99-addcolorpicker)
+   - [9.10 AddParagraph (Kartu Informasi & Dukungan RichText Penuh)](#910-addparagraph)
+   - [9.11 AddGraph (Grafik Batang Telemetri Animasi Real-Time)](#911-addgraph)
+   - [9.12 AddProgressBar (Bilah Progres Halus / XP / Level)](#912-addprogressbar)
+   - [9.13 AddPlayerList (Daftar Pemilih Pemain Interaktif & Searchable)](#913-addplayerlist)
+   - [9.14 AddDiscordCard / AddCommunityCard (Kartu Komunitas Resmi)](#914-adddiscordcard--addcommunitycard)
+   - [9.15 AddSeperator / AddDivider (Garis Pemisah & Header Kategori)](#915-addseperator--adddivider)
+10. [Struktur Section & Toggle di Example Resmi (`pinathub_example.lua`)](#10-struktur-section--toggle-di-example-resmi)
+11. [Sistem Config Profile Manager (Penyimpanan JSON & Memori)](#11-sistem-config-profile-manager)
+12. [Sistem Tema & Palet Warna](#12-sistem-tema--palet-warna)
+13. [Daftar Icon Bawaan](#13-daftar-icon-bawaan)
+14. [Template Boilerplate Universal (Siap Pakai untuk Game Baru)](#14-template-boilerplate-universal)
+15. [FAQ & Solusi Masalah Teknis](#15-faq--solusi-masalah-teknis)
 
 ---
 
 ## 1. Pengenalan & Keunggulan
 
-**PinatHub UI Library** adalah framework antarmuka pengguna (UI) modern berkinerja tinggi yang dirancang khusus untuk skrip eksekutor Roblox (Solara, Wave, Delta, Fluxus, Codex, Swift, Synapse Z, Macsploit, dll.). Framework ini memadukan estetika dark obsidian glassmorphism dengan aksen neon khas PinatHub.
+**PinatHub UI Library** adalah framework antarmuka pengguna (UI) modern berkinerja tinggi yang dirancang khusus untuk skrip Roblox (kompatibel dengan Solara, Wave, Delta, Fluxus, Codex, Swift, Synapse Z, Macsploit, dll.). Framework ini memadukan estetika obsidian glassmorphism gelap dengan aksen neon ungu-putih khas PinatHub.
 
 ### Fitur Unggulan:
-- **Floating Launcher Button**: Tombol toggle melayang permanen berbentuk bulat (50×50 px) dengan latar putih, outline putih neon (`rgb(0, 255, 0)`), icon PinatHub permanen, dan dukungan drag & drop halus (Mouse & Touch).
+- **Floating Launcher Button**: Tombol toggle melayang permanen berbentuk bulat (50×50 px) dengan latar putih, outline putih neon, logo PinatHub permanen, dan dukungan drag & drop halus (Mouse PC & Touch Mobile).
 - **CoreGui & Topbar Overlay**: Menggunakan layer rendering tertinggi (`DisplayOrder = 999999`, `IgnoreGuiInset = true`) sehingga mampu menembus menu atas Roblox tanpa terhalang.
-- **RichText Engine Terintegrasi**: Label paragraf mendukung pewarnaan teks dinamis via tag Roblox XML seperti `<font color='#4ade80'>$50M</font>`, `<b>Teks Tebal</b>`, dan `<i>Miring</i>`.
-- **Live Telemetry Bar Graph**: Modul grafik batang real-time dengan animasi tween halus untuk menampilkan performa, throughput data, dan statistik live.
-- **Animasi Super Smooth**: Setiap interaksi (hover, klik, drag, transisi halaman, buka/tutup) diperhalus menggunakan `TweenService` dengan easing spring alami.
+- **RichText Engine Terintegrasi**: Komponen teks mendukung penuh pewarnaan dinamis via tag Roblox XML seperti `<font color='#4ade80'>$50M</font>`, `<b>Teks Tebal</b>`, dan `<i>Miring</i>`.
+- **Live Telemetry Bar Graph**: Modul grafik batang 14 bar real-time dengan animasi tween halus untuk menampilkan performa, throughput data, dan statistik live.
+- **Multi-Select Collapsible Paragraphs**: Kartu informasi yang dapat dibuka/ditutup secara independen. Beberapa kartu bisa terbuka sekaligus (multi-select), klik di luar semua kartu yang terbuka untuk auto-collapse, chevron indicator, dan opsi `DefaultOpen = true`.
+- **Interaksi Komprehensif**: Mendukung semua jenis kontrol: Regular Toggle, Sub-Toggle (indented), Dual Toggle-Slider, Progress Bar, Multi-Player Selector, Color Picker, hingga Drawer Popout Dropdown.
 - **Dukungan Mobile & PC**: Kompatibel penuh dengan input sentuh (Touch) di Android/iOS dan mouse di Windows/Mac.
 
 ---
 
 ## 2. Tautan Komunitas & Dukungan
 
-Bergabunglah dengan komunitas pengembang dan pengguna skrip PinatHub untuk mendapatkan pembaruan terkini, bantuan integrasi, dan skrip terbaru:
+Bergabunglah dengan jaringan resmi PinatHub untuk mendapatkan pembaruan terkini, tutorial, dan rilis skrip baru:
 
 - 🟢 **Komunitas Utama WhatsApp (XploitForce)**:  
   [https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp](https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp)
@@ -60,39 +69,42 @@ Bergabunglah dengan komunitas pengembang dan pengguna skrip PinatHub untuk menda
   [https://discord.gg/ysHZCYFaX7](https://discord.gg/ysHZCYFaX7)
 - 🔴 **YouTube Channel (vinzee)**:  
   [https://www.youtube.com/@viunzee1](https://www.youtube.com/@viunzee1)
+- ⚫ **TikTok Official (@viunze)**:  
+  [https://tiktok.com/@viunze](https://tiktok.com/@viunze)
 
 ---
 
-## 3. Struktur File
-
-Project ini menyediakan file lengkap agar Anda dapat menggunakannya berulang kali:
+## 3. Struktur File Workspace
 
 | Nama File | Deskripsi |
 |-----------|-----------|
-| `kingrualibrarysource.lua` | **Full Source UI Library murni**. Berisi seluruh core logika UI, komponen grafis, launcher button, theme engine, dan manajemen event. Gunakan file ini jika ingin meng-host library di GitHub / Pastebin untuk di-`loadstring`. |
-| `pinathublibraryexample.lua` | **Contoh Implementasi Lengkap (Full Script Bundled)**. Menggabungkan library dengan skrip fungsional game Drain Water (Auto Farm, Live Stats Dashboard, Upgrades, Auto Sell, Community). Siap dieksekusi langsung di eksekutor. |
-| `DOCUMENTATION.md` | **Buku panduan lengkap (file ini)** dengan referensi API setiap fungsi dan contoh kode. |
+| `kingrualibrarysource.lua` | **Source UI Library Murni**. Berisi seluruh core logika UI, komponen visual, launcher button, drawer popout, theme engine, dan manajemen event. Gunakan file ini jika ingin meng-host library di GitHub / Pastebin untuk di-`loadstring`. |
+| `pinathub_example.lua` | **Example Showcase Lengkap**. Contoh implementasi komprehensif tanpa fitur game spesifik. Mendemonstrasikan seluruh 7 tab, semua variasi section & toggle, ke-15 elemen UI, sistem telemetri live, dan Config Profile Manager. |
+| `DOCUMENTATION.md` | **Buku Panduan & Dokumentasi Lengkap (File Ini)** dengan referensi API setiap fungsi, tabel parameter, dan contoh kode. |
 
 ---
 
 ## 4. Quick Start (Memulai Cepat)
 
-Jika Anda memuat library via URL mentah (raw loadstring):
+Jika Anda ingin memuat library langsung via URL mentah (raw GitHub loadstring):
 
 ```lua
+-- Tunggu hingga game selesai dimuat
+repeat task.wait() until game:IsLoaded()
+
 -- Memuat PinatHub Library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua"))()
 
--- Membuat Jendela Utama
+-- Membuat Window Utama
 local Window = Library:CreateWindow({
     Title = "PinatHub",
-    SubTitle = "Universal Script",
-    Version = "1.0.0",
+    SubTitle = "Universal Control Center",
+    Version = "3.0.0",
     Discord = "https://discord.gg/ysHZCYFaX7"
 })
 
 -- Menambahkan Tab
-local MainTab = Window:AddTab({ Name = "Main", Icon = "home" })
+local MainTab = Window:AddTab({ Title = "Main", Icon = "home" })
 
 -- Menambahkan Section
 local FarmSection = MainTab:AddSection({ Title = "Automation" })
@@ -100,17 +112,18 @@ local FarmSection = MainTab:AddSection({ Title = "Automation" })
 -- Menambahkan Toggle
 FarmSection:AddToggle({
     Title = "Auto Farm Coins",
+    Description = "Mengaktifkan loop otomatis",
     Default = false,
     Callback = function(state)
         print("Status Auto Farm:", state)
     end
 })
 
--- Notifikasi Sukses
-Window:Notify({
-    Title = "PinatHub Siap",
-    Content = "Library berhasil dimuat!",
-    Duration = 3
+-- Mengirim Notifikasi
+Library:Notify({
+    Title = "PinatHub",
+    Content = "Skrip berhasil diinisialisasi!",
+    Type = "Success"
 })
 ```
 
@@ -118,186 +131,443 @@ Window:Notify({
 
 ## 5. Inisialisasi Window (Library:CreateWindow)
 
-Metode utama untuk membuat antarmuka GUI baru.
+Metode utama untuk membuat jendela antarmuka GUI baru.
 
 ```lua
 local Window = Library:CreateWindow({
     Title = "PinatHub",                          -- Judul utama di header (Default: "PinatHub")
-    SubTitle = "Drain Water",                    -- Subjudul / nama game (Default: "Drain Water")
-    Game = "Drain Water",                        -- Nama game
-    Version = "1.4.8",                           -- Label versi di kanan atas header
-    Discord = "https://discord.gg/ysHZCYFaX7",   -- Tautan Discord
+    SubTitle = "Universal Control Center",       -- Subjudul / nama kategori (Default: "Drain Water")
+    Game = "Universal Script Hub",               -- Nama game / mode
+    Version = "3.0.0",                           -- Label versi di kanan atas header
+    Discord = "https://discord.gg/ysHZCYFaX7",   -- Tautan Discord resmi
     Logo = "rbxassetid://118264723961739",       -- Asset ID logo PinatHub
-    OnClose = function()                         -- Callback saat GUI ditutup total (tombol X)
-        print("GUI ditutup! Membersihkan semua loop...")
+    OnClose = function()                         -- Callback saat tombol Close (X) ditekan
+        print("[PinatHub] Window ditutup total! Bersihkan semua loop background...")
     end
 })
 ```
 
-### Opsi Konfigurasi:
+### Parameter Konfigurasi:
 | Parameter | Tipe Data | Nilai Bawaan | Keterangan |
 |-----------|-----------|--------------|------------|
 | `Title` | `string` | `"Pinathub"` | Teks judul utama pada header |
 | `SubTitle` | `string` | `"Drain Water"` | Teks subjudul samping judul |
-| `Version` | `string` | `"1.0.0"` | String versi yang tampil di pill header |
+| `Game` | `string` | `"Drain Water"` | Nama game atau edisi skrip |
+| `Version` | `string` | `"1.0.0"` | String versi yang tampil pada pill kanan header |
 | `Discord` | `string` | `https://discord.gg/ysHZCYFaX7` | Link Discord resmi |
-| `Logo` | `string` | `rbxassetid://118264723961739` | Asset ID gambar logo |
-| `OnClose` | `function` | `nil` | Fungsi callback pembersih saat UI di-shutdown |
+| `Logo` | `string` | `rbxassetid://118264723961739` | Asset ID gambar watermark dan logo launcher |
+| `OnClose` | `function` | `nil` | Callback fungsi pembersih saat UI di-shutdown |
 
 ---
 
-## 6. Floating Launcher Button (Icon Toggle PinatHub)
+## 6. Floating Launcher Button (PinatHub Toggle Icon)
 
-Tombol launcher dibuat secara otomatis saat `Library:CreateWindow` dipanggil. Tombol ini mengadopsi spesifikasi presisi PinatHub:
+Tombol launcher dibuat secara otomatis saat `Library:CreateWindow` dipanggil. Tombol ini memiliki spesifikasi teknis presisi:
 
-### Spesifikasi Teknis:
-- **ScreenGui**: `MainGui` diparent ke `CoreGui` (prioritas executor) dengan fallback ke `PlayerGui`.
 - **Dimensi**: `50 × 50` piksel (`UDim2.new(0, 50, 0, 50)`).
 - **Posisi Awal**: Di tengah layar (`UDim2.new(0.5, -25, 0.5, -25)`).
 - **Latar Belakang**: Putih solid (`Color3.fromRGB(255, 255, 255)`), `BackgroundTransparency = 0`.
-- **Bentuk**: Bulat penuh (`UICorner.CornerRadius = UDim.new(1, 0)`).
-- **Outline (UIStroke)**: Hijau neon (`Color3.fromRGB(255, 255, 255)`), ketebalan `2px`.
+- **Bentuk**: Lingkaran bulat penuh (`UICorner.CornerRadius = UDim.new(1, 0)`).
+- **Outline (UIStroke)**: Putih neon (`Color3.fromRGB(255, 255, 255)`), ketebalan `2px`.
 - **Icon**: Logo PinatHub permanen (`rbxassetid://118264723961739`).
-- **Draggable**: Dapat digeser bebas di layar via kursor mouse maupun jari di layar sentuh (mobile support).
-- **Fungsi Toggle**:
-  - Klik tombol launcher -> Buka / Tutup jendela utama (`WindowOpen = not WindowOpen`).
-  - Animasi transisi scale dan fade yang mulus.
-  - Tombol minimize (`—`) pada header -> Menutup jendela utama (launcher tetap siaga di layar).
-  - Tombol shutdown (`X`) pada header -> Menghancurkan jendela utama dan tombol launcher sepenuhnya, serta memanggil callback `OnClose`.
+- **Draggable**: Dapat digeser bebas di layar via mouse (PC) maupun layar sentuh (Mobile).
+- **Fungsi**:
+  - Klik tombol launcher -> Buka / Tutup jendela utama dengan animasi transisi smooth scale & fade.
+  - Tombol minimize (`—`) pada header -> Menyembunyikan jendela (launcher tetap siaga di layar).
+  - Tombol close (`X`) pada header -> Menghancurkan seluruh UI dan memanggil callback `OnClose`.
 
 ---
 
-## 7. Metode Window
+## 7. Metode & Kontrol Window
 
-Objek `Window` yang dikembalikan memiliki fungsi-fungsi berikut:
+Objek `Window` yang dikembalikan memiliki metode-metode berikut:
 
-### `Window:AddTab(config)`
-Menambahkan tab baru di sidebar kiri.
+### `Window:AddTab(config)` / `Window:Tab(config)` / `Window:T(config)`
+Menambahkan tab navigasi baru di sidebar kiri.
 ```lua
-local Tab = Window:AddTab({
-    Name = "Auto Farm",
-    Icon = "Farm" -- Bisa nama fitur atau nama icon Lucide
-})
-```
-
-### `Window:Notify(config)`
-Menampilkan notifikasi toast melayang yang elegan di pojok kanan bawah.
-```lua
-Window:Notify({
-    Title = "Auto Farm",
-    Content = "Mode pembibitan diaktifkan!",
-    Duration = 3,
-    Type = "Success" -- "Success", "Warning", "Danger", "Info"
+local MyTab = Window:AddTab({
+    Title = "Combat",
+    Icon = "swords", -- Nama icon Lucide atau asset ID
+    Desc = "Pengaturan pertarungan dan target"
 })
 ```
 
 ### `Window:Minimize()`
-Menyembunyikan jendela utama secara terprogram (bisa dipanggil kapan saja).
+Menyembunyikan jendela utama secara terprogram (bisa dipanggil kapan saja dari script).
+```lua
+Window:Minimize()
+```
 
 ### `Window:SelectTab(index)`
 Berpindah tab secara otomatis berdasarkan nomor urut (1-indexed).
+```lua
+Window:SelectTab(1) -- Berpindah ke tab pertama
+```
 
-### `Window:FullShutdown()`
-Menutup UI, menghancurkan seluruh instance GUI termasuk floating launcher button, dan membersihkan semua resource.
+### `Library:Notify(config)`
+Menampilkan notifikasi toast melayang di pojok kanan bawah.
+```lua
+Library:Notify({
+    Title = "Auto Farm",
+    Content = "Target berhasil dikumpulkan!",
+    Type = "Success" -- Opsi: "Success", "Warning", "Danger", "Info"
+})
+```
 
 ---
 
 ## 8. Sistem Tab & Section
 
 ### Menambahkan Section
-Section adalah kartu kontainer yang mengelompokkan elemen-elemen kontrol. Section dilengkapi header dengan judul beraksen neon dan ikon chevron (`v`) yang bisa diklik untuk collapse (melipat) dan expand (membuka) section.
+Section adalah kartu kontainer pengelompok elemen. Header section dilengkapi teks beraksen neon dan ikon panah (`v`) yang dapat diklik untuk melipat (*collapse*) atau membuka (*expand*) section.
 
 ```lua
-local MySection = MyTab:AddSection({
-    Title = "Konfigurasi Otomatis",
-    Collapsed = false -- opsional, default false
+local MySec = MyTab:AddSection({
+    Title = "Automation Engine"
 })
+-- Bisa juga langsung string:
+local MySec2 = MyTab:AddSection("Player Modifiers")
 ```
 
-### Shorthand Alias untuk Section
-Untuk kenyamanan coding, tersedia alias singkat:
-```lua
-MySection.Toggle      = MySection.AddToggle
-MySection.Button      = MySection.AddButton
-MySection.Slider      = MySection.AddSlider
-MySection.Dropdown    = MySection.AddDropdown
-MySection.TextInput   = MySection.AddTextInput
-MySection.Keybind     = MySection.AddKeybind
-MySection.ColorPicker = MySection.AddColorPicker
-MySection.Paragraph   = MySection.AddParagraph
-MySection.Graph       = MySection.AddGraph
-MySection.Divider     = MySection.AddDivider
-```
+### Alias Shorthand Method Section:
+Untuk fleksibilitas penulisan skrip, Anda dapat menggunakan nama metode standar maupun alias:
+- `AddToggle` / `Toggle`
+- `AddSubToggle` / `SubToggle`
+- `AddToggleSlider` / `ToggleSlider`
+- `AddButton` / `Button`
+- `AddSlider` / `Slider`
+- `AddDropdown` / `Dropdown`
+- `AddInput` / `AddTextInput` / `Input` / `TextInput`
+- `AddKeybind` / `Keybind`
+- `AddColorPicker` / `ColorPicker`
+- `AddParagraph` / `Paragraph`
+- `AddGraph` / `Graph`
+- `AddProgressBar` / `ProgressBar`
+- `AddPlayerList` / `PlayerList`
+- `AddDiscordCard` / `AddCommunityCard` / `DiscordCard` / `CommunityCard`
+- `AddSeperator` / `AddSeparator` / `AddDivider` / `Divider`
 
 ---
 
-## 9. Katalog Elemen & Kontrol Interaktif
+## 9. Katalog Lengkap Seluruh 15 Elemen UI
 
-### AddToggle
-Tombol switch aktif/nonaktif dengan indikator animasi geser.
+### 9.1 AddToggle
+Tombol switch aktif/nonaktif utama dengan opsi deskripsi dan lencana keybind inline `[None]`.
 
 ```lua
-local FarmToggle = MySection:AddToggle({
-    Title = "Auto Drain Water",
+local MasterToggle = MySec:AddToggle({
+    Title = "Master Farm Switch",
+    Description = "Aktifkan siklus utama dengan hotkey F",
     Default = false,
+    Keybind = Enum.KeyCode.F, -- Opsional: langsung pasang hotkey
     Callback = function(state)
-        print("Status:", state)
+        print("Status toggle:", state)
     end
 })
 
--- Mengubah nilai secara script:
-FarmToggle:Set(true)
--- Membaca status saat ini:
-local isRunning = FarmToggle:Get()
+-- Metode Controller:
+MasterToggle:Set(true)   -- Mengubah nilai secara terprogram
+print(MasterToggle.Value) -- Membaca nilai saat ini (boolean)
 ```
 
 ---
 
-
-### AddSubToggle
-Toggle sekunder dengan posisi sedikit menjorok ke dalam (indented), cocok untuk opsi tambahan di bawah fitur utama (misalnya opsi "Auto Sell" di bawah "Auto Farm").
+### 9.2 AddSubToggle
+Toggle sekunder dengan indent visual ke dalam. Sangat ideal untuk opsi turunan di bawah toggle utama.
 
 ```lua
-MySection:AddSubToggle({
+local SubSell = MySec:AddSubToggle({
     Title = "Auto Sell Saat Tas Penuh",
-    Default = false,
+    Default = true,
     Callback = function(state)
-        print("Sub toggle status:", state)
+        print("Sub-toggle state:", state)
     end
 })
+
+-- Metode Controller:
+SubSell:Set(false)
+local current = SubSell:Get()
 ```
 
 ---
 
-### AddToggleSlider
-Kombinasi toggle switch dan slider dalam satu baris kartu yang ringkas. Sangat efisien untuk fitur seperti Speed Boost, Jump Power, atau Fly Speed.
+### 9.3 AddToggleSlider
+Elemen ganda yang menggabungkan Switch Toggle dan Slider ke dalam **satu baris kartu ringkas**. Sangat efisien untuk menghemat ruang pada fitur seperti WalkSpeed, JumpPower, FOV, atau Fly Speed.
 
 ```lua
-MySection:AddToggleSlider({
-    Title = "WalkSpeed Multiplier",
+local SpeedCtrl = MySec:AddToggleSlider({
+    Title = "Custom WalkSpeed",
     DefaultToggle = false,
     Min = 16,
-    Max = 150,
+    Max = 250,
     DefaultSlider = 32,
-    Suffix = " spd",
-    Callback = function(enabled, speed)
-        print("Status:", enabled, "Kecepatan:", speed)
+    Suffix = " studs/s",
+    Callback = function(toggleState, sliderValue)
+        print("Aktif:", toggleState, "Kecepatan:", sliderValue)
+    end
+})
+
+-- Metode Controller:
+SpeedCtrl:SetToggle(true)
+SpeedCtrl:SetSlider(50)
+local isEnabled, currentVal = SpeedCtrl:Get()
+```
+
+---
+
+### 9.4 AddButton
+Tombol aksi interaktif dengan animasi bounce spring saat diklik dan dukungan ikon.
+
+```lua
+MySec:AddButton({
+    Title = "Teleport ke Safe Zone",
+    Description = "Pindah posisi karakter secara instan",
+    Icon = "target", -- Lucide icon name atau rbxassetid
+    Callback = function()
+        print("Tombol ditekan!")
     end
 })
 ```
 
 ---
 
-### AddButton
-Tombol interaktif dengan efek hover dan animasi klik spring.
+### 9.5 AddSlider
+Slider geser horizontal presisi dengan kotak input teks langsung di sebelah kanan judul (bisa digeser atau diketik langsung nilainya).
 
 ```lua
-MySection:AddButton({
-    Title = "Teleport ke Spawn",
-    Callback = function()
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            char.HumanoidRootPart.CFrame = CFrame.new(0, 50, 0)
+local DelaySlider = MySec:AddSlider({
+    Title = "Harvest Action Delay",
+    Min = 0.1,
+    Max = 5.0,
+    Default = 0.5,
+    Increment = 0.1,
+    Callback = function(value)
+        print("Delay:", value)
+    end
+})
+
+-- Metode Controller:
+DelaySlider:Set(1.2)
+print(DelaySlider.Value)
+```
+
+---
+
+### 9.6 AddDropdown
+Dropdown modern yang memicu **Drawer Popout di sisi kanan layar** dengan fitur kotak pencarian (*search filter*), tombol tutup cepat (`X`), deteksi klik di luar drawer (*click outside to close*), dan dukungan pilihan tunggal maupun ganda (*multi-select*). Drawer otomatis tertutup jika pengguna berpindah tab.
+
+```lua
+local ModeDropdown = MySec:AddDropdown({
+    Title = "Farming Routine Mode",
+    Description = "Pilih pola pergerakan auto-farm",
+    Values = { "Default Pattern", "Aggressive Orbit", "Stealth Safe", "Custom Path" },
+    Default = "Default Pattern",
+    Multi = false,
+    Callback = function(selected)
+        print("Pilihan terpilih:", selected)
+    end
+})
+
+-- Fitur Drawer Popout:
+-- 1. Tombol 'X' di header drawer untuk menutup drawer secara manual
+-- 2. Klik di luar area popout drawer untuk langsung menutup drawer
+-- 3. Otomatis menutup saat pengguna berpindah tab di sidebar
+-- 4. Ukuran kompak (155px) sehingga tidak menutupi seluruh konten
+
+-- Metode Controller:
+ModeDropdown:Set("Aggressive Orbit")
+ModeDropdown:Refresh({ "Opsi 1", "Opsi 2", "Opsi 3" }) -- Memperbarui daftar opsi
+local current = ModeDropdown:Get()
+```
+
+---
+
+### 9.7 AddInput / AddTextInput
+Kotak masukan teks dengan efek glowing stroke saat sedang fokus (diketik).
+
+```lua
+local WaypointInput = MySec:AddTextInput({
+    Title = "Nama Waypoint",
+    Default = "Base_Alpha",
+    PlaceHolder = "Ketik identitas koordinat...",
+    Callback = function(text)
+        print("Teks diinput:", text)
+    end
+})
+```
+
+---
+
+### 9.8 AddKeybind
+Perekam tombol keyboard mandiri (*standalone keybind selector*). Pengguna cukup mengklik tombol, lalu menekan tombol keyboard apa pun yang diinginkan.
+
+```lua
+local UIKeybind = MySec:AddKeybind({
+    Title = "Toggle UI Window Keybind",
+    Default = Enum.KeyCode.RightControl,
+    Callback = function(keyCode)
+        print("Keybind baru:", keyCode.Name)
+    end
+})
+
+-- Metode Controller:
+UIKeybind:Set(Enum.KeyCode.F8)
+local key = UIKeybind:Get()
+```
+
+---
+
+### 9.9 AddColorPicker
+Pemilih warna interaktif dengan kotak preview warna dan siklus palet preset (ungu, biru, hijau, kuning, merah, pink, toska, putih).
+
+```lua
+local ESPColor = MySec:AddColorPicker({
+    Title = "Warna ESP Accent",
+    Description = "Warna outline untuk sorotan visual",
+    Default = Color3.fromRGB(168, 85, 247),
+    Callback = function(color3)
+        print("Warna dipilih:", color3)
+    end
+})
+
+-- Metode Controller:
+ESPColor:Set(Color3.fromRGB(74, 222, 128))
+local c = ESPColor:Get()
+```
+
+---
+
+### 9.10 AddParagraph
+Kartu informasi multi-baris collapsible dengan **multi-select expand/collapse independen**, dukungan penuh **Roblox RichText XML formatting** (`<font color='#hex'>`, `<b>`, `<i>`, dll.), animasi smooth slide, chevron rotate indicator, tombol tutup kartu (`X`), dan auto-collapse saat klik di luar kartu.
+
+#### Perilaku Baru (v3.1):
+- **Collapsed by default**: Kartu mulai dalam keadaan lipat (26px header saja — hanya judul + chevron + X).
+- **Click header → expand**: Klik area header untuk membuka isi kartu dengan animasi slide + accent glow + chevron rotate 90°.
+- **Click header lagi → collapse**: Lipat kembali ke mode header saja.
+- **Multi-select**: Beberapa kartu dapat dibuka sekaligus secara independen — membuka satu tidak menutup yang lain.
+- **Click anywhere outside → auto-collapse**: Jika ada kartu yang terbuka dan pengguna mengklik area di luar kartu tersebut, kartu otomatis terlipat.
+- **Tombol X**: Menyembunyikan kartu sepenuhnya dari tampilan (bukan sekadar collapse).
+- **DefaultOpen = true**: Kartu langsung ter-expand otomatis saat dibuat.
+
+```lua
+-- Contoh 1: Collapsed by default (klik header untuk expand)
+local StatusCard = MySec:AddParagraph({
+    Title = "Session Analytics Overview",
+    Content = "<b>Status:</b> <font color='#4ade80'>Aktif</font>\n" ..
+              "<b>Latency:</b> <font color='#38bdf8'>35 ms</font>\n" ..
+              "<b>Throughput:</b> <font color='#facc15'>24 op/s</font>"
+    -- DefaultOpen = false (nilai bawaan: dimulai dalam keadaan collapse)
+})
+
+-- Contoh 2: Auto-expanded saat dibuat (untuk kartu dengan data live)
+local LiveCard = MySec:AddParagraph({
+    Title = "Live System Metrics",
+    Content = "Initializing...",
+    DefaultOpen = true  -- Langsung expand saat dibuat
+})
+
+-- Contoh 3: Multi-select — dua kartu bisa terbuka bersamaan
+local CardA = MySec:AddParagraph({ Title = "Info A", Content = "Detail A..." })
+local CardB = MySec:AddParagraph({ Title = "Info B", Content = "Detail B..." })
+-- User bisa expand CardA lalu expand CardB — keduanya tetap terbuka
+-- Klik di luar keduanya -> keduanya auto-collapse
+```
+
+#### Parameter Konfigurasi:
+| Parameter | Tipe Data | Nilai Bawaan | Keterangan |
+|-----------|-----------|--------------|------------|
+| `Title` | `string` | `"Information"` | Judul header kartu |
+| `Content` | `string` | `""` | Isi konten (mendukung RichText XML) |
+| `Desc` / `Description` | `string` | — | Alias untuk `Content` |
+| `DefaultOpen` | `boolean` | `false` | `true` = auto-expand saat dibuat |
+
+#### Metode Controller (ParaObj API):
+```lua
+-- ── Expand / Collapse ───────────────────────────────────────────────
+StatusCard:Expand()         -- Buka kartu (expand dengan animasi)
+StatusCard:Collapse()       -- Tutup kartu (collapse ke header saja)
+StatusCard:Toggle()         -- Toggle antara expand dan collapse
+
+-- ── Visibilitas ─────────────────────────────────────────────────────
+StatusCard:Open()           -- Tampilkan & expand kartu (jika tersembunyi)
+StatusCard:Close()          -- Sembunyikan kartu sepenuhnya dari tampilan
+
+-- ── Update Konten ───────────────────────────────────────────────────
+StatusCard:SetTitle("Judul Baru")
+StatusCard:SetContent("<b>Data:</b> <font color='#4ade80'>Updated</font>")
+StatusCard:SetDesc("Alias untuk SetContent")
+StatusCard:Set("Judul", "Isi baru")       -- Update judul + isi sekaligus
+StatusCard:Set("Hanya Isi Baru")          -- Update isi saja (tanpa judul)
+```
+
+#### Contoh Live Data Feed:
+```lua
+-- Buat kartu yang auto-expand dan update kontennya tiap detik
+local LiveCard = MySec:AddParagraph({
+    Title = "Live Stats",
+    Content = "Loading...",
+    DefaultOpen = true
+})
+
+task.spawn(function()
+    while task.wait(1) do
+        local ping = math.floor((game.Players.LocalPlayer:GetNetworkPing()) * 1000)
+        LiveCard:SetContent(
+            string.format("<b>Ping:</b> <font color='#4ade80'>%d ms</font>", ping)
+        )
+    end
+end)
+```
+
+---
+
+### 9.11 AddGraph
+Grafik batang telemetri real-time 14-bar dengan animasi tweening tinggi batang yang halus.
+
+```lua
+local CPSGraph = MySec:AddGraph({
+    Title = "Action Throughput & CPS",
+    BarCount = 14,
+    MaxValue = 60,
+    Height = 115,
+    Unit = "/s"
+})
+
+-- Metode Controller:
+CPSGraph:Push(28)          -- Memasukkan data baru (menggeser batang lama ke kiri)
+CPSGraph:SetMax(100)       -- Mengubah skala batas maksimum Y
+CPSGraph:SetTitle("Throughput Live") -- Mengubah judul grafik
+```
+
+---
+
+### 9.12 AddProgressBar
+Bilah progres animasi halus dengan indikator persentase otomatis. Sangat ideal untuk status kapasitas tas penyimpanan, level XP, atau proses unduhan data.
+
+```lua
+local BagProgress = MySec:AddProgressBar({
+    Title = "Inventory Bag Capacity",
+    Default = 45,
+    Max = 100
+})
+
+-- Metode Controller:
+BagProgress:Set(80, 100) -- Memperbarui nilai dan batas maksimum (otomatis update teks ke 80%)
+```
+
+---
+
+### 9.13 AddPlayerList
+Komponen daftar pemain interaktif lengkap dengan fitur **kotak pencarian pemain real-time**, tombol **Select All**, tombol **Deselect All**, checklist tanda centang (`✓` / `○`), serta sinkronisasi otomatis saat pemain masuk (`PlayerAdded`) atau keluar (`PlayerRemoving`).
+
+```lua
+local PlayerFilter = MySec:AddPlayerList({
+    Title = "Target & Whitelist Players",
+    Multi = true,
+    Callback = function(selectedPlayersMap)
+        print("Daftar pemain terpilih:")
+        for playerName, playerInstance in pairs(selectedPlayersMap) do
+            print(" -", playerName)
         end
     end
 })
@@ -305,249 +575,177 @@ MySection:AddButton({
 
 ---
 
-### AddSlider
-Slider geser untuk mengatur nilai numerik secara presisi.
+### 9.14 AddDiscordCard / AddCommunityCard
+Kartu tautan komunitas resmi PinatHub yang menampilkan jumlah total member, status online live, dan tombol satu-ketukan untuk menyalin link invite Discord ke clipboard.
 
 ```lua
-local SpeedSlider = MySection:AddSlider({
-    Title = "Kecepatan Drain",
-    Min = 1,
-    Max = 100,
-    Default = 16,
-    Suffix = " L/s",
-    Callback = function(value)
-        print("Nilai kecepatan:", value)
-    end
-})
-
-SpeedSlider:Set(50)
-local currentSpeed = SpeedSlider:Get()
-```
-
----
-
-### AddDropdown
-Pilihan dropdown modern dengan daftar opsi yang dapat digulir dan dicari.
-
-```lua
-local AreaDropdown = MySection:AddDropdown({
-    Title = "Pilih Zona Area",
-    Options = { "Zona 1 (Laut Dangkal)", "Zona 2 (Terumbu Karang)", "Zona 3 (Palung Laut)" },
-    Default = "Zona 1 (Laut Dangkal)",
-    Callback = function(selected)
-        print("Zona terpilih:", selected)
-    end
-})
-
--- Update pilihan baru secara dinamis:
-AreaDropdown:Refresh({ "Area A", "Area B", "Area C" })
-AreaDropdown:Set("Area B")
-```
-
----
-
-### AddTextInput
-Kotak input teks untuk memasukkan nama pemain, angka, atau webhook.
-
-```lua
-local InputBox = MySection:AddTextInput({
-    Title = "Nama Target",
-    PlaceHolder = "Ketik nama pemain di sini...",
-    Default = "",
-    Callback = function(text)
-        print("Teks diinput:", text)
-    end
-})
-
-InputBox:Set("Player1")
-local val = InputBox:Get()
-```
-
----
-
-### AddKeybind
-Perekam tombol keyboard untuk shortcut aktivasi fitur.
-
-```lua
-local Keybind = MySection:AddKeybind({
-    Title = "Shortcut Buka Menu",
-    Default = Enum.KeyCode.RightControl,
-    Callback = function(key)
-        print("Tombol ditekan:", key)
-    end
-})
-```
-
----
-
-### AddColorPicker
-Pemilih warna dinamis berbasis HSV untuk efek visual skrip (ESP, Glow, UI Color).
-
-```lua
-local ColorPicker = MySection:AddColorPicker({
-    Title = "Warna ESP Target",
-    Default = Color3.fromRGB(168, 85, 247),
-    Callback = function(color)
-        print("Warna diubah:", color)
-    end
-})
-```
-
----
-
-### AddParagraph (Dukungan RichText Penuh)
-Kartu informasi yang mendukung teks multibaris dan **tag warna Roblox RichText**. Sangat ideal untuk dashboard statistik, deskripsi status, dan panduan fitur.
-
-> 💡 **Fitur RichText**: `TitleLabel.RichText = true` dan `ContentLabel.RichText = true` telah terintegrasi secara otomatis, sehingga tag seperti `<font color='#hex'>`, `<b>`, dan `<i>` akan dirender dengan warna cerah tanpa terlihat mentah!
-
-```lua
-local StatsCard = MySection:AddParagraph({
-    Title = "💰 Treasury & Status Akun",
-    Content = "Koin: <font color='#4ade80'>$1,500,000</font>
-Level: <font color='#fbbf24'>Level 50</font>
-Status: <font color='#93c5fd'>Aktif</font>"
-})
-
--- Memperbarui isi secara dinamis di dalam loop:
-StatsCard:SetContent("Koin: <font color='#4ade80'>$2,000,000</font>")
-StatsCard:SetTitle("📊 Ringkasan Baru")
-StatsCard:Set("Judul Baru", "Isi <font color='#c084fc'>Aksen Baru</font>")
-```
-
----
-
-### AddGraph (Grafik Telemetri Real-Time)
-Komponen grafik batang animasi bawaan untuk menampilkan metrik langsung seperti laju drain, throughput data, FPS, atau nilai fluktuatif lainnya.
-
-```lua
-local RateGraph = MySection:AddGraph({
-    Title = "Laju Drain Air (L/s)", -- Judul grafik
-    BarCount = 14,                  -- Jumlah batang grafik
-    MaxValue = 100,                 -- Nilai maksimum skala Y
-    Height = 110,                   -- Tinggi kontainer dalam piksel
-    BarColor = Color3.fromRGB(168, 85, 247),     -- Warna dasar batang
-    BarGlow = Color3.fromRGB(192, 132, 252),     -- Warna puncak gradien batang
-    Unit = " L/s"                   -- Satuan teks pada label nilai
-})
-
--- Memasukkan data baru (otomatis menggeser data lama ke kiri):
-RateGraph:Push(45.5)
-
--- Mengubah batas maksimum grafik secara dinamis saat nilai melonjak:
-RateGraph:SetMax(200)
-
--- Mengubah judul grafik:
-RateGraph:SetTitle("Live Drain Rate")
-```
-
----
-
-### AddDiscordCard & AddCommunityCard
-Kartu tautan komunitas resmi yang dilengkapi tombol salin tautan satu ketukan.
-
-```lua
-MySection:AddDiscordCard({
+MySec:AddDiscordCard({
     Title = "PinatHub Official Community",
-    Members = "10.000+",
-    Online = "1.500+",
-    Invite = "https://discord.gg/ysHZCYFaX7"
+    Members = "30522",
+    Online = "2309",
+    Invite = "https://discord.gg/ysHZCYFaX7",
+    Callback = function()
+        print("Link Discord disalin ke clipboard!")
+    end
 })
 ```
 
 ---
 
-### AddDivider
-Garis pemisah elegan tipis untuk merapikan tata letak antar elemen kontrol.
+### 9.15 AddSeperator / AddDivider
+Garis pembatas pemisah antar grup elemen. Dapat berupa garis horizontal tipis elegan (jika teks kosong) atau berupa header teks kategori beraksen ungu neon (jika diberikan teks judul).
 
 ```lua
-MySection:AddDivider()
+-- Contoh 1: Garis pemisah tipis
+MySec:AddSeperator()
+
+-- Contoh 2: Header Kategori
+MySec:AddSeperator("PENGATURAN PROFIL & PREFERENSI")
 ```
 
 ---
 
-## 10. Sistem Tema & Warna
+## 10. Struktur Section & Toggle di Example Resmi
 
-Library ini menggunakan palet warna gelap Obsidian dengan aksen Amethyst Glow yang lembut di mata:
+Skrip contoh lengkap [`pinathub_example.lua`](file:///c:/Users/personal/pinathubkingrua/intregation-pinathub-to-kingrua-library/pinathub_example.lua) menyusun seluruh elemen ke dalam 7 tab tematik:
 
-| Token Tema | Nilai RGB | Penggunaan |
-|------------|-----------|------------|
-| `Background` | `15, 14, 20` | Warna dasar jendela utama |
-| `Header` | `20, 18, 28` | Bar navigasi header atas |
-| `Sidebar` | `17, 16, 24` | Sidebar navigasi tab kiri |
-| `Surface` | `25, 23, 35` | Latar kartu section |
-| `SurfaceHover` | `34, 31, 48` | Latar elemen saat mouse hover |
-| `SurfaceActive`| `46, 41, 66` | Latar elemen saat aktif / ditekan |
+| Tab | Section | Elemen & Toggle yang Tersedia |
+|-----|---------|--------------------------------|
+| **1. Main** (`home`) | **Auto Farming** | • `AddToggle`: Master Farm Switch (Hotkey: `F`)<br>• `AddSubToggle`: Auto Collect Drops<br>• `AddSubToggle`: Auto Sell Inventory<br>• `AddSubToggle`: Auto Level Up & Rebirth<br>• `AddToggleSlider`: Fast Clicker (5–60 CPS)<br>• `AddSlider`: Harvest Action Delay (0.1–3.0s)<br>• `AddDropdown`: Farming Routine Mode |
+| | **Combat & Targeting** | • `AddToggle`: Auto Attack Target (Hotkey: `R`)<br>• `AddSubToggle`: Prioritize Boss & Elite Targets<br>• `AddSubToggle`: Auto Equip Strongest Weapon<br>• `AddToggle`: Kill Aura (360° Sphere)<br>• `AddSlider`: Aura Detection Radius (5–50 studs)<br>• `AddDropdown`: Target Mode Priority |
+| **2. Player** (`user`) | **Mobility Modifiers** | • `AddToggleSlider`: Custom WalkSpeed (16–250 studs/s)<br>• `AddToggleSlider`: Custom JumpPower (50–350 pwr)<br>• `AddToggle`: Infinite Air Jump<br>• `AddToggle`: Noclip (Phase Walls, Hotkey: `N`)<br>• `AddToggleSlider`: Fly Mode (10–200 studs/s) |
+| | **Character Utilities** | • `AddToggle`: Anti-AFK Protection (Anti Disconnect)<br>• `AddToggle`: Auto Respawn on Death<br>• `AddToggle`: Godmode Simulation (Auto Heal)<br>• `AddButton`: Instant Reset Character |
+| **3. Visuals** (`eye`) | **Player ESP & Overlays** | • `AddToggle`: Master Player ESP<br>• `AddSubToggle`: Show Bounding Boxes<br>• `AddSubToggle`: Show Display Names<br>• `AddSubToggle`: Show Health & Distance Bars<br>• `AddSubToggle`: Show Bottom Screen Tracers<br>• `AddColorPicker`: ESP Color Theme<br>• `AddSlider`: Max ESP Render Distance (100–3000 studs) |
+| | **World Lighting & Camera** | • `AddToggle`: Fullbright (Remove Darkness)<br>• `AddToggle`: Disable Map Shadows<br>• `AddToggleSlider`: Field of View (FOV: 70–120°)<br>• `AddButton`: Clear Atmosphere Blur & Fog |
+| **4. Teleport** (`compass`) | **Preset Waypoints** | • `AddDropdown`: Select Destination (Spawn, Shop, PVP, VIP, dll.)<br>• `AddButton`: Teleport to Selected Destination<br>• `AddToggle`: Click to Teleport (Ctrl + Click) |
+| | **Custom Waypoint Memory** | • `AddTextInput`: Waypoint Name<br>• `AddButton`: Record Current Position<br>• `AddButton`: Teleport to Saved Waypoint |
+| | **Server Controls** | • `AddButton`: Rejoin Current Server<br>• `AddButton`: Server Hop (Find New Server) |
+| **5. Live Stats** (`bar-chart-2`) | **Performance & Metrics** | • `AddParagraph`: Session Analytics Overview (RichText Live Feed)<br>• `AddGraph`: Action Throughput & CPS Rate (14-Bar Chart)<br>• `AddProgressBar`: Inventory Bag Capacity<br>• `AddProgressBar`: Account Level Experience (XP)<br>• `AddButton`: Reset Analytics Counters |
+| **6. Settings** (`settings`) | **Profile Manager** | • `AddSeperator`: PROFILE MANAGEMENT<br>• `AddTextInput`: Config Profile Name<br>• `AddDropdown`: Select Profile (Auto File Scan)<br>• `AddButton`: Save Current Settings to Profile<br>• `AddButton`: Load Selected Profile<br>• `AddToggle`: Auto Load Profile on Launch<br>• `AddSubToggle`: Create Automatic Timestamped Backups |
+| | **Player Target Filters** | • `AddSeperator`: TARGETING MODES<br>• `AddDropdown`: Filter Evaluation Mode (Whitelist / Blacklist)<br>• `AddPlayerList`: Target & Whitelist Players (Searchable Multiselect) |
+| | **Preferences & Hub Controls** | • `AddSeperator`: KEYBINDS & THEME<br>• `AddKeybind`: Toggle UI Window Keybind<br>• `AddColorPicker`: Accent Theme Color<br>• `AddButton`: Minimize UI to Floating Launcher |
+| **7. Community** (`users`) | **Official Socials** | • `AddDiscordCard`: PinatHub Official Community (30k+ Member)<br>• `AddSeperator`: KOMUNITAS WHATSAPP & MEDIA SOSIAL<br>• `AddParagraph` (`MediaPara`): Official PinatHub Media Links *(collapsed by default, klik header untuk expand)*<br>• `AddButton`: Copy WhatsApp Community Link (XploitForce)<br>• `AddButton`: Copy YouTube Channel Link (@viunzee1)<br>• `AddButton`: Copy TikTok Profile Link (@viunze)<br>• `AddSeperator`: CREDITS<br>• `AddParagraph` (`CreditsPara`): PinatHub Credits & Team *(DefaultOpen = true, auto-expanded)*<br>• **Multi-select demo**: `MediaPara` & `CreditsPara` bisa terbuka bersamaan secara independen |
+
+---
+
+## 11. Sistem Config Profile Manager
+
+PinatHub UI Library menyediakan pola arsitektur penyimpanan konfigurasi yang andal:
+1. **File System Executor**: Menggunakan API standar eksekutor (`writefile`, `readfile`, `isfolder`, `makefolder`, `listfiles`).
+2. **Format JSON**: Data disimpan secara terstruktur via `HttpService:JSONEncode()` dan `HttpService:JSONDecode()`.
+3. **Memory Fallback**: Apabila skrip dijalankan di eksekutor tanpa izin file system, skrip tetap berjalan normal dengan penyimpanan tabel memori tanpa mengalami crash.
+
+### Contoh Implementasi Simpan & Muat:
+```lua
+local HttpService = game:GetService("HttpService")
+local ProfileFolder = "PinatHub_Configs"
+
+pcall(function()
+    if makefolder and not isfolder(ProfileFolder) then
+        makefolder(ProfileFolder)
+    end
+end)
+
+-- Menyimpan Pengaturan
+local function SaveConfig(profileName, dataTable)
+    local serialized = HttpService:JSONEncode(dataTable)
+    local filePath = ProfileFolder .. "/" .. profileName .. ".json"
+    pcall(function()
+        if writefile then
+            writefile(filePath, serialized)
+        end
+    end)
+end
+
+-- Memuat Pengaturan
+local function LoadConfig(profileName, targetTable)
+    local filePath = ProfileFolder .. "/" .. profileName .. ".json"
+    pcall(function()
+        if readfile and isfile and isfile(filePath) then
+            local data = HttpService:JSONDecode(readfile(filePath))
+            if type(data) == "table" then
+                for k, v in pairs(data) do targetTable[k] = v end
+            end
+        end
+    end)
+end
+```
+
+---
+
+## 12. Sistem Tema & Palet Warna
+
+Library menggunakan sistem tema gelap Obsidian Glassmorphism dengan aksen Amethyst Glow:
+
+| Token Tema | Nilai RGB | Kegunaan |
+|------------|-----------|----------|
+| `Background` | `15, 14, 20` | Latar belakang jendela utama |
+| `Header` | `20, 18, 28` | Header atas navigasi |
+| `Sidebar` | `17, 16, 24` | Sidebar navigasi tab samping |
+| `Surface` | `25, 23, 35` | Latar dasar kartu section |
+| `SurfaceHover` | `34, 31, 48` | Latar elemen saat cursor di atasnya (hover) |
+| `SurfaceActive`| `46, 41, 66` | Latar elemen saat ditekan / aktif |
 | `Accent` | `168, 85, 247` | Aksen ungu neon utama |
-| `AccentGlow` | `192, 132, 252` | Kilau neon untuk teks penting & judul |
+| `AccentGlow` | `192, 132, 252` | Kilau neon judul dan teks utama |
 | `NeonWhite` | `245, 247, 255` | Teks judul utama & label tombol |
-| `Text` | `245, 245, 250` | Teks reguler |
-| `TextSecondary`| `170, 168, 185`| Teks deskripsi & keterangan |
-| `TextMuted` | `115, 112, 130`| Teks nonaktif / placeholder |
-| `Success` | `74, 222, 128` | Hijau neon (Status aktif / ON) |
-| `Warning` | `251, 191, 36` | Kuning amber (Perhatian) |
-| `Danger` | `248, 113, 113` | Merah terang (Tutup / Error) |
+| `Text` | `245, 245, 250` | Teks utama reguler |
+| `TextSecondary`| `170, 168, 185`| Teks sub-label dan deskripsi |
+| `TextMuted` | `115, 112, 130`| Teks placeholder dan elemen nonaktif |
+| `Success` | `74, 222, 128` | Hijau neon status sukses / aktif |
+| `Warning` | `251, 191, 36` | Kuning amber perhatian |
+| `Danger` | `248, 113, 113` | Merah terang tombol tutup / error |
 
 ---
 
-## 11. Daftar Icon Bawaan
+## 13. Daftar Icon Bawaan
 
-Saat menambahkan tab dengan `Window:AddTab({ Name = "...", Icon = "..." })`, Anda dapat menggunakan kata kunci berikut:
+Saat menambahkan tab dengan `Window:AddTab({ Title = "...", Icon = "..." })`, Anda dapat memasukkan nama icon berikut:
 
-### Icon Khas Game & Fitur:
-- `"Auto Farm"` / `"Farm"` -> Tetesan Air (`droplet`)
-- `"Upgrades"` / `"Upgrade"` -> Panah ke Atas (`arrow-up`)
-- `"Fish & Pets"` / `"Fish"` -> Jangkar Laut (`anchor`)
-- `"Pets"` -> Tas Ransel (`backpack`)
-- `"Auto Sell"` / `"Sell"` -> Tanda Dolar (`dollar-sign`)
-- `"Advanced"` -> Kunci Pas (`wrench`)
-- `"Live Stats"` / `"Stats"` -> Grafik Batang (`bar-chart-2`)
-- `"Community"` -> Grup Pengguna (`users`)
-
-### Icon Lucide Umum:
-- `"home"`, `"settings"`, `"sliders"`, `"user"`, `"users"`, `"eye"`, `"crosshair"`
-- `"skull"`, `"swords"`, `"sword"`, `"shield"`, `"wrench"`, `"activity"`, `"heart"`
-- `"bell"`, `"search"`, `"globe"`, `"database"`, `"discord"`, `"flame"`, `"coins"`
+- **Navigasi & Kontrol**: `"home"`, `"settings"`, `"sliders"`, `"compass"`, `"activity"`, `"database"`
+- **Karakter & Player**: `"user"`, `"users"`, `"heart"`, `"backpack"`
+- **Pertarungan & Combat**: `"swords"`, `"sword"`, `"crosshair"`, `"target"`, `"shield"`, `"skull"`
+- **Visual & ESP**: `"eye"`, `"flame"`, `"globe"`
+- **Data & Telemetri**: `"bar-chart"`, `"bar-chart-2"`, `"chart-bar"`
+- **Finansial & Upgrade**: `"coins"`, `"dollar-sign"`, `"arrow-up"`
+- **Komunitas & Chat**: `"discord"`, `"bell"`, `"search"`
 
 ---
 
-## 12. Template Boilerplate (Siap Pakai untuk Game Baru)
+## 14. Template Boilerplate Universal
 
-Salin kode di bawah ini sebagai pondasi cepat untuk membuat skrip cheat/utility game Roblox baru:
+Gunakan template di bawah ini untuk memulai skrip game baru Anda dengan cepat:
 
 ```lua
--- ------------------------------------------------------------
--- PINATHUB SCRIPT TEMPLATE — SIAP PAKAI
--- Discord: https://discord.gg/ysHZCYFaX7
--- WhatsApp XploitForce: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp
--- YouTube: https://www.youtube.com/@viunzee1
--- ------------------------------------------------------------
+-- =============================================================================
+-- PINATHUB UNIVERSAL BOILERPLATE TEMPLATE
+-- Komunitas Utama WhatsApp: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp
+-- Discord Official: https://discord.gg/ysHZCYFaX7
+-- =============================================================================
 
 repeat task.wait() until game:IsLoaded()
 
--- Memuat Library Source
--- Ganti RAW_URL dengan tautan mentah file kingrualibrarysource.lua Anda
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua"))()
 
 local Window = Library:CreateWindow({
     Title = "PinatHub",
-    SubTitle = "My New Game Script",
+    SubTitle = "Game Name Here",
     Version = "1.0.0",
     Discord = "https://discord.gg/ysHZCYFaX7",
     OnClose = function()
-        print("Script dinonaktifkan!")
+        print("[PinatHub] Script dinonaktifkan!")
     end
 })
 
--- ==================== TAB UTAMA ====================
-local MainTab = Window:AddTab({ Name = "Main Features", Icon = "home" })
-local MainSec = MainTab:AddSection({ Title = "Automation" })
+-- TAB 1: AUTOMATION
+local MainTab = Window:AddTab({ Title = "Main", Icon = "home" })
+local AutoSec = MainTab:AddSection({ Title = "Auto Farming" })
 
 local isFarming = false
-MainSec:AddToggle({
-    Title = "Auto Farm",
+AutoSec:AddToggle({
+    Title = "Auto Farm Mobs",
     Default = false,
-    Callback = function(state)
-        isFarming = state
+    Callback = function(val)
+        isFarming = val
         if isFarming then
             task.spawn(function()
                 while isFarming do
@@ -559,121 +757,71 @@ MainSec:AddToggle({
     end
 })
 
-MainSec:AddSlider({
-    Title = "WalkSpeed Multiplier",
+AutoSec:AddToggleSlider({
+    Title = "Speed Multiplier",
+    DefaultToggle = false,
     Min = 16,
     Max = 200,
-    Default = 16,
+    DefaultSlider = 32,
     Suffix = " spd",
-    Callback = function(v)
-        local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if hum then hum.WalkSpeed = v end
+    Callback = function(toggle, spd)
+        local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed = toggle and spd or 16 end
     end
 })
 
--- ==================== TAB STATISTIK ====================
-local StatsTab = Window:AddTab({ Name = "Live Stats", Icon = "Live Stats" })
-local GraphSec = StatsTab:AddSection({ Title = "Performance Metrics" })
-
-local myGraph = GraphSec:AddGraph({
-    Title = "Real-Time CPS / Throughput",
-    BarCount = 14,
-    MaxValue = 100,
-    Height = 110,
-    Unit = " op/s"
-})
-
-local MetricsSec = StatsTab:AddSection({ Title = "Status Overview" })
-local myStatusPara = MetricsSec:AddParagraph({
-    Title = "Player Telemetry",
-    Content = "Memuat data telemetri..."
-})
-
--- Worker Update Real-Time
-task.spawn(function()
-    while true do
-        task.wait(1)
-        local sample = math.random(20, 85)
-        myGraph:Push(sample)
-        myStatusPara:SetContent(string.format(
-            "Uptime: <font color='#4ade80'>%d detik</font>
-Throughput: <font color='#c084fc'>%d op/s</font>
-Status: <font color='#93c5fd'>Optimal</font>",
-            math.floor(workspace.DistributedGameTime), sample
-        ))
-    end
-end)
-
--- ==================== TAB KOMUNITAS ====================
-local CommTab = Window:AddTab({ Name = "Community", Icon = "Community" })
+-- TAB 2: COMMUNITY
+local CommTab = Window:AddTab({ Title = "Community", Icon = "users" })
 local CommSec = CommTab:AddSection({ Title = "Join Our Network" })
 
-CommSec:AddParagraph({
-    Title = "PinatHub Network",
-    Content = "Dapatkan update script eksklusif dan tutorial di channel kami!"
+CommSec:AddDiscordCard({
+    Title = "PinatHub Official Discord",
+    Members = "30522",
+    Online = "2309",
+    Invite = "https://discord.gg/ysHZCYFaX7"
 })
 
 CommSec:AddButton({
-    Title = "Gabung WhatsApp XploitForce (Utama)",
+    Title = "Salin Link Komunitas WhatsApp (XploitForce)",
     Callback = function()
         setclipboard("https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp")
-        Library:Notify({ Title = "Berhasil", Content = "Link WhatsApp disalin!", Duration = 3 })
+        Library:Notify({ Title = "Berhasil", Content = "Tautan WhatsApp disalin!", Type = "Success" })
     end
 })
 
-CommSec:AddButton({
-    Title = "Gabung Discord PinatHub",
-    Callback = function()
-        setclipboard("https://discord.gg/ysHZCYFaX7")
-        Library:Notify({ Title = "Berhasil", Content = "Link Discord disalin!", Duration = 3 })
-    end
-})
-
-CommSec:AddButton({
-    Title = "Kunjungi YouTube @viunzee1",
-    Callback = function()
-        setclipboard("https://www.youtube.com/@viunzee1")
-        Library:Notify({ Title = "Berhasil", Content = "Link YouTube disalin!", Duration = 3 })
-    end
-})
-
-Window:Notify({
-    Title = "PinatHub Siap",
-    Content = "Selamat datang! Tekan floating launcher untuk membuka/tutup UI.",
-    Duration = 4
+Library:Notify({
+    Title = "PinatHub Ready",
+    Content = "Tekan ikon launcher bulat putih di layar untuk membuka/menutup UI!",
+    Type = "Success"
 })
 ```
 
 ---
 
-## 13. FAQ & Solusi Masalah
+## 15. FAQ & Solusi Masalah Teknis
 
-### Q1: Mengapa tag warna `<font color=...>` sebelumnya muncul sebagai teks mentah?
-**Jawaban**: Teks mentah terjadi bila properti `RichText = true` belum diaktifkan pada `TextLabel`. Pada versi ini, `TitleLabel.RichText = true` dan `ContentLabel.RichText = true` telah diaktifkan secara permanen di dalam `AddParagraph`, sehingga seluruh format XML Roblox akan diuraikan menjadi warna yang indah.
+### Q1: Mengapa tag warna RichText `<font color=...>` tampil sebagai teks mentah pada library lama?
+**Solusi**: Hal tersebut terjadi jika properti `RichText = true` belum diaktifkan pada `TextLabel`. Pada PinatHub Library versi ini, properti `RichText = true` telah diaktifkan secara baku pada `TitleLabel` dan `ContentLabel` di dalam `AddParagraph`, sehingga seluruh tag XML format warna seperti `<font color='#hex'>`, `<b>`, dan `<i>` akan dirender dengan warna cerah dan tajam.
 
-### Q2: Mengapa grafik telemetri sebelumnya kosong atau hilang?
-**Jawaban**: Sebelumnya kontainer grafik di-parent secara manual melalui pemanggilan `pcall` yang gagal menemukan parent internal. Sekarang, library telah menyediakan fungsi bawaan `SecObj:AddGraph(cfg)` yang terhubung langsung ke `secData.Elements`, menghitung tinggi kartu secara dinamis, dan merender 14 batang grafik animasi secara presisi.
+### Q2: Bagaimana cara kerja Floating Launcher Button?
+**Solusi**: Tombol launcher berada di ScreenGui terpisah bernama `MainGui` yang diletakkan pada `CoreGui` (dengan fallback ke `PlayerGui`) dengan `DisplayOrder = 999999` dan `ZIndex = 50`. Tombol ini permanen berada di layar, dapat digeser bebas (draggable), dan men-toggle visibilitas jendela utama dengan animasi tween scale & fade yang mulus.
 
-### Q3: Bagaimana cara kerja tombol launcher mengambang?
-**Jawaban**: Tombol launcher berada di ScreenGui `MainGui` yang terpisah dengan `ZIndex = 50`. Tombol ini selalu tampil di layar. Ketika diklik, tombol ini mengubah nilai boolean `WindowOpen = not WindowOpen` dan memicu animasi scale serta visibilitas `DropShadowHolder`. Tombol ini dapat digeser bebas (draggable) kapan saja ke posisi yang Anda inginkan.
+### Q3: Apakah library ini aman dari deteksi UI reset saat karakter mati (respawn)?
+**Solusi**: Ya. Seluruh ScreenGui diset dengan properti `ResetOnSpawn = false`, sehingga antarmuka pengguna tidak akan hilang atau ter-reset ketika karakter Anda respawn.
 
-### Q4: Apakah GUI ini menembus menu atas Roblox?
-**Jawaban**: Ya. `MainGui` dan `ScreenGui` diset dengan `IgnoreGuiInset = true` dan `DisplayOrder = 999999`, sehingga berada di atas layer HUD default Roblox.
+### Q4: Bagaimana cara menghentikan semua loop otomatis saat jendela UI ditutup?
+**Solusi**: Pasang callback pada parameter `OnClose` saat memanggil `Library:CreateWindow`. Di dalam fungsi tersebut, ubah flag penanda loop (misal `isRunning = false`) atau putuskan koneksi event aktif.
 
-### Q5: Bagaimana cara mematikan semua loop otomatis saat GUI di-close?
-**Jawaban**: Masukkan fungsi pembersih pada opsi `OnClose` di `Library:CreateWindow`:
-```lua
-local isRunning = true
-Library:CreateWindow({
-    OnClose = function()
-        isRunning = false -- Otomatis menghentikan semua loop while isRunning do
-    end
-})
-```
+### Q5: Bagaimana cara kerja multi-select paragraph?
+**Solusi**: Setiap kartu `AddParagraph` adalah entitas independen. Klik header suatu kartu → kartu tersebut expand (kartu lain tetap pada state masing-masing). Klik header lagi → collapse. Untuk menutup semua kartu yang terbuka sekaligus, cukup klik di area mana saja di luar kartu-kartu tersebut. Gunakan `DefaultOpen = true` dalam konfigurasi agar kartu langsung terbuka saat dibuat. Gunakan `:Expand()`, `:Collapse()`, `:Toggle()` untuk kontrol programatik.
+
+### Q6: Apa perbedaan antara `:Close()` dan `:Collapse()` pada paragraf?
+**Solusi**: `:Collapse()` melipat kartu ke mode header saja (26px) — kartu masih terlihat dan bisa dibuka lagi dengan klik. `:Close()` menyembunyikan kartu sepenuhnya dari tampilan (`Visible = false`), sama seperti menekan tombol X di pojok kartu. Untuk menampilkan kembali kartu yang ter-close, panggil `:Open()`.
 
 ---
 
-*© 2026 PinatHub Official • Dikembangkan dengan bangga oleh vinzee*  
+*© 2026 PinatHub Official v3.1 • Dikembangkan oleh vinzee (@viunzee1)*  
 *Komunitas Utama WhatsApp: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp*  
 *Discord Official: https://discord.gg/ysHZCYFaX7*  
-*YouTube: https://www.youtube.com/@viunzee1*
+*YouTube: https://www.youtube.com/@viunzee1*  
+*TikTok: https://tiktok.com/@viunze*

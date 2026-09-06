@@ -79,7 +79,13 @@ local TabIcons = {
 	["star"] = "rbxassetid://10734973351",
 	["box"] = "rbxassetid://10734954201",
 	["package"] = "rbxassetid://10734954201",
-	["compass"] = "rbxassetid://10709789310",
+	["compass"] = "rbxassetid://7733924216",
+	["teleport"] = "rbxassetid://7733992789",
+	["map-pin"] = "rbxassetid://7733992789",
+	["map"] = "rbxassetid://7733964719",
+	["navigation"] = "rbxassetid://7734020989",
+	["locate"] = "rbxassetid://7733964719",
+	["waypoint"] = "rbxassetid://7733992789",
 	["gem"] = "rbxassetid://10723387847",
 	["diamond"] = "rbxassetid://10723387847",
 	["trophy"] = "rbxassetid://10747372167",
@@ -104,6 +110,8 @@ local TabIcons = {
 	Killer = "rbxassetid://10734962068",          -- Skull
 	ESP = "rbxassetid://10723346959",             -- Eye
 	Visuals = "rbxassetid://10723346959",         -- Eye
+	Teleport = "rbxassetid://7733992789",         -- Official Roblox Creator Store Map-Pin
+	["Teleport"] = "rbxassetid://7733992789",
 	["Emote & Skin"] = "rbxassetid://10747373176",-- User
 	Emote = "rbxassetid://10747373176",           -- User
 	Aimbot = "rbxassetid://10709818534",          -- Crosshair (FIXED, NOT BLANK)
@@ -122,6 +130,33 @@ local TabIcons = {
 	Discord = "rbxassetid://10734950553",
 	Cursor = "rbxassetid://10709818534"
 }
+
+-- Shared Icon Resolver for Tabs, Buttons, and UI Components
+local function ResolveIcon(iconInput, fallbackTitle)
+	if type(iconInput) == "string" then
+		local trimmed = string.match(iconInput, "^%s*(.-)%s*$") or iconInput
+		if string.sub(trimmed, 1, 13) == "rbxassetid://" or string.sub(trimmed, 1, 10) == "rbxasset://" or string.sub(trimmed, 1, 4) == "http" then
+			return trimmed
+		end
+		if TabIcons[trimmed] then
+			return TabIcons[trimmed]
+		end
+		local lowerName = string.lower(trimmed)
+		if TabIcons[lowerName] then
+			return TabIcons[lowerName]
+		end
+	end
+	if fallbackTitle then
+		if TabIcons[fallbackTitle] then
+			return TabIcons[fallbackTitle]
+		end
+		local lowerTitle = string.lower(fallbackTitle)
+		if TabIcons[lowerTitle] then
+			return TabIcons[lowerTitle]
+		end
+	end
+	return "rbxassetid://10723407389" -- Default Lucide Home Icon
+end
 
 -- Detect Executor Name dynamically
 local function DetectExecutor()
@@ -181,7 +216,9 @@ local Library = {
 	Theme = Theme,
 	Logo = PINATHUB_LOGO,
 	CurrentWindow = nil,
-	NotificationHolder = nil
+	NotificationHolder = nil,
+	-- Global registry of all expanded paragraph frames for click-outside-to-close
+	_ActiveParaFrames = {}
 }
 
 function Library:TweenInstance(instance, time, prop, value, easingStyle, easingDir)
@@ -536,13 +573,46 @@ function Library:NewWindow(ConfigWindow)
 	sheenGrad.Rotation = 120
 	sheenGrad.Parent = glassSheen
 
-	-- Neon Edge Stroke (Amethyst Glow Rim)
+	-- Neon Edge Stroke (Amethyst Glow Rim with Continuous Moving Purple Neon Trace)
 	local MainStroke = Instance.new("UIStroke")
 	MainStroke.Name = "Stroke"
-	MainStroke.Color = Theme.BorderAccent
+	MainStroke.Color = Color3.fromRGB(255, 255, 255)
 	MainStroke.Thickness = 1.2
-	MainStroke.Transparency = 0.4
+	MainStroke.Transparency = 0
 	MainStroke.Parent = MainWindow
+
+	-- Moving Neon Purple Linear Border Trace (Corner to corner smoothly)
+	local StrokeGradient = Instance.new("UIGradient")
+	StrokeGradient.Name = "MovingNeonTrace"
+	StrokeGradient.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 30, 55)),
+		ColorSequenceKeypoint.new(0.35, Color3.fromRGB(40, 30, 55)),
+		ColorSequenceKeypoint.new(0.47, Color3.fromRGB(168, 85, 247)), -- Neon Purple
+		ColorSequenceKeypoint.new(0.50, Color3.fromRGB(235, 210, 255)), -- Subtle Bright Sparkle
+		ColorSequenceKeypoint.new(0.53, Color3.fromRGB(168, 85, 247)), -- Neon Purple
+		ColorSequenceKeypoint.new(0.65, Color3.fromRGB(40, 30, 55)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 30, 55)),
+	})
+	StrokeGradient.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.75),
+		NumberSequenceKeypoint.new(0.35, 0.75),
+		NumberSequenceKeypoint.new(0.47, 0.15),
+		NumberSequenceKeypoint.new(0.50, 0.0),
+		NumberSequenceKeypoint.new(0.53, 0.15),
+		NumberSequenceKeypoint.new(0.65, 0.75),
+		NumberSequenceKeypoint.new(1, 0.75),
+	})
+	StrokeGradient.Rotation = 0
+	StrokeGradient.Parent = MainStroke
+
+	local borderNeonConn
+	borderNeonConn = RunService.RenderStepped:Connect(function(dt)
+		if MainWindow and MainWindow.Parent and StrokeGradient and StrokeGradient.Parent then
+			StrokeGradient.Rotation = (StrokeGradient.Rotation + dt * 60) % 360
+		else
+			if borderNeonConn then borderNeonConn:Disconnect() end
+		end
+	end)
 
 	-- PinatHub Watermark Background Logo (Subtle & Dimmed)
 	local WindowBackgroundLogo = Instance.new("ImageLabel")
@@ -1060,13 +1130,25 @@ function Library:NewWindow(ConfigWindow)
 	UIPageLayout.EasingDirection = Enum.EasingDirection.Out
 	UIPageLayout.TweenTime = 0.22
 
-	-- 9. Right Popout Drawer for Dropdown (PinatHub Screenshot 2 Style)
+	-- Fullscreen invisible backdrop for instant click-outside-to-close anywhere on UI
+	local PopoutBackdrop = Instance.new("TextButton")
+	PopoutBackdrop.Name = "PopoutBackdrop"
+	PopoutBackdrop.Parent = MainWindow
+	PopoutBackdrop.BackgroundTransparency = 1
+	PopoutBackdrop.Position = UDim2.new(0, 0, 0, 0)
+	PopoutBackdrop.Size = UDim2.fromScale(1, 1)
+	PopoutBackdrop.ZIndex = 28
+	PopoutBackdrop.Visible = false
+	PopoutBackdrop.Text = ""
+	PopoutBackdrop.AutoButtonColor = false
+
+	-- 9. Right Popout Drawer for Dropdown (PinatHub Slim 140px Style)
 	local PopoutDrawer = Instance.new("Frame")
 	PopoutDrawer.Name = "PopoutDrawer"
 	PopoutDrawer.Parent = MainWindow
 	PopoutDrawer.AnchorPoint = Vector2.new(1, 0)
 	PopoutDrawer.Position = UDim2.new(1, 0, 0, 46)
-	PopoutDrawer.Size = UDim2.new(0, 190, 1, -46)
+	PopoutDrawer.Size = UDim2.new(0, 140, 1, -46)
 	PopoutDrawer.BackgroundColor3 = Theme.Header
 	PopoutDrawer.BackgroundTransparency = 0.05
 	PopoutDrawer.BorderSizePixel = 0
@@ -1078,37 +1160,91 @@ function Library:NewWindow(ConfigWindow)
 	PopoutStroke.Thickness = 1.2
 	PopoutStroke.Parent = PopoutDrawer
 
+	local function ClosePopout()
+		PopoutDrawer.Visible = false
+		PopoutBackdrop.Visible = false
+	end
+	PopoutBackdrop.MouseButton1Click:Connect(ClosePopout)
+
+	-- Popout Header with Title & Close 'X' Button
+	local PopoutHeader = Instance.new("Frame")
+	PopoutHeader.Name = "PopoutHeader"
+	PopoutHeader.Parent = PopoutDrawer
+	PopoutHeader.BackgroundTransparency = 1
+	PopoutHeader.Position = UDim2.new(0, 6, 0, 6)
+	PopoutHeader.Size = UDim2.new(1, -12, 0, 20)
+
+	local PopoutTitle = Instance.new("TextLabel")
+	PopoutTitle.Name = "Title"
+	PopoutTitle.Parent = PopoutHeader
+	PopoutTitle.BackgroundTransparency = 1
+	PopoutTitle.Position = UDim2.new(0, 2, 0, 0)
+	PopoutTitle.Size = UDim2.new(1, -24, 1, 0)
+	PopoutTitle.Font = Enum.Font.GothamBold
+	PopoutTitle.Text = "Options"
+	PopoutTitle.TextColor3 = Theme.AccentGlow
+	PopoutTitle.TextSize = 10
+	PopoutTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+	local PopoutCloseBtn = Instance.new("ImageButton")
+	PopoutCloseBtn.Name = "Btn_PopoutClose"
+	PopoutCloseBtn.Parent = PopoutHeader
+	PopoutCloseBtn.AnchorPoint = Vector2.new(1, 0.5)
+	PopoutCloseBtn.Position = UDim2.new(1, 0, 0.5, 0)
+	PopoutCloseBtn.Size = UDim2.new(0, 16, 0, 16)
+	PopoutCloseBtn.BackgroundColor3 = Theme.Surface
+	PopoutCloseBtn.BackgroundTransparency = 0.5
+	PopoutCloseBtn.BorderSizePixel = 0
+	PopoutCloseBtn.Image = "rbxassetid://10747384394" -- Genuine Lucide X
+	PopoutCloseBtn.ImageColor3 = Theme.TextSecondary
+	PopoutCloseBtn.ScaleType = Enum.ScaleType.Fit
+	PopoutCloseBtn.AutoButtonColor = false
+
+	local PCB_Corner = Instance.new("UICorner")
+	PCB_Corner.CornerRadius = UDim.new(0, 4)
+	PCB_Corner.Parent = PopoutCloseBtn
+
+	PopoutCloseBtn.MouseEnter:Connect(function()
+		TweenService:Create(PopoutCloseBtn, TweenInfoFast, { BackgroundTransparency = 0, BackgroundColor3 = Theme.Danger }):Play()
+		TweenService:Create(PopoutCloseBtn, TweenInfoFast, { ImageColor3 = Color3.fromRGB(255, 255, 255) }):Play()
+	end)
+	PopoutCloseBtn.MouseLeave:Connect(function()
+		TweenService:Create(PopoutCloseBtn, TweenInfoFast, { BackgroundTransparency = 0.5, BackgroundColor3 = Theme.Surface }):Play()
+		TweenService:Create(PopoutCloseBtn, TweenInfoFast, { ImageColor3 = Theme.TextSecondary }):Play()
+	end)
+	PopoutCloseBtn.MouseButton1Click:Connect(ClosePopout)
+
 	local PopoutSearchFrame = Instance.new("Frame")
 	PopoutSearchFrame.Name = "Search"
 	PopoutSearchFrame.Parent = PopoutDrawer
-	PopoutSearchFrame.Position = UDim2.new(0, 10, 0, 10)
-	PopoutSearchFrame.Size = UDim2.new(1, -20, 0, 28)
+	PopoutSearchFrame.Position = UDim2.new(0, 6, 0, 30)
+	PopoutSearchFrame.Size = UDim2.new(1, -12, 0, 22)
 	PopoutSearchFrame.BackgroundColor3 = Theme.Surface
 	PopoutSearchFrame.BorderSizePixel = 0
 
 	local PopoutSCorner = Instance.new("UICorner")
-	PopoutSCorner.CornerRadius = UDim.new(0, 6)
+	PopoutSCorner.CornerRadius = UDim.new(0, 5)
 	PopoutSCorner.Parent = PopoutSearchFrame
 
 	local PopoutSBox = Instance.new("TextBox")
 	PopoutSBox.Parent = PopoutSearchFrame
 	PopoutSBox.BackgroundTransparency = 1
-	PopoutSBox.Position = UDim2.new(0, 8, 0, 0)
-	PopoutSBox.Size = UDim2.new(1, -16, 1, 0)
+	PopoutSBox.Position = UDim2.new(0, 6, 0, 0)
+	PopoutSBox.Size = UDim2.new(1, -12, 1, 0)
 	PopoutSBox.Font = Enum.Font.Gotham
 	PopoutSBox.PlaceholderColor3 = Theme.TextMuted
 	PopoutSBox.PlaceholderText = "Search..."
 	PopoutSBox.Text = ""
 	PopoutSBox.TextColor3 = Theme.Text
-	PopoutSBox.TextSize = 11
+	PopoutSBox.TextSize = 10
 	PopoutSBox.TextXAlignment = Enum.TextXAlignment.Left
 
 	local PopoutScroll = Instance.new("ScrollingFrame")
 	PopoutScroll.Name = "Options"
 	PopoutScroll.Parent = PopoutDrawer
 	PopoutScroll.BackgroundTransparency = 1
-	PopoutScroll.Position = UDim2.new(0, 8, 0, 44)
-	PopoutScroll.Size = UDim2.new(1, -16, 1, -50)
+	PopoutScroll.Position = UDim2.new(0, 6, 0, 56)
+	PopoutScroll.Size = UDim2.new(1, -12, 1, -62)
 	PopoutScroll.ScrollBarThickness = 2
 	PopoutScroll.ScrollBarImageColor3 = Theme.Border
 	PopoutScroll.BorderSizePixel = 0
@@ -1116,9 +1252,64 @@ function Library:NewWindow(ConfigWindow)
 	local PopoutLayout = Instance.new("UIListLayout")
 	PopoutLayout.Parent = PopoutScroll
 	PopoutLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	PopoutLayout.Padding = UDim.new(0, 4)
+	PopoutLayout.Padding = UDim.new(0, 2)
 
 	self:UpdateScrolling(PopoutScroll, PopoutLayout)
+
+	-- Close Popout Drawer when user clicks anywhere on screen outside of it
+	UserInputService.InputBegan:Connect(function(input)
+		if not PopoutDrawer.Visible then return end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			local mPos = input.Position
+			local dPos = PopoutDrawer.AbsolutePosition
+			local dSize = PopoutDrawer.AbsoluteSize
+			local inside = (mPos.X >= dPos.X and mPos.X <= (dPos.X + dSize.X)) and (mPos.Y >= dPos.Y and mPos.Y <= (dPos.Y + dSize.Y))
+			if not inside then
+				task.defer(ClosePopout)
+			end
+		end
+	end)
+
+	-- Collapse all open paragraph panels when user clicks outside any of them
+	-- (multi-select: they individually stay open until click-outside or X)
+	UserInputService.InputBegan:Connect(function(input)
+		if #Library._ActiveParaFrames == 0 then return end
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+		local mPos = input.Position
+		local toCollapse = {}
+		for _, frame in ipairs(Library._ActiveParaFrames) do
+			if frame and frame.Parent then
+				local fPos = frame.AbsolutePosition
+				local fSize = frame.AbsoluteSize
+				local inside = (mPos.X >= fPos.X and mPos.X <= (fPos.X + fSize.X))
+					and (mPos.Y >= fPos.Y and mPos.Y <= (fPos.Y + fSize.Y))
+				if not inside then
+					table.insert(toCollapse, frame)
+				end
+			end
+		end
+		if #toCollapse > 0 then
+			task.defer(function()
+				for _, frame in ipairs(toCollapse) do
+					-- Find the HeaderBtn child and simulate collapse via UIStroke + size tween
+					local COLLAPSED_H = 26
+					local stroke = frame:FindFirstChildOfClass("UIStroke")
+					local chevron = frame:FindFirstChild("Chevron")
+					local title = frame:FindFirstChild("Title")
+					local divider = frame:FindFirstChild("Divider")
+					if divider then divider.Visible = false end
+					TweenService:Create(frame, TweenInfoSmooth, { Size = UDim2.new(1, 0, 0, COLLAPSED_H) }):Play()
+					if stroke then TweenService:Create(stroke, TweenInfoFast, { Color = Theme.BorderSoft, Transparency = 0.45 }):Play() end
+					if chevron then TweenService:Create(chevron, TweenInfoFast, { Rotation = 0, ImageColor3 = Theme.TextMuted }):Play() end
+					if title then TweenService:Create(title, TweenInfoFast, { TextColor3 = Theme.NeonWhite }):Play() end
+					-- Remove from active list
+					for i, v in ipairs(Library._ActiveParaFrames) do
+						if v == frame then table.remove(Library._ActiveParaFrames, i) break end
+					end
+				end
+			end)
+		end
+	end)
 
 	-- 10. Tab System & Tab Creation Implementation
 	local TabCount = 0
@@ -1206,32 +1397,6 @@ function Library:NewWindow(ConfigWindow)
 			icon = tabIcon
 			descText = tabDesc or title
 		end
-		local function ResolveIcon(iconInput, fallbackTitle)
-			if type(iconInput) == "string" then
-				local trimmed = string.match(iconInput, "^%s*(.-)%s*$") or iconInput
-				if string.sub(trimmed, 1, 13) == "rbxassetid://" or string.sub(trimmed, 1, 10) == "rbxasset://" or string.sub(trimmed, 1, 4) == "http" then
-					return trimmed
-				end
-				if TabIcons[trimmed] then
-					return TabIcons[trimmed]
-				end
-				local lowerName = string.lower(trimmed)
-				if TabIcons[lowerName] then
-					return TabIcons[lowerName]
-				end
-			end
-			if fallbackTitle then
-				if TabIcons[fallbackTitle] then
-					return TabIcons[fallbackTitle]
-				end
-				local lowerTitle = string.lower(fallbackTitle)
-				if TabIcons[lowerTitle] then
-					return TabIcons[lowerTitle]
-				end
-			end
-			return PINATHUB_LOGO
-		end
-
 		icon = ResolveIcon(icon, title)
 		descText = descText or title
 
@@ -1326,6 +1491,9 @@ function Library:NewWindow(ConfigWindow)
 		local function SelectThisTab()
 			ActiveTabIndex = currentOrder + 1
 			UIPageLayout:JumpToIndex(currentOrder)
+			if PopoutDrawer then
+				PopoutDrawer.Visible = false
+			end
 
 			for _, t in ipairs(TabsCollection) do
 				local isActive = (t.Order == currentOrder)
@@ -1749,8 +1917,12 @@ function Library:NewWindow(ConfigWindow)
 				ActionIcon.Position = UDim2.new(1, -10, 0.5, 0)
 				ActionIcon.Size = UDim2.new(0, 15, 0, 15)
 				ActionIcon.BackgroundTransparency = 1
-				ActionIcon.Image = cfg.Icon or TabIcons.Cursor
-				ActionIcon.ImageColor3 = Theme.TextMuted
+				local btnIcon = TabIcons.Cursor
+				if cfg.Icon and cfg.Icon ~= "" then
+					btnIcon = ResolveIcon(cfg.Icon) or TabIcons.Cursor
+				end
+				ActionIcon.Image = btnIcon
+				ActionIcon.ImageColor3 = Theme.TextSecondary
 				ActionIcon.ScaleType = Enum.ScaleType.Fit
 
 				BtnFrame.MouseEnter:Connect(function()
@@ -1762,7 +1934,7 @@ function Library:NewWindow(ConfigWindow)
 				BtnFrame.MouseLeave:Connect(function()
 					TweenService:Create(BtnFrame, TweenInfoFast, { BackgroundTransparency = 0.55 }):Play()
 					TweenService:Create(BtnStroke, TweenInfoFast, { Color = Theme.BorderSoft }):Play()
-					TweenService:Create(ActionIcon, TweenInfoFast, { ImageColor3 = Theme.TextMuted }):Play()
+					TweenService:Create(ActionIcon, TweenInfoFast, { ImageColor3 = Theme.TextSecondary }):Play()
 				end)
 
 				BtnFrame.MouseButton1Click:Connect(function()
@@ -1778,73 +1950,218 @@ function Library:NewWindow(ConfigWindow)
 				return BtnFrame
 			end
 
-			-- 12.3 RICH PARAGRAPH (PinatHub Screenshot 3: Multi-line description card)
+			-- 12.3 RICH PARAGRAPH — Multi-select collapsible cards
+			-- Each paragraph starts collapsed (header-only). Clicking the header toggles expand/collapse
+			-- independently (multi-select: multiple can be open at once). Clicking anywhere outside
+			-- all open paragraph panels collapses them all. The X button hides the card entirely.
 			function SecObj:AddParagraph(paraConfig)
 				local cfg = Library:MakeConfig({
 					Title = "Information",
-					Content = ""
+					Content = "",
+					DefaultOpen = false
 				}, paraConfig or {})
 
 				if cfg.Desc and cfg.Content == "" then cfg.Content = cfg.Desc end
 				if cfg.Description and cfg.Content == "" then cfg.Content = cfg.Description end
 
+				-- Heights
+				local COLLAPSED_H = 26
+				local _isExpanded = cfg.DefaultOpen and true or false
+				local _computedExpandedH = COLLAPSED_H -- updated by ResizePara
+
+				-- Outer frame (clips children for smooth slide)
 				local ItemFrame = Instance.new("Frame")
 				ItemFrame.Name = "Para_" .. cfg.Title
 				ItemFrame.Parent = ControlsContainer
 				ItemFrame.BackgroundColor3 = Theme.SurfaceHover
-				ItemFrame.BackgroundTransparency = 0.65
+				ItemFrame.BackgroundTransparency = 0.6
 				ItemFrame.BorderSizePixel = 0
-				ItemFrame.Size = UDim2.new(1, 0, 0, 50)
+				ItemFrame.Size = UDim2.new(1, 0, 0, COLLAPSED_H)
 				ItemFrame.ClipsDescendants = true
 
 				local ItemCorner = Instance.new("UICorner")
-				ItemCorner.CornerRadius = UDim.new(0, 8)
+				ItemCorner.CornerRadius = UDim.new(0, 7)
 				ItemCorner.Parent = ItemFrame
 
 				local ItemStroke = Instance.new("UIStroke")
 				ItemStroke.Color = Theme.BorderSoft
 				ItemStroke.Thickness = 1
-				ItemStroke.Transparency = 0.5
+				ItemStroke.Transparency = 0.45
 				ItemStroke.Parent = ItemFrame
+
+				-- ── Header row (clickable to toggle) ──────────────────────────────────
+				local HeaderBtn = Instance.new("TextButton")
+				HeaderBtn.Name = "ParaHeader"
+				HeaderBtn.Parent = ItemFrame
+				HeaderBtn.BackgroundTransparency = 1
+				HeaderBtn.Position = UDim2.new(0, 0, 0, 0)
+				HeaderBtn.Size = UDim2.new(1, 0, 0, COLLAPSED_H)
+				HeaderBtn.Text = ""
+				HeaderBtn.AutoButtonColor = false
+				HeaderBtn.ZIndex = 3
+
+				-- Chevron icon (right-pointing when collapsed, down when expanded)
+				local ChevronIcon = Instance.new("ImageLabel")
+				ChevronIcon.Name = "Chevron"
+				ChevronIcon.Parent = ItemFrame
+				ChevronIcon.AnchorPoint = Vector2.new(0, 0.5)
+				ChevronIcon.Position = UDim2.new(0, 8, 0, COLLAPSED_H / 2)
+				ChevronIcon.Size = UDim2.new(0, 10, 0, 10)
+				ChevronIcon.BackgroundTransparency = 1
+				ChevronIcon.Image = TabIcons.ChevronRight -- right = collapsed
+				ChevronIcon.ImageColor3 = Theme.TextMuted
+				ChevronIcon.ScaleType = Enum.ScaleType.Fit
+				ChevronIcon.ZIndex = 2
 
 				local TitleLabel = Instance.new("TextLabel")
 				TitleLabel.Name = "Title"
 				TitleLabel.Parent = ItemFrame
 				TitleLabel.BackgroundTransparency = 1
-				TitleLabel.Position = UDim2.new(0, 12, 0, 8)
-				TitleLabel.Size = UDim2.new(1, -24, 0, 16)
+				TitleLabel.Position = UDim2.new(0, 22, 0, 0)
+				TitleLabel.Size = UDim2.new(1, -52, 0, COLLAPSED_H)
 				TitleLabel.Font = Enum.Font.GothamBold
 				TitleLabel.Text = cfg.Title
 				TitleLabel.TextColor3 = Theme.NeonWhite
-				TitleLabel.TextSize = 12
+				TitleLabel.TextSize = 11
 				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-				TitleLabel.RichText = true  -- RichText enabled
+				TitleLabel.TextYAlignment = Enum.TextYAlignment.Center
+				TitleLabel.RichText = true
+				TitleLabel.ZIndex = 2
 
+				-- X close button (hides the card entirely)
+				local ParaCloseBtn = Instance.new("ImageButton")
+				ParaCloseBtn.Name = "Btn_ClosePara"
+				ParaCloseBtn.Parent = ItemFrame
+				ParaCloseBtn.AnchorPoint = Vector2.new(1, 0.5)
+				ParaCloseBtn.Position = UDim2.new(1, -7, 0, COLLAPSED_H / 2)
+				ParaCloseBtn.Size = UDim2.new(0, 13, 0, 13)
+				ParaCloseBtn.BackgroundTransparency = 1
+				ParaCloseBtn.Image = "rbxassetid://10747384394"
+				ParaCloseBtn.ImageColor3 = Theme.TextMuted
+				ParaCloseBtn.ScaleType = Enum.ScaleType.Fit
+				ParaCloseBtn.AutoButtonColor = false
+				ParaCloseBtn.ZIndex = 4
+
+				ParaCloseBtn.MouseEnter:Connect(function()
+					TweenService:Create(ParaCloseBtn, TweenInfoFast, { ImageColor3 = Theme.Danger }):Play()
+				end)
+				ParaCloseBtn.MouseLeave:Connect(function()
+					TweenService:Create(ParaCloseBtn, TweenInfoFast, { ImageColor3 = Theme.TextMuted }):Play()
+				end)
+
+				-- ── Content label ─────────────────────────────────────────────────────
 				local ContentLabel = Instance.new("TextLabel")
 				ContentLabel.Name = "Content"
 				ContentLabel.Parent = ItemFrame
 				ContentLabel.BackgroundTransparency = 1
-				ContentLabel.Position = UDim2.new(0, 12, 0, 26)
-				ContentLabel.Size = UDim2.new(1, -24, 0, 20)
+				ContentLabel.Position = UDim2.new(0, 10, 0, COLLAPSED_H + 2)
+				ContentLabel.Size = UDim2.new(1, -20, 0, 18)
 				ContentLabel.Font = Enum.Font.Gotham
 				ContentLabel.Text = cfg.Content
 				ContentLabel.TextColor3 = Theme.TextSecondary
-				ContentLabel.TextSize = 11
+				ContentLabel.TextSize = 10
 				ContentLabel.TextWrapped = true
 				ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
 				ContentLabel.TextYAlignment = Enum.TextYAlignment.Top
-				ContentLabel.RichText = true  -- RichText enabled for tags
+				ContentLabel.RichText = true
+				ContentLabel.ZIndex = 2
 
+				-- Divider line between header and content
+				local ParaDivider = Instance.new("Frame")
+				ParaDivider.Name = "Divider"
+				ParaDivider.Parent = ItemFrame
+				ParaDivider.BackgroundColor3 = Theme.BorderSoft
+				ParaDivider.BorderSizePixel = 0
+				ParaDivider.Position = UDim2.new(0, 8, 0, COLLAPSED_H - 1)
+				ParaDivider.Size = UDim2.new(1, -16, 0, 1)
+				ParaDivider.BackgroundTransparency = 0.6
+				ParaDivider.Visible = false
+				ParaDivider.ZIndex = 2
+
+				-- ── Resize helper ─────────────────────────────────────────────────────
 				local function ResizePara()
-					ContentLabel.Size = UDim2.new(1, -24, 0, 1000)
-					local textHeight = ContentLabel.TextBounds.Y
-					ContentLabel.Size = UDim2.new(1, -24, 0, textHeight)
-					ItemFrame.Size = UDim2.new(1, 0, 0, textHeight + 36)
+					ContentLabel.Size = UDim2.new(1, -20, 0, 1000)
+					local textH = ContentLabel.TextBounds.Y
+					textH = math.max(textH, 14)
+					ContentLabel.Size = UDim2.new(1, -20, 0, textH)
+					_computedExpandedH = COLLAPSED_H + 6 + textH + 8
+					if _isExpanded then
+						ItemFrame.Size = UDim2.new(1, 0, 0, _computedExpandedH)
+					end
 				end
 
-				ContentLabel:GetPropertyChangedSignal("TextBounds"):Connect(ResizePara)
-				task.defer(ResizePara)
+				-- ── Expand / Collapse logic ───────────────────────────────────────────
+				local function ExpandPara()
+					_isExpanded = true
+					ParaDivider.Visible = true
+					TweenService:Create(ItemFrame, TweenInfoSmooth, { Size = UDim2.new(1, 0, 0, _computedExpandedH) }):Play()
+					TweenService:Create(ItemStroke, TweenInfoFast, { Color = Theme.BorderAccent, Transparency = 0.2 }):Play()
+					TweenService:Create(ChevronIcon, TweenInfoFast, { Rotation = 90, ImageColor3 = Theme.AccentGlow }):Play()
+					TweenService:Create(TitleLabel, TweenInfoFast, { TextColor3 = Theme.AccentGlow }):Play()
+					-- Register in global active list
+					local found = false
+					for _, v in ipairs(Library._ActiveParaFrames) do
+						if v == ItemFrame then found = true break end
+					end
+					if not found then
+						table.insert(Library._ActiveParaFrames, ItemFrame)
+					end
+				end
 
+				local function CollapsePara()
+					_isExpanded = false
+					ParaDivider.Visible = false
+					TweenService:Create(ItemFrame, TweenInfoSmooth, { Size = UDim2.new(1, 0, 0, COLLAPSED_H) }):Play()
+					TweenService:Create(ItemStroke, TweenInfoFast, { Color = Theme.BorderSoft, Transparency = 0.45 }):Play()
+					TweenService:Create(ChevronIcon, TweenInfoFast, { Rotation = 0, ImageColor3 = Theme.TextMuted }):Play()
+					TweenService:Create(TitleLabel, TweenInfoFast, { TextColor3 = Theme.NeonWhite }):Play()
+					-- Unregister from global active list
+					for i, v in ipairs(Library._ActiveParaFrames) do
+						if v == ItemFrame then table.remove(Library._ActiveParaFrames, i) break end
+					end
+				end
+
+				-- Header click: toggle this paragraph (multi-select: others stay open)
+				HeaderBtn.MouseButton1Click:Connect(function()
+					if _isExpanded then
+						CollapsePara()
+					else
+						ExpandPara()
+					end
+				end)
+
+				-- X button: hide the card entirely (does not track in active list after this)
+				ParaCloseBtn.MouseButton1Click:Connect(function()
+					CollapsePara()
+					local t = TweenService:Create(ItemFrame, TweenInfoFast, { BackgroundTransparency = 1 })
+					t:Play()
+					t.Completed:Connect(function()
+						ItemFrame.Visible = false
+						ItemFrame.BackgroundTransparency = 0.6
+					end)
+				end)
+
+				-- Hover glow on header
+				HeaderBtn.MouseEnter:Connect(function()
+					if not _isExpanded then
+						TweenService:Create(ItemFrame, TweenInfoFast, { BackgroundTransparency = 0.5 }):Play()
+					end
+				end)
+				HeaderBtn.MouseLeave:Connect(function()
+					if not _isExpanded then
+						TweenService:Create(ItemFrame, TweenInfoFast, { BackgroundTransparency = 0.6 }):Play()
+					end
+				end)
+
+				ContentLabel:GetPropertyChangedSignal("TextBounds"):Connect(ResizePara)
+				task.defer(function()
+					ResizePara()
+					if cfg.DefaultOpen then
+						ExpandPara()
+					end
+				end)
+
+				-- ── ParaObj API ───────────────────────────────────────────────────────
 				local ParaObj = {}
 				function ParaObj:SetTitle(newTitle)
 					TitleLabel.Text = tostring(newTitle)
@@ -1865,6 +2182,23 @@ function Library:NewWindow(ConfigWindow)
 						ContentLabel.Text = tostring(arg1)
 					end
 					ResizePara()
+				end
+				function ParaObj:Expand()
+					ItemFrame.Visible = true
+					ExpandPara()
+				end
+				function ParaObj:Collapse()
+					CollapsePara()
+				end
+				function ParaObj:Open()
+					ItemFrame.Visible = true
+					ExpandPara()
+				end
+				function ParaObj:Close()
+					ItemFrame.Visible = false
+				end
+				function ParaObj:Toggle()
+					if _isExpanded then CollapsePara() else ExpandPara() end
 				end
 
 				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })

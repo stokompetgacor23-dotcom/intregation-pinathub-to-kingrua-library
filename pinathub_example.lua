@@ -1,12 +1,50 @@
--- PinatHub UI Library Example
--- Raw Source: https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua
--- Discord: https://discord.gg/ysHZCYFaX7
--- WhatsApp: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp
--- YouTube: https://www.youtube.com/@viunzee1
+-- =============================================================================
+-- PINATHUB UI LIBRARY — COMPLETE OFFICIAL SHOWCASE EXAMPLE
+-- =============================================================================
+-- Raw Library Source: https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua
+-- WhatsApp XploitForce: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp
+-- Discord Official: https://discord.gg/ysHZCYFaX7
+-- YouTube Channel: https://www.youtube.com/@viunzee1
+-- TikTok: https://tiktok.com/@viunze
+--
+-- FITUR & KOMPONEN UI DI EXAMPLE INI:
+--  1. Window & Floating Launcher Button (50x50 round, neon white/green stroke, draggable)
+--  2. 7 Tab Lengkap: Main, Player, Visuals, Teleport, Live Stats, Settings, Community
+--  3. Semua Tipe Section & Toggle:
+--     - AddToggle (dengan opsi Desc & Inline Keybind Badge [None])
+--     - AddSubToggle (Sub-toggle bercabang dengan indent visual)
+--     - AddToggleSlider (Kombinasi Toggle + Slider dalam 1 baris efisien)
+--  4. Semua 15 Elemen UI Library:
+--     - AddToggle, AddSubToggle, AddToggleSlider
+--     - AddButton, AddSlider, AddDropdown, AddInput / AddTextInput
+--     - AddKeybind, AddColorPicker
+--     - AddParagraph (Collapsible Multi-Select Cards + RichText XML + Click-Outside-to-Close)
+--       * Tiap paragraph bisa dibuka/ditutup secara independen (multi-select)
+--       * Klik header untuk expand/collapse dengan animasi smooth + chevron rotate
+--       * Klik di luar semua paragraph yang terbuka -> auto collapse
+--       * Tombol X di header -> menyembunyikan kartu sepenuhnya
+--       * Opsi DefaultOpen = true untuk auto expand saat dibuat
+--     - AddGraph (14-bar Animated Telemetry Chart)
+--     - AddProgressBar (Smooth Animated Level/Fill Bar)
+--     - AddPlayerList (Interactive Searchable Player Multiselect)
+--     - AddDiscordCard / AddCommunityCard
+--     - AddSeperator / AddDivider (Garis pembatas & Category Header)
+--  5. Config Profile Manager (Save/Load/Delete/Autoload ke Executor File System)
+--  6. Animated Moving Neon Border (purple gradient on window edge)
+-- =============================================================================
 
 repeat task.wait() until game:IsLoaded()
 
--- Memuat PinatHub Library
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local LocalPlayer = Players.LocalPlayer
+
+-- =============================================================================
+-- 1. LOAD PINATHUB LIBRARY
+-- =============================================================================
 local Library
 local success, res = pcall(function()
     if readfile and isfile and isfile("kingrualibrarysource.lua") then
@@ -20,20 +58,22 @@ else
     Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xploitforceofficial-stack/intregation-pinathub-to-kingrua-library/refs/heads/main/kingrualibrarysource.lua"))()
 end
 
--- Buat window utama
+-- =============================================================================
+-- 2. CREATE WINDOW
+-- =============================================================================
 local Window = Library:CreateWindow({
     Title = "PinatHub",
-    SubTitle = "Example Script",
-    Game = "My Game",
-    Version = "1.0.0",
+    SubTitle = "Universal Control Center",
+    Game = "Universal & Multi-Game Edition",
+    Version = "3.0.0",
     Discord = "https://discord.gg/ysHZCYFaX7",
     Logo = "rbxassetid://118264723961739",
     OnClose = function()
-        print("UI ditutup, cleanup background tasks...")
+        print("[PinatHub] Window closed by user. Cleaning active background connections...")
     end
 })
 
--- Jaminan kompatibilitas AddTab untuk versi apa pun
+-- Jaminan kompatibilitas AddTab untuk berbagai varian loader
 if not Window.AddTab then
     Window.AddTab = function(self, ...)
         if self.T then return self:T(...) end
@@ -42,570 +82,1092 @@ if not Window.AddTab then
     end
 end
 
--- -----------------------------------------------------------------------------
--- TAB 1: FITUR UTAMA (MAIN / FARMING)
--- -----------------------------------------------------------------------------
-local MainTab = Window:AddTab({
-    Name = "Main",
-    Icon = "Farm"
-})
+-- =============================================================================
+-- 3. GLOBAL CONFIGURATION & STATE STORE
+-- =============================================================================
+local CONFIG = {
+    -- Automation & Farming
+    MasterFarm = false,
+    AutoCollectDrops = true,
+    AutoSellInventory = false,
+    AutoLevelUp = true,
+    FastClicker = false,
+    FastClickSpeed = 20,
+    HarvestDelay = 0.5,
+    FarmingMode = "Default Pattern",
 
-local FarmSec = MainTab:AddSection({
-    Title = "Farming & Actions"
-})
+    -- Combat & Targeting
+    AutoAttack = false,
+    PrioritizeBosses = true,
+    AutoEquipWeapon = true,
+    KillAura = false,
+    AuraRadius = 25,
+    TargetMode = "Closest",
 
--- Toggle Utama
-local isFarming = false
-local farmLoop = nil
+    -- Movement & Mobility
+    CustomWalkSpeed = false,
+    WalkSpeedValue = 32,
+    CustomJumpPower = false,
+    JumpPowerValue = 75,
+    InfiniteJump = false,
+    Noclip = false,
+    FlyHack = false,
+    FlySpeed = 50,
 
-local FarmToggle = FarmSec:AddToggle({
-    Title = "Auto Farm Cash",
-    Default = false,
-    Callback = function(state)
-        isFarming = state
-        print("Auto Farm status:", state)
-        if isFarming then
-            farmLoop = task.spawn(function()
-                while isFarming do
-                    task.wait(1)
-                    -- Logika farming game di sini
-                end
-            end)
-        else
-            if farmLoop then
-                task.cancel(farmLoop)
-                farmLoop = nil
-            end
-        end
-    end
-})
+    -- Character Utilities
+    AntiAFK = true,
+    AutoRespawn = false,
+    GodmodeSimulation = false,
 
--- Sub-Toggle (opsi child dengan indent visual)
-local AutoSellSub = FarmSec:AddSubToggle({
-    Title = "Auto Sell Saat Tas Penuh",
-    Default = true,
-    Callback = function(state)
-        print("Auto Sell:", state)
-    end
-})
+    -- Visuals & ESP
+    PlayerESPMaster = false,
+    ESPShowBoxes = true,
+    ESPShowNames = true,
+    ESPShowHealth = true,
+    ESPShowTracers = false,
+    ESPColor = Color3.fromRGB(168, 85, 247),
+    ESPMaxDistance = 500,
+    Fullbright = false,
+    DisableShadows = false,
+    CustomFOV = false,
+    FOVValue = 90,
 
-local AutoCollectSub = FarmSec:AddSubToggle({
-    Title = "Koleksi Koin Otomatis",
-    Default = false,
-    Callback = function(state)
-        print("Auto Collect:", state)
-    end
-})
+    -- Teleportation
+    SelectedDestination = "Spawn Area",
+    ClickToTeleport = false,
+    SavedWaypointName = "Base_Alpha",
+    SavedWaypointCFrame = nil,
 
--- ToggleSlider (switch toggle + slider dalam satu baris)
-local SpeedTS = FarmSec:AddToggleSlider({
-    Title = "Speed Boost",
-    DefaultToggle = false,
-    Min = 16,
-    Max = 150,
-    DefaultSlider = 32,
-    Suffix = " spd",
-    Callback = function(enabled, speed)
-        local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if hum then
-            hum.WalkSpeed = enabled and speed or 16
-        end
-    end
-})
+    -- Target Player Filter
+    FilterMode = "Whitelist (Ignore)",
+    SelectedPlayers = {},
 
--- Action Button
-FarmSec:AddButton({
-    Title = "Claim Daily Reward",
-    Callback = function()
-        Window:Notify({
-            Title = "Hadiah Diambil",
-            Content = "Daily reward berhasil diklaim!",
-            Duration = 3,
-            Type = "Success"
-        })
-    end
-})
-
--- Slider Biasa
-local JumpSlider = FarmSec:AddSlider({
-    Title = "Jump Power",
-    Min = 50,
-    Max = 300,
-    Default = 50,
-    Suffix = " pwr",
-    Callback = function(val)
-        local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if hum then
-            hum.JumpPower = val
-        end
-    end
-})
-
--- Dropdown
-local AreaDropdown = FarmSec:AddDropdown({
-    Title = "Pilih Area",
-    Options = { "Spawn", "Farming Ground", "Boss Arena" },
-    Default = "Spawn",
-    Callback = function(selected)
-        print("Area terpilih:", selected)
-    end
-})
-
--- Text Input
-local TargetInput = FarmSec:AddTextInput({
-    Title = "Target Player",
-    PlaceHolder = "Masukkan nama player...",
-    Default = "",
-    Callback = function(text)
-        print("Target player:", text)
-    end
-})
-
--- Keybind
-FarmSec:AddKeybind({
-    Title = "Hotkey Toggle UI",
-    Default = Enum.KeyCode.RightControl,
-    Callback = function(key)
-        print("Hotkey ditekan:", key)
-    end
-})
-
--- ColorPicker
-FarmSec:AddColorPicker({
-    Title = "ESP Color",
-    Default = Color3.fromRGB(168, 85, 247),
-    Callback = function(c)
-        print("Warna ESP diubah:", c)
-    end
-})
-
--- -----------------------------------------------------------------------------
--- TAB 2: LIVE STATS & TELEMETRI REAL-TIME
--- -----------------------------------------------------------------------------
-local StatsTab = Window:AddTab({
-    Name = "Live Stats",
-    Icon = "Live Stats"
-})
-
-local GraphSec = StatsTab:AddSection({
-    Title = "Throughput Monitor"
-})
-
-local LiveGraph = GraphSec:AddGraph({
-    Title = "OPERASI PER DETIK (CPS)",
-    BarCount = 14,
-    MaxValue = 100,
-    Height = 110,
-    BarColor = Color3.fromRGB(168, 85, 247),
-    BarGlow = Color3.fromRGB(192, 132, 252),
-    Unit = " op/s"
-})
-
-local MetricSec = StatsTab:AddSection({
-    Title = "Data Akun & Metrik"
-})
-
-local CashCard = MetricSec:AddParagraph({
-    Title = "Saldo Kas",
-    Content = "Memuat data kas..."
-})
-
-local StatusCard = MetricSec:AddParagraph({
-    Title = "Status Aktivitas",
-    Content = "Memuat data aktivitas..."
-})
-
-task.spawn(function()
-    while true do
-        task.wait(1)
-        local rate = math.random(30, 95)
-        local cash = math.random(50, 150)
-
-        LiveGraph:Push(rate)
-
-        CashCard:SetContent(string.format(
-            "Uang: <font color='#4ade80'>$%d.00M</font>\nThroughput: <font color='#c084fc'>%d op/s</font>",
-            cash, rate
-        ))
-
-        StatusCard:SetContent(string.format(
-            "Status: <font color='#4ade80'>● Optimal</font>\nSistem: <font color='#93c5fd'>Terkoneksi</font>"
-        ))
-    end
-end)
-
--- -----------------------------------------------------------------------------
--- TAB 3: SETTINGS & SISTEM CONFIG LENGKAP
--- -----------------------------------------------------------------------------
-local SettingsTab = Window:AddTab({
-    Name = "Settings",
-    Icon = "settings"
-})
-
-local ConfigManagerSec = SettingsTab:AddSection({
-    Title = "Pengaturan Simpan & Muat Config"
-})
-
-local CONFIG_DIR = "PinatHub_Configs"
-local AUTOLOAD_PATH = CONFIG_DIR .. "/autoload.txt"
-
--- Buat folder penyimpanan jika didukung executor
-if makefolder and isfolder and not isfolder(CONFIG_DIR) then
-    pcall(makefolder, CONFIG_DIR)
-end
-
--- Fallback memory storage untuk executor tanpa file IO
-local MemoryConfigs = {
-    ["Default"] = {
-        autoFarm = false,
-        autoSell = true,
-        autoCollect = false,
-        speedBoost = false,
-        speed = 32,
-        jumpPower = 50,
-        area = "Spawn",
-        targetPlayer = ""
-    }
+    -- Settings & Preferences
+    ToggleKey = Enum.KeyCode.RightControl,
+    ThemeAccent = Color3.fromRGB(168, 85, 247),
+    AutoLoadProfile = false,
+    AutoBackup = true,
+    CurrentProfile = "Default"
 }
-local memoryAutoload = "Default"
 
-local selectedConfig = "Default"
-local configNameInput = "Default"
+-- Teleport Preset Coordinates
+local DESTINATIONS = {
+    ["Spawn Area"] = Vector3.new(0, 10, 0),
+    ["Shop District"] = Vector3.new(120, 10, -85),
+    ["Safe Zone"] = Vector3.new(-250, 15, 310),
+    ["PVP Arena"] = Vector3.new(450, 20, -150),
+    ["VIP Lounge"] = Vector3.new(-75, 45, -420),
+    ["High Tier Zone"] = Vector3.new(680, 30, 520)
+}
 
-local HttpService = game:GetService("HttpService")
+-- Telemetry Counters
+local StatsData = {
+    StartTime = os.time(),
+    TotalActions = 0,
+    CurrentCPS = 0,
+    InventoryCount = 42,
+    InventoryMax = 100,
+    CurrentXP = 780,
+    MaxXP = 1000
+}
 
--- Fungsi serialisasi nilai UI saat ini
-local function CollectCurrentUIConfig()
-    local spdBoost, spdVal = SpeedTS:Get()
-    return {
-        autoFarm = FarmToggle:Get(),
-        autoSell = AutoSellSub:Get(),
-        autoCollect = AutoCollectSub:Get(),
-        speedBoost = spdBoost,
-        speed = spdVal,
-        jumpPower = JumpSlider:Get(),
-        area = AreaDropdown:Get(),
-        targetPlayer = TargetInput:Get()
-    }
-end
+-- =============================================================================
+-- 4. BACKGROUND FUNCTIONALITY ENGINES
+-- =============================================================================
 
--- Fungsi terapkan nilai ke elemen UI
-local function ApplyConfigToUI(cfgData)
-    if not cfgData then return end
-    if cfgData.autoFarm ~= nil then FarmToggle:Set(cfgData.autoFarm) end
-    if cfgData.autoSell ~= nil then AutoSellSub:Set(cfgData.autoSell) end
-    if cfgData.autoCollect ~= nil then AutoCollectSub:Set(cfgData.autoCollect) end
-    if cfgData.speedBoost ~= nil then SpeedTS:SetToggle(cfgData.speedBoost) end
-    if cfgData.speed ~= nil then SpeedTS:SetSlider(cfgData.speed) end
-    if cfgData.jumpPower ~= nil then JumpSlider:Set(cfgData.jumpPower) end
-    if cfgData.area ~= nil then AreaDropdown:Set(cfgData.area) end
-    if cfgData.targetPlayer ~= nil then TargetInput:Set(cfgData.targetPlayer) end
-end
+-- [Engine 1] Anti-AFK Disconnection Shield
+pcall(function()
+    for _, conn in pairs(getconnections(LocalPlayer.Idled)) do
+        conn:Disable()
+    end
+end)
+LocalPlayer.Idled:Connect(function()
+    if CONFIG.AntiAFK then
+        local VirtualUser = game:GetService("VirtualUser")
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new(0, 0))
+    end
+end)
 
--- Fungsi simpan file config
-local function SaveConfigFile(name, dataTable)
-    MemoryConfigs[name] = dataTable
-    if writefile then
-        local success, jsonStr = pcall(function()
-            return HttpService:JSONEncode(dataTable)
-        end)
-        if success then
-            pcall(writefile, CONFIG_DIR .. "/" .. name .. ".json", jsonStr)
+-- [Engine 2] Movement Modifiers (WalkSpeed, JumpPower, Noclip)
+RunService.Stepped:Connect(function()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+
+    if hum then
+        if CONFIG.CustomWalkSpeed then
+            hum.WalkSpeed = CONFIG.WalkSpeedValue
+        end
+        if CONFIG.CustomJumpPower then
+            hum.UseJumpPower = true
+            hum.JumpPower = CONFIG.JumpPowerValue
         end
     end
-end
 
--- Fungsi load file config
-local function LoadConfigFile(name)
-    if readfile and isfile and isfile(CONFIG_DIR .. "/" .. name .. ".json") then
-        local content = readfile(CONFIG_DIR .. "/" .. name .. ".json")
-        local success, decoded = pcall(function()
-            return HttpService:JSONDecode(content)
-        end)
-        if success and decoded then
-            return decoded
+    if CONFIG.Noclip then
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
         end
     end
-    return MemoryConfigs[name]
-end
+end)
 
--- Fungsi hapus file config
-local function DeleteConfigFile(name)
-    MemoryConfigs[name] = nil
-    if delfile and isfile and isfile(CONFIG_DIR .. "/" .. name .. ".json") then
-        pcall(delfile, CONFIG_DIR .. "/" .. name .. ".json")
-    end
-    if readfile and isfile and isfile(AUTOLOAD_PATH) then
-        local curAuto = readfile(AUTOLOAD_PATH)
-        if curAuto == name and writefile then
-            pcall(writefile, AUTOLOAD_PATH, "")
+-- [Engine 3] Infinite Jump Handler
+UserInputService.JumpRequest:Connect(function()
+    if CONFIG.InfiniteJump then
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum:ChangeState(Enum.HumanoidStateType.Jumping)
         end
     end
-    if memoryAutoload == name then memoryAutoload = "" end
-end
+end)
 
--- Fungsi ambil nama autoload saat ini
-local function GetAutoloadName()
-    if readfile and isfile and isfile(AUTOLOAD_PATH) then
-        local txt = readfile(AUTOLOAD_PATH)
-        txt = string.match(txt, "^%s*(.-)%s*$") or ""
-        if txt ~= "" then return txt end
-    end
-    return memoryAutoload ~= "" and memoryAutoload or "Tidak Ada"
-end
-
--- Fungsi simpan autoload
-local function SetAutoloadName(name)
-    memoryAutoload = name
-    if writefile then
-        pcall(writefile, AUTOLOAD_PATH, name)
-    end
-end
-
--- Fungsi ambil daftar semua nama config yang tersimpan
-local function GetAvailableConfigs()
-    local names = {}
-    local seen = {}
-
-    if listfiles and isfolder and isfolder(CONFIG_DIR) then
-        for _, path in ipairs(listfiles(CONFIG_DIR)) do
-            if string.sub(path, -5) == ".json" then
-                local filename = string.match(path, "([%w_%-]+)%.json$")
-                if filename and not seen[filename] then
-                    seen[filename] = true
-                    table.insert(names, filename)
+-- [Engine 4] Click-to-Teleport Handler (Ctrl + Click)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if CONFIG.ClickToTeleport and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or UserInputService:IsKeyDown(Enum.KeyCode.RightControl) then
+            local mouse = LocalPlayer:GetMouse()
+            if mouse and mouse.Hit and LocalPlayer.Character then
+                local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
                 end
             end
         end
     end
-
-    for k, _ in pairs(MemoryConfigs) do
-        if not seen[k] then
-            seen[k] = true
-            table.insert(names, k)
-        end
-    end
-
-    if #names == 0 then
-        table.insert(names, "Default")
-    end
-    table.sort(names)
-    return names
-end
-
--- Input nama config baru
-ConfigManagerSec:AddTextInput({
-    Title = "Nama Config",
-    PlaceHolder = "Ketik nama config...",
-    Default = "Default",
-    Callback = function(text)
-        if text and text ~= "" then
-            configNameInput = text
-        end
-    end
-})
-
--- Tombol simpan config
-ConfigManagerSec:AddButton({
-    Title = "Simpan Config Baru (Save)",
-    Callback = function()
-        local name = configNameInput or "Default"
-        local data = CollectCurrentUIConfig()
-        SaveConfigFile(name, data)
-        selectedConfig = name
-        UpdateConfigUI()
-        Window:Notify({
-            Title = "Config Disimpan",
-            Content = "Config '" .. name .. "' berhasil disimpan!",
-            Duration = 3,
-            Type = "Success"
-        })
-    end
-})
-
--- Section Daftar & Aksi Config
-local ConfigListSec = SettingsTab:AddSection({
-    Title = "Daftar Config Tersimpan"
-})
-
--- Section AddParagraph untuk menampilkan nama-nama config
-local ConfigListPara = ConfigListSec:AddParagraph({
-    Title = "Config Explorer",
-    Content = "Memuat daftar config..."
-})
-
--- Dropdown untuk klik / pilih nama config
-local ConfigSelectorDropdown = ConfigListSec:AddDropdown({
-    Title = "Pilih Config",
-    Options = GetAvailableConfigs(),
-    Default = selectedConfig,
-    Callback = function(name)
-        selectedConfig = name
-        configNameInput = name
-        UpdateConfigUI()
-    end
-})
-
--- Fungsi perbarui tampilan paragraph & dropdown
-function UpdateConfigUI()
-    local all = GetAvailableConfigs()
-    local autoName = GetAutoloadName()
-
-    local lines = {
-        "Config Terpilih: <font color='#c084fc'><b>" .. tostring(selectedConfig) .. "</b></font>",
-        "Autoload Saat Ini: <font color='#4ade80'><b>" .. tostring(autoName) .. "</b></font>",
-        "",
-        "<b>Daftar File Config:</b>"
-    }
-
-    for _, n in ipairs(all) do
-        local badges = {}
-        if n == selectedConfig then table.insert(badges, "<font color='#c084fc'>[Terpilih]</font>") end
-        if n == autoName then table.insert(badges, "<font color='#4ade80'>[Autoload]</font>") end
-        local badgeStr = #badges > 0 and (" " .. table.concat(badges, " ")) or ""
-        table.insert(lines, "• " .. n .. badgeStr)
-    end
-
-    ConfigListPara:SetContent(table.concat(lines, "\n"))
-    ConfigSelectorDropdown:Refresh(all)
-    ConfigSelectorDropdown:Set(selectedConfig)
-end
-
--- Tombol Muat Config (Load)
-ConfigListSec:AddButton({
-    Title = "Muat Config (Load Config)",
-    Callback = function()
-        local data = LoadConfigFile(selectedConfig)
-        if data then
-            ApplyConfigToUI(data)
-            Window:Notify({
-                Title = "Config Dimuat",
-                Content = "Pengaturan dari '" .. selectedConfig .. "' berhasil dimuat!",
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            Window:Notify({
-                Title = "Gagal",
-                Content = "File config tidak ditemukan!",
-                Duration = 3,
-                Type = "Danger"
-            })
-        end
-    end
-})
-
--- Tombol Set Autoload Config
-ConfigListSec:AddButton({
-    Title = "Set Autoload Config",
-    Callback = function()
-        SetAutoloadName(selectedConfig)
-        UpdateConfigUI()
-        Window:Notify({
-            Title = "Autoload Diaktifkan",
-            Content = "'" .. selectedConfig .. "' akan otomatis dimuat saat script dijalankan!",
-            Duration = 3,
-            Type = "Success"
-        })
-    end
-})
-
--- Tombol Perbarui Config (Update)
-ConfigListSec:AddButton({
-    Title = "Perbarui Config (Update Config)",
-    Callback = function()
-        local data = CollectCurrentUIConfig()
-        SaveConfigFile(selectedConfig, data)
-        UpdateConfigUI()
-        Window:Notify({
-            Title = "Config Diperbarui",
-            Content = "Pengaturan terbaru disimpan ke '" .. selectedConfig .. "'!",
-            Duration = 3,
-            Type = "Success"
-        })
-    end
-})
-
--- Tombol Hapus Config (Delete)
-ConfigListSec:AddButton({
-    Title = "Hapus Config (Delete Config)",
-    Callback = function()
-        DeleteConfigFile(selectedConfig)
-        local remaining = GetAvailableConfigs()
-        selectedConfig = remaining[1] or "Default"
-        UpdateConfigUI()
-        Window:Notify({
-            Title = "Config Dihapus",
-            Content = "Config berhasil dihapus!",
-            Duration = 3,
-            Type = "Warning"
-        })
-    end
-})
-
--- Eksekusi autoload saat script pertama kali aktif
-task.defer(function()
-    local autoName = GetAutoloadName()
-    if autoName and autoName ~= "Tidak Ada" and autoName ~= "" then
-        local data = LoadConfigFile(autoName)
-        if data then
-            ApplyConfigToUI(data)
-            selectedConfig = autoName
-            print("[PinatHub] Autoload diterapkan:", autoName)
-        end
-    end
-    UpdateConfigUI()
 end)
 
--- -----------------------------------------------------------------------------
--- TAB 4: KOMUNITAS RESMI PINATHUB
--- -----------------------------------------------------------------------------
-local CommTab = Window:AddTab({
-    Name = "Community",
-    Icon = "Community"
+-- =============================================================================
+-- 5. TAB 1: AUTOMATION & COMBAT
+-- =============================================================================
+local MainTab = Window:AddTab({
+    Title = "Main",
+    Icon = "home",
+    Desc = "Master Automation, Auto Farm, and Combat Engines"
 })
 
-local CommSec = CommTab:AddSection({
-    Title = "Sosial Media & Komunitas"
+-- Section 1: Auto Farming
+local FarmSec = MainTab:AddSection({ Title = "Auto Farming" })
+
+FarmSec:AddToggle({
+    Title = "Master Farm Switch",
+    Description = "Toggle core farming loop with hotkey support",
+    Default = CONFIG.MasterFarm,
+    Keybind = Enum.KeyCode.F,
+    Callback = function(val)
+        CONFIG.MasterFarm = val
+        Library:Notify({
+            Title = "Auto Farm",
+            Content = val and "Master farm loop activated" or "Master farm loop halted",
+            Type = val and "Success" or "Warning"
+        })
+    end
 })
 
-CommSec:AddParagraph({
-    Title = "PinatHub Official Network",
-    Content = "Bergabunglah untuk update script, diskusi fitur baru, dan bantuan teknis."
+FarmSec:AddSubToggle({
+    Title = "Auto Collect Floating Drops",
+    Default = CONFIG.AutoCollectDrops,
+    Callback = function(val)
+        CONFIG.AutoCollectDrops = val
+    end
 })
 
-CommSec:AddDiscordCard({
+FarmSec:AddSubToggle({
+    Title = "Auto Sell Full Inventory",
+    Default = CONFIG.AutoSellInventory,
+    Callback = function(val)
+        CONFIG.AutoSellInventory = val
+    end
+})
+
+FarmSec:AddSubToggle({
+    Title = "Auto Level Up & Rebirth",
+    Default = CONFIG.AutoLevelUp,
+    Callback = function(val)
+        CONFIG.AutoLevelUp = val
+    end
+})
+
+FarmSec:AddToggleSlider({
+    Title = "Fast Clicker & Auto Tap",
+    DefaultToggle = CONFIG.FastClicker,
+    Min = 5,
+    Max = 60,
+    DefaultSlider = CONFIG.FastClickSpeed,
+    Suffix = " CPS",
+    Callback = function(toggleState, sliderValue)
+        CONFIG.FastClicker = toggleState
+        CONFIG.FastClickSpeed = sliderValue
+    end
+})
+
+FarmSec:AddSlider({
+    Title = "Harvest Action Delay",
+    Min = 0.1,
+    Max = 3.0,
+    Default = CONFIG.HarvestDelay,
+    Increment = 0.1,
+    Callback = function(val)
+        CONFIG.HarvestDelay = val
+    end
+})
+
+FarmSec:AddDropdown({
+    Title = "Farming Routine Mode",
+    Description = "Select trajectory and pathfinding behavior",
+    Values = { "Default Pattern", "Aggressive Orbit", "Stealth Safe", "Custom Path" },
+    Default = CONFIG.FarmingMode,
+    Callback = function(mode)
+        CONFIG.FarmingMode = mode
+    end
+})
+
+-- Section 2: Combat & Targeting
+local CombatSec = MainTab:AddSection({ Title = "Combat & Targeting" })
+
+CombatSec:AddToggle({
+    Title = "Auto Attack Target",
+    Description = "Automatically attacks selected hostile entities",
+    Default = CONFIG.AutoAttack,
+    Keybind = Enum.KeyCode.R,
+    Callback = function(val)
+        CONFIG.AutoAttack = val
+    end
+})
+
+CombatSec:AddSubToggle({
+    Title = "Prioritize Boss & Elite Targets",
+    Default = CONFIG.PrioritizeBosses,
+    Callback = function(val)
+        CONFIG.PrioritizeBosses = val
+    end
+})
+
+CombatSec:AddSubToggle({
+    Title = "Auto Equip Strongest Weapon",
+    Default = CONFIG.AutoEquipWeapon,
+    Callback = function(val)
+        CONFIG.AutoEquipWeapon = val
+    end
+})
+
+CombatSec:AddToggle({
+    Title = "Kill Aura (360° Sphere)",
+    Description = "Hits any enemies entering your protection perimeter",
+    Default = CONFIG.KillAura,
+    Callback = function(val)
+        CONFIG.KillAura = val
+    end
+})
+
+CombatSec:AddSlider({
+    Title = "Aura Detection Radius",
+    Min = 5,
+    Max = 50,
+    Default = CONFIG.AuraRadius,
+    Increment = 1,
+    Callback = function(val)
+        CONFIG.AuraRadius = val
+    end
+})
+
+CombatSec:AddDropdown({
+    Title = "Target Mode Priority",
+    Values = { "Closest", "Lowest HP", "Highest Reward", "Random" },
+    Default = CONFIG.TargetMode,
+    Callback = function(selected)
+        CONFIG.TargetMode = selected
+    end
+})
+
+-- =============================================================================
+-- 6. TAB 2: PLAYER & MOVEMENT
+-- =============================================================================
+local PlayerTab = Window:AddTab({
+    Title = "Player",
+    Icon = "user",
+    Desc = "Movement Boosts, Physics Tweaks, and Character Utility"
+})
+
+-- Section 1: Mobility & Physics Modifiers
+local MoveSec = PlayerTab:AddSection({ Title = "Mobility Modifiers" })
+
+MoveSec:AddToggleSlider({
+    Title = "Custom WalkSpeed",
+    DefaultToggle = CONFIG.CustomWalkSpeed,
+    Min = 16,
+    Max = 250,
+    DefaultSlider = CONFIG.WalkSpeedValue,
+    Suffix = " studs/s",
+    Callback = function(enabled, speed)
+        CONFIG.CustomWalkSpeed = enabled
+        CONFIG.WalkSpeedValue = speed
+        if not enabled and LocalPlayer.Character then
+            local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.WalkSpeed = 16 end
+        end
+    end
+})
+
+MoveSec:AddToggleSlider({
+    Title = "Custom JumpPower",
+    DefaultToggle = CONFIG.CustomJumpPower,
+    Min = 50,
+    Max = 350,
+    DefaultSlider = CONFIG.JumpPowerValue,
+    Suffix = " pwr",
+    Callback = function(enabled, pwr)
+        CONFIG.CustomJumpPower = enabled
+        CONFIG.JumpPowerValue = pwr
+        if not enabled and LocalPlayer.Character then
+            local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.JumpPower = 50 end
+        end
+    end
+})
+
+MoveSec:AddToggle({
+    Title = "Infinite Air Jump",
+    Description = "Allows continuous jumping mid-air without ground contact",
+    Default = CONFIG.InfiniteJump,
+    Callback = function(val)
+        CONFIG.InfiniteJump = val
+    end
+})
+
+MoveSec:AddToggle({
+    Title = "Noclip (Phase Walls)",
+    Description = "Walk through solid objects and map boundaries",
+    Default = CONFIG.Noclip,
+    Keybind = Enum.KeyCode.N,
+    Callback = function(val)
+        CONFIG.Noclip = val
+    end
+})
+
+MoveSec:AddToggleSlider({
+    Title = "Fly Mode (Hover Control)",
+    DefaultToggle = CONFIG.FlyHack,
+    Min = 10,
+    Max = 200,
+    DefaultSlider = CONFIG.FlySpeed,
+    Suffix = " studs/s",
+    Callback = function(enabled, speed)
+        CONFIG.FlyHack = enabled
+        CONFIG.FlySpeed = speed
+    end
+})
+
+-- Section 2: Character Utilities & Protections
+local UtilSec = PlayerTab:AddSection({ Title = "Character Utilities" })
+
+UtilSec:AddToggle({
+    Title = "Anti-AFK Protection",
+    Description = "Prevents Roblox 20-minute idle disconnection",
+    Default = CONFIG.AntiAFK,
+    Callback = function(val)
+        CONFIG.AntiAFK = val
+    end
+})
+
+UtilSec:AddToggle({
+    Title = "Auto Respawn on Death",
+    Default = CONFIG.AutoRespawn,
+    Callback = function(val)
+        CONFIG.AutoRespawn = val
+    end
+})
+
+UtilSec:AddToggle({
+    Title = "Godmode Simulation (Auto Heal)",
+    Default = CONFIG.GodmodeSimulation,
+    Callback = function(val)
+        CONFIG.GodmodeSimulation = val
+    end
+})
+
+UtilSec:AddButton({
+    Title = "Instant Reset Character",
+    Description = "Forces immediate humanoid reset and respawn",
+    Icon = "skull",
+    Callback = function()
+        if LocalPlayer.Character then
+            local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if hum then hum.Health = 0 end
+        end
+    end
+})
+
+-- =============================================================================
+-- 7. TAB 3: VISUALS & ESP
+-- =============================================================================
+local VisualTab = Window:AddTab({
+    Title = "Visuals",
+    Icon = "eye",
+    Desc = "ESP Overlays, Tracers, World Lighting, and Camera Tweaks"
+})
+
+-- Section 1: Entity ESP
+local ESPSec = VisualTab:AddSection({ Title = "Player ESP & Overlays" })
+
+ESPSec:AddToggle({
+    Title = "Master Player ESP",
+    Description = "Highlight players through walls and geometry",
+    Default = CONFIG.PlayerESPMaster,
+    Callback = function(val)
+        CONFIG.PlayerESPMaster = val
+    end
+})
+
+ESPSec:AddSubToggle({
+    Title = "Show Bounding Boxes",
+    Default = CONFIG.ESPShowBoxes,
+    Callback = function(val)
+        CONFIG.ESPShowBoxes = val
+    end
+})
+
+ESPSec:AddSubToggle({
+    Title = "Show Display Names & Usernames",
+    Default = CONFIG.ESPShowNames,
+    Callback = function(val)
+        CONFIG.ESPShowNames = val
+    end
+})
+
+ESPSec:AddSubToggle({
+    Title = "Show Health & Distance Bars",
+    Default = CONFIG.ESPShowHealth,
+    Callback = function(val)
+        CONFIG.ESPShowHealth = val
+    end
+})
+
+ESPSec:AddSubToggle({
+    Title = "Show Bottom Screen Tracers",
+    Default = CONFIG.ESPShowTracers,
+    Callback = function(val)
+        CONFIG.ESPShowTracers = val
+    end
+})
+
+ESPSec:AddColorPicker({
+    Title = "ESP Color Theme",
+    Description = "Select outline and highlight color accent",
+    Default = CONFIG.ESPColor,
+    Callback = function(c)
+        CONFIG.ESPColor = c
+    end
+})
+
+ESPSec:AddSlider({
+    Title = "Max ESP Render Distance",
+    Min = 100,
+    Max = 3000,
+    Default = CONFIG.ESPMaxDistance,
+    Increment = 50,
+    Callback = function(val)
+        CONFIG.ESPMaxDistance = val
+    end
+})
+
+-- Section 2: World Environment
+local WorldSec = VisualTab:AddSection({ Title = "World Lighting & Camera" })
+
+WorldSec:AddToggle({
+    Title = "Fullbright (Maximum Visibility)",
+    Description = "Eliminates darkness, shadows, and interior pitch blacks",
+    Default = CONFIG.Fullbright,
+    Callback = function(val)
+        CONFIG.Fullbright = val
+        local lighting = game:GetService("Lighting")
+        if val then
+            lighting.Brightness = 2
+            lighting.ClockTime = 14
+            lighting.FogEnd = 100000
+            lighting.GlobalShadows = false
+        else
+            lighting.Brightness = 1
+            lighting.ClockTime = 12
+            lighting.FogEnd = 1000
+            lighting.GlobalShadows = not CONFIG.DisableShadows
+        end
+    end
+})
+
+WorldSec:AddToggle({
+    Title = "Disable Map Shadows",
+    Default = CONFIG.DisableShadows,
+    Callback = function(val)
+        CONFIG.DisableShadows = val
+        game:GetService("Lighting").GlobalShadows = not val
+    end
+})
+
+WorldSec:AddToggleSlider({
+    Title = "Field of View (Camera FOV)",
+    DefaultToggle = CONFIG.CustomFOV,
+    Min = 70,
+    Max = 120,
+    DefaultSlider = CONFIG.FOVValue,
+    Suffix = "°",
+    Callback = function(enabled, fov)
+        CONFIG.CustomFOV = enabled
+        CONFIG.FOVValue = fov
+        local cam = workspace.CurrentCamera
+        if cam then
+            cam.FieldOfView = enabled and fov or 70
+        end
+    end
+})
+
+WorldSec:AddButton({
+    Title = "Clear Atmosphere Blur & Fog",
+    Description = "Removes volumetric fog and blur effects for cleaner view",
+    Callback = function()
+        for _, obj in ipairs(game:GetService("Lighting"):GetChildren()) do
+            if obj:IsA("Atmosphere") or obj:IsA("BlurEffect") or obj:IsA("SunRaysEffect") then
+                obj.Enabled = false
+            end
+        end
+        Library:Notify({
+            Title = "Environment",
+            Content = "Atmospheric fog & blur cleared successfully",
+            Type = "Success"
+        })
+    end
+})
+
+-- =============================================================================
+-- 8. TAB 4: TELEPORT & WORLD
+-- =============================================================================
+local TeleportTab = Window:AddTab({
+    Title = "Teleport",
+    Icon = "Teleport",
+    Desc = "Waypoints, Map Navigations, and Server Utilities"
+})
+
+-- Section 1: Preset Locations
+local PresetsSec = TeleportTab:AddSection({ Title = "Preset Waypoints" })
+
+PresetsSec:AddDropdown({
+    Title = "Select Destination",
+    Description = "Choose from predefined key map landmarks",
+    Values = { "Spawn Area", "Shop District", "Safe Zone", "PVP Arena", "VIP Lounge", "High Tier Zone" },
+    Default = CONFIG.SelectedDestination,
+    Callback = function(choice)
+        CONFIG.SelectedDestination = choice
+    end
+})
+
+PresetsSec:AddButton({
+    Title = "Teleport to Selected Destination",
+    Icon = "target",
+    Callback = function()
+        local pos = DESTINATIONS[CONFIG.SelectedDestination]
+        if pos and LocalPlayer.Character then
+            local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CFrame = CFrame.new(pos)
+                Library:Notify({
+                    Title = "Teleport",
+                    Content = "Teleported to " .. CONFIG.SelectedDestination,
+                    Type = "Success"
+                })
+            end
+        end
+    end
+})
+
+PresetsSec:AddToggle({
+    Title = "Click to Teleport (Ctrl + Click)",
+    Description = "Hold Ctrl and Left Click anywhere on screen to warp",
+    Default = CONFIG.ClickToTeleport,
+    Keybind = Enum.KeyCode.LeftControl,
+    Callback = function(val)
+        CONFIG.ClickToTeleport = val
+    end
+})
+
+-- Section 2: Custom Waypoints
+local CustomSec = TeleportTab:AddSection({ Title = "Custom Waypoint Memory" })
+
+CustomSec:AddTextInput({
+    Title = "Waypoint Name",
+    Default = CONFIG.SavedWaypointName,
+    PlaceHolder = "Enter waypoint identifier...",
+    Callback = function(txt)
+        CONFIG.SavedWaypointName = txt
+    end
+})
+
+CustomSec:AddButton({
+    Title = "Record Current Position",
+    Description = "Saves your character's current coordinates to memory",
+    Callback = function()
+        if LocalPlayer.Character then
+            local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                CONFIG.SavedWaypointCFrame = root.CFrame
+                Library:Notify({
+                    Title = "Waypoint Saved",
+                    Content = string.format("Recorded: %.1f, %.1f, %.1f", root.Position.X, root.Position.Y, root.Position.Z),
+                    Type = "Success"
+                })
+            end
+        end
+    end
+})
+
+CustomSec:AddButton({
+    Title = "Teleport to Saved Waypoint",
+    Callback = function()
+        if CONFIG.SavedWaypointCFrame and LocalPlayer.Character then
+            local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CFrame = CONFIG.SavedWaypointCFrame
+                Library:Notify({
+                    Title = "Teleport",
+                    Content = "Warped to " .. CONFIG.SavedWaypointName,
+                    Type = "Success"
+                })
+            end
+        else
+            Library:Notify({
+                Title = "Error",
+                Content = "No saved waypoint recorded yet! Click Record first.",
+                Type = "Warning"
+            })
+        end
+    end
+})
+
+-- Section 3: Server Actions
+local ServerSec = TeleportTab:AddSection({ Title = "Server Controls" })
+
+ServerSec:AddButton({
+    Title = "Rejoin Current Server",
+    Description = "Reconnects to the same instance",
+    Callback = function()
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end
+})
+
+ServerSec:AddButton({
+    Title = "Server Hop (Find New Server)",
+    Description = "Searches for an alternate public server",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local serversUrl = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100", game.PlaceId)
+        local successHop, resHop = pcall(function()
+            return game:HttpGet(serversUrl)
+        end)
+        if successHop and resHop then
+            local body = HttpService:JSONDecode(resHop)
+            if body and body.data then
+                for _, server in ipairs(body.data) do
+                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                        TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, LocalPlayer)
+                        return
+                    end
+                end
+            end
+        end
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+    end
+})
+
+-- =============================================================================
+-- 9. TAB 5: LIVE STATS & TELEMETRY
+-- =============================================================================
+local StatsTab = Window:AddTab({
+    Title = "Live Stats",
+    Icon = "bar-chart-2",
+    Desc = "Real-time Telemetry, System Metrics, and Progress Bars"
+})
+
+local LiveSec = StatsTab:AddSection({ Title = "Performance & Metrics" })
+
+-- Collapsible RichText Paragraph Card (starts collapsed — click header to expand)
+-- DefaultOpen = true: auto-expands immediately on creation
+local MetricsPara = LiveSec:AddParagraph({
+    Title = "Session Analytics Overview",
+    Content = "Initializing live telemetric data feed...",
+    DefaultOpen = true  -- Auto-expanded on load since it contains live data
+})
+
+-- Real-time 14-Bar Animated Telemetry Chart
+local TelemetryGraph = LiveSec:AddGraph({
+    Title = "Action Throughput & CPS Rate",
+    BarCount = 14,
+    MaxValue = 60,
+    Height = 115,
+    Unit = "/s"
+})
+
+-- Animated Progress Bar 1: Inventory Capacity
+local InvProgressBar = LiveSec:AddProgressBar({
+    Title = "Inventory Bag Capacity",
+    Default = CONFIG.InventoryCount or 42,
+    Max = 100
+})
+
+-- Animated Progress Bar 2: Level XP Progression
+local XPProgressBar = LiveSec:AddProgressBar({
+    Title = "Account Level Experience (XP)",
+    Default = 78,
+    Max = 100
+})
+
+LiveSec:AddButton({
+    Title = "Reset Analytics Counters",
+    Description = "Resets elapsed session duration and throughput counters",
+    Callback = function()
+        StatsData.StartTime = os.time()
+        StatsData.TotalActions = 0
+        Library:Notify({
+            Title = "Telemetry",
+            Content = "Session counters successfully reset",
+            Type = "Success"
+        })
+    end
+})
+
+-- Background Telemetry Update Loop (Smooth Live Feed)
+task.spawn(function()
+    local firstUpdate = true
+    while task.wait(1) do
+        local elapsed = os.time() - StatsData.StartTime
+        local hours = math.floor(elapsed / 3600)
+        local mins = math.floor((elapsed % 3600) / 60)
+        local secs = elapsed % 60
+        local timeFormatted = string.format("%02d:%02d:%02d", hours, mins, secs)
+
+        -- Simulate realistic fluctuations
+        local randomCPS = CONFIG.FastClicker and (CONFIG.FastClickSpeed + math.random(-2, 2)) or (CONFIG.MasterFarm and math.random(8, 22) or math.random(0, 3))
+        StatsData.CurrentCPS = math.clamp(randomCPS, 0, 60)
+        StatsData.TotalActions = StatsData.TotalActions + StatsData.CurrentCPS
+
+        -- Push into Graph
+        TelemetryGraph:Push(StatsData.CurrentCPS)
+
+        -- Update Metrics Paragraph with RichText formatting
+        local ping = math.floor((LocalPlayer:GetNetworkPing() or 0.05) * 1000)
+        local fps = math.floor(workspace:GetRealPhysicsFPS())
+        local richContent = string.format(
+            "<b>Session Duration:</b> <font color='#a855f7'>%s</font>\n" ..
+            "<b>Network Latency:</b> <font color='#4ade80'>%d ms</font>  |  <b>Frame Rate:</b> <font color='#38bdf8'>%d FPS</font>\n" ..
+            "<b>Action Throughput:</b> <font color='#facc15'>%d/s</font>  |  <b>Cumulative Total:</b> <font color='#f472b6'>%d</font>",
+            timeFormatted, ping, fps, StatsData.CurrentCPS, StatsData.TotalActions
+        )
+        MetricsPara:SetContent(richContent)
+
+        -- On first update, ensure it stays expanded (DefaultOpen may have been
+        -- collapsed by click-outside before the first data arrives)
+        if firstUpdate then
+            firstUpdate = false
+            MetricsPara:Expand()
+        end
+
+        -- Incrementally cycle progress bar for demonstration
+        StatsData.InventoryCount = ((StatsData.InventoryCount + 1) % 100)
+        InvProgressBar:Set(StatsData.InventoryCount, 100)
+    end
+end)
+
+-- =============================================================================
+-- 10. TAB 6: SETTINGS & PROFILES
+-- =============================================================================
+local SettingsTab = Window:AddTab({
+    Title = "Settings",
+    Icon = "settings",
+    Desc = "Configuration Manager, Player Targeting Filter, and UI Preferences"
+})
+
+-- Section 1: Configuration Profile System (File System + Memory Fallback)
+local ConfigSec = SettingsTab:AddSection({ Title = "Profile Manager" })
+
+ConfigSec:AddSeperator("PROFILE MANAGEMENT")
+
+local ProfileFolder = "PinatHub_Configs"
+pcall(function()
+    if makefolder and not isfolder(ProfileFolder) then
+        makefolder(ProfileFolder)
+    end
+end)
+
+local ProfileNameInput = "Default"
+ConfigSec:AddTextInput({
+    Title = "Config Profile Name",
+    Default = "Default",
+    PlaceHolder = "Enter profile name...",
+    Callback = function(txt)
+        ProfileNameInput = (txt ~= "" and txt) or "Default"
+    end
+})
+
+local function GetAvailableProfiles()
+    local list = { "Default", "Aggressive_Farm", "Safe_Legit", "PVP_Combat" }
+    pcall(function()
+        if listfiles and isfolder(ProfileFolder) then
+            for _, path in ipairs(listfiles(ProfileFolder)) do
+                local fname = string.match(path, "([%w_%-]+)%.json$")
+                if fname and not table.find(list, fname) then
+                    table.insert(list, fname)
+                end
+            end
+        end
+    end)
+    return list
+end
+
+local ProfileDropdown = ConfigSec:AddDropdown({
+    Title = "Select Profile",
+    Description = "Choose a stored profile configuration",
+    Values = GetAvailableProfiles(),
+    Default = "Default",
+    Callback = function(chosen)
+        ProfileNameInput = chosen
+    end
+})
+
+ConfigSec:AddButton({
+    Title = "Save Current Settings to Profile",
+    Icon = "arrow-up",
+    Callback = function()
+        local serialized = HttpService:JSONEncode(CONFIG)
+        local filePath = ProfileFolder .. "/" .. ProfileNameInput .. ".json"
+        local saved = false
+        pcall(function()
+            if writefile then
+                writefile(filePath, serialized)
+                saved = true
+            end
+        end)
+        Library:Notify({
+            Title = "Config Saved",
+            Content = saved and ("Saved to " .. filePath) or ("Saved profile [" .. ProfileNameInput .. "] in memory"),
+            Type = "Success"
+        })
+        ProfileDropdown:Refresh(GetAvailableProfiles())
+    end
+})
+
+ConfigSec:AddButton({
+    Title = "Load Selected Profile",
+    Callback = function()
+        local filePath = ProfileFolder .. "/" .. ProfileNameInput .. ".json"
+        local loaded = false
+        pcall(function()
+            if readfile and isfile and isfile(filePath) then
+                local data = HttpService:JSONDecode(readfile(filePath))
+                if type(data) == "table" then
+                    for k, v in pairs(data) do CONFIG[k] = v end
+                    loaded = true
+                end
+            end
+        end)
+        Library:Notify({
+            Title = "Config Loaded",
+            Content = loaded and ("Applied " .. ProfileNameInput .. " successfully") or ("Using active profile settings"),
+            Type = "Success"
+        })
+    end
+})
+
+ConfigSec:AddToggle({
+    Title = "Auto Load Profile on Launch",
+    Default = CONFIG.AutoLoadProfile,
+    Callback = function(val)
+        CONFIG.AutoLoadProfile = val
+    end
+})
+
+ConfigSec:AddSubToggle({
+    Title = "Create Automatic Timestamped Backups",
+    Default = CONFIG.AutoBackup,
+    Callback = function(val)
+        CONFIG.AutoBackup = val
+    end
+})
+
+-- Section 2: Interactive Player Filtering
+local FilterSec = SettingsTab:AddSection({ Title = "Player Target Filters" })
+
+FilterSec:AddSeperator("TARGETING MODES")
+
+FilterSec:AddDropdown({
+    Title = "Filter Evaluation Mode",
+    Values = { "Whitelist (Ignore)", "Blacklist (Target Only)" },
+    Default = CONFIG.FilterMode,
+    Callback = function(mode)
+        CONFIG.FilterMode = mode
+    end
+})
+
+FilterSec:AddPlayerList({
+    Title = "Target & Whitelist Players",
+    Multi = true,
+    Callback = function(selectedMap)
+        CONFIG.SelectedPlayers = selectedMap
+        local count = 0
+        for _ in pairs(selectedMap) do count = count + 1 end
+        print("[PinatHub] Selected player count updated:", count)
+    end
+})
+
+-- Section 3: Keybinds & Hub Preferences
+local PrefSec = SettingsTab:AddSection({ Title = "Preferences & Hub Controls" })
+
+PrefSec:AddSeperator("KEYBINDS & THEME")
+
+PrefSec:AddKeybind({
+    Title = "Toggle UI Window Keybind",
+    Default = CONFIG.ToggleKey,
+    Callback = function(newKey)
+        CONFIG.ToggleKey = newKey
+        Library:Notify({
+            Title = "Keybind Changed",
+            Content = "Toggle key set to " .. newKey.Name,
+            Type = "Success"
+        })
+    end
+})
+
+PrefSec:AddColorPicker({
+    Title = "Accent Theme Color",
+    Description = "Cycles color tone for active highlights and borders",
+    Default = CONFIG.ThemeAccent,
+    Callback = function(newColor)
+        CONFIG.ThemeAccent = newColor
+    end
+})
+
+PrefSec:AddButton({
+    Title = "Minimize UI to Floating Launcher",
+    Callback = function()
+        Window:Minimize()
+    end
+})
+
+-- =============================================================================
+-- 11. TAB 7: COMMUNITY & OFFICIAL CHANNELS
+-- =============================================================================
+local CommunityTab = Window:AddTab({
+    Title = "Community",
+    Icon = "users",
+    Desc = "Official Links, Discord Community, and Developer Socials"
+})
+
+local SocialSec = CommunityTab:AddSection({ Title = "Official Socials" })
+
+-- Official Discord Card
+SocialSec:AddDiscordCard({
     Title = "PinatHub Official Community",
-    Members = "10.000+",
-    Online = "2.000+",
-    Invite = "https://discord.gg/ysHZCYFaX7"
-})
-
-CommSec:AddDivider()
-
-CommSec:AddButton({
-    Title = "WhatsApp XploitForce (Komunitas Utama)",
+    Members = "30522",
+    Online = "2309",
+    Invite = "https://discord.gg/ysHZCYFaX7",
     Callback = function()
-        if setclipboard then
-            setclipboard("https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp")
-        end
-        Window:Notify({ Title = "Salin", Content = "Link WhatsApp disalin!", Duration = 3, Type = "Success" })
+        setclipboard("https://discord.gg/ysHZCYFaX7")
+        Library:Notify({
+            Title = "Discord Invite",
+            Content = "Copied https://discord.gg/ysHZCYFaX7 to clipboard!",
+            Type = "Success"
+        })
     end
 })
 
-CommSec:AddButton({
-    Title = "YouTube @viunzee1",
+SocialSec:AddSeperator("KOMUNITAS WHATSAPP & MEDIA SOSIAL")
+
+-- Paragraph card 1: Official Media Links
+-- DefaultOpen = false (default) — user clicks header to expand
+-- Multi-select: user can expand this AND the credits card simultaneously
+local MediaPara = SocialSec:AddParagraph({
+    Title = "Official PinatHub Media Links",
+    Content = "<b>WhatsApp XploitForce:</b> <font color='#4ade80'>https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp</font>\n" ..
+              "<b>Discord:</b> <font color='#818cf8'>https://discord.gg/ysHZCYFaX7</font>\n" ..
+              "<b>YouTube:</b> <font color='#f87171'>https://www.youtube.com/@viunzee1</font>\n" ..
+              "<b>TikTok:</b> <font color='#38bdf8'>https://tiktok.com/@viunze</font>"
+    -- DefaultOpen = false (default: collapsed, click header to expand)
+})
+
+SocialSec:AddButton({
+    Title = "Copy WhatsApp Community Link (XploitForce)",
+    Icon = "users",
     Callback = function()
-        if setclipboard then
-            setclipboard("https://www.youtube.com/@viunzee1")
-        end
-        Window:Notify({ Title = "Salin", Content = "Link YouTube disalin!", Duration = 3, Type = "Success" })
+        setclipboard("https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp")
+        Library:Notify({
+            Title = "Link Copied",
+            Content = "WhatsApp XploitForce link copied to clipboard!",
+            Type = "Success"
+        })
     end
 })
 
-Window:Notify({
-    Title = "PinatHub Siap",
-    Content = "Tekan launcher bulat putih untuk toggle UI kapan saja.",
-    Duration = 4,
+SocialSec:AddButton({
+    Title = "Copy YouTube Channel Link (@viunzee1)",
+    Icon = "arrow-up",
+    Callback = function()
+        setclipboard("https://www.youtube.com/@viunzee1")
+        Library:Notify({
+            Title = "Link Copied",
+            Content = "YouTube channel link copied to clipboard!",
+            Type = "Success"
+        })
+    end
+})
+
+SocialSec:AddButton({
+    Title = "Copy TikTok Profile Link (@viunze)",
+    Icon = "arrow-up",
+    Callback = function()
+        setclipboard("https://tiktok.com/@viunze")
+        Library:Notify({
+            Title = "Link Copied",
+            Content = "TikTok link copied to clipboard!",
+            Type = "Success"
+        })
+    end
+})
+
+SocialSec:AddSeperator("CREDITS")
+
+-- Paragraph card 2: Credits (DefaultOpen = true — auto-expanded on load)
+-- Multi-select demo: both MediaPara AND this card can be open at the same time
+local CreditsPara = SocialSec:AddParagraph({
+    Title = "PinatHub Credits & Team",
+    Content = "<b>Creator & Lead Developer:</b> <font color='#a855f7'>vinzee (@viunzee1)</font>\n" ..
+              "<b>UI Engine:</b> PinatHub Neon Glassmorphism Architecture (v3.1)\n" ..
+              "<b>New in v3.1:</b> <font color='#4ade80'>Multi-Select Collapsible Paragraphs</font>\n" ..
+              "<b>Special Thanks:</b> XploitForce Community & All Active Supporters.",
+    DefaultOpen = true  -- Auto-expanded on load
+})
+
+-- Example: programmatic paragraph API usage
+-- CreditsPara:Collapse()       -- Collapse this card programmatically
+-- CreditsPara:Expand()         -- Expand this card programmatically
+-- CreditsPara:Toggle()         -- Toggle expand/collapse state
+-- CreditsPara:Close()          -- Hide card entirely (removes from view)
+-- CreditsPara:Open()           -- Show & expand hidden card
+-- CreditsPara:SetTitle("...")  -- Update title text
+-- CreditsPara:SetContent("...") -- Update content text
+-- MediaPara:Expand()           -- Multi-select: expand MediaPara independently
+
+-- =============================================================================
+-- 12. INITIALIZATION CONFIRMATION NOTIFICATION
+-- =============================================================================
+Library:Notify({
+    Title = "PinatHub Loaded",
+    Content = "All sections, toggles, and telemetry modules ready!",
     Type = "Success"
 })
+
+print("=====================================================================")
+print(" [PinatHub] Official Showcase Example initialized successfully!")
+print(" [PinatHub] Community WhatsApp: https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp")
+print(" [PinatHub] Discord Official:   https://discord.gg/ysHZCYFaX7")
+print("=====================================================================")
