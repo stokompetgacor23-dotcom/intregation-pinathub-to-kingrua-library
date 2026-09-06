@@ -68,6 +68,7 @@ local Window = Library:CreateWindow({
     Version = "3.0.0",
     Discord = "https://discord.gg/ysHZCYFaX7",
     Logo = "rbxassetid://118264723961739",
+    NeonGapLines = true,
     OnClose = function()
         print("[PinatHub] Window closed by user. Cleaning active background connections...")
     end

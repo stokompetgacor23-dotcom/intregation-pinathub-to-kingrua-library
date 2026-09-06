@@ -535,7 +535,8 @@ function Library:NewWindow(ConfigWindow)
 		Title = "Pinathub",
 		Description = "PinatHub Community",
 		Size = UDim2.fromOffset(630, 390), -- Compact PinatHub landscape proportions
-		Logo = PINATHUB_LOGO
+		Logo = PINATHUB_LOGO,
+		NeonGapLines = true
 	}, ConfigWindow or {})
 
 	-- Auto-cleanup any old instances
@@ -1589,6 +1590,7 @@ function Library:NewWindow(ConfigWindow)
 		local sectionNeonConn
 
 		local function AddSectionGapLine()
+			if Config.NeonGapLines == false then return end
 			local gapLine = Instance.new("Frame")
 			gapLine.Name = "SectionNeonGapLine"
 			gapLine.BackgroundColor3 = Color3.fromRGB(150, 70, 230)
@@ -1627,7 +1629,7 @@ function Library:NewWindow(ConfigWindow)
 			if not child:IsA("GuiObject") or child.Name == "SectionNeonGapLine" then return end
 			sectionOrder += 1
 			child.LayoutOrder = sectionOrder * 2
-			if sectionOrder > 1 then
+			if sectionOrder > 1 and Config.NeonGapLines ~= false then
 				AddSectionGapLine()
 			end
 		end)
@@ -1794,6 +1796,7 @@ function Library:NewWindow(ConfigWindow)
 			local gapNeonConn
 
 			local function AddNeonGapLine()
+				if Config.NeonGapLines == false then return end
 				local gapLine = Instance.new("Frame")
 				gapLine.Name = "NeonGapLine"
 				gapLine.BackgroundColor3 = Color3.fromRGB(125, 55, 205)
@@ -1831,7 +1834,7 @@ function Library:NewWindow(ConfigWindow)
 				if not child:IsA("GuiObject") or child.Name == "NeonGapLine" then return end
 				controlOrder += 1
 				child.LayoutOrder = controlOrder * 2
-				if controlOrder > 1 then
+				if controlOrder > 1 and Config.NeonGapLines ~= false then
 					AddNeonGapLine()
 				end
 			end)
