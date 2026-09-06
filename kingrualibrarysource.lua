@@ -3299,6 +3299,7 @@ function Library:NewWindow(ConfigWindow)
 				BoxFrame.Size = UDim2.new(0, 105, 0, 22)
 				BoxFrame.BackgroundColor3 = Theme.SurfaceActive
 				BoxFrame.BorderSizePixel = 0
+				BoxFrame.ClipsDescendants = true
 
 				local BoxCorner = Instance.new("UICorner")
 				BoxCorner.CornerRadius = UDim.new(0, 5)
@@ -3322,6 +3323,8 @@ function Library:NewWindow(ConfigWindow)
 				TextBox.TextColor3 = Theme.Text
 				TextBox.TextSize = 11
 				TextBox.TextXAlignment = Enum.TextXAlignment.Left
+				TextBox.TextWrapped = false
+				TextBox.TextTruncate = Enum.TextTruncate.AtEnd
 
 				TextBox.Focused:Connect(function()
 					TweenService:Create(BoxStroke, TweenInfoFast, { Color = Theme.Accent, Transparency = 0.2 }):Play()

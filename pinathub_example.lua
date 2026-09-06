@@ -150,6 +150,38 @@ local CONFIG = {
     CurrentProfile = "Default"
 }
 
+local CONFIG_DEFAULTS = {}
+for key, value in pairs(CONFIG) do
+    CONFIG_DEFAULTS[key] = value
+end
+
+local function ResetConfigToDefaults()
+    for key in pairs(CONFIG) do
+        CONFIG[key] = nil
+    end
+    for key, value in pairs(CONFIG_DEFAULTS) do
+        CONFIG[key] = value
+    end
+end
+
+local function GetSerializableValue(value)
+    local valueType = type(value)
+    if valueType == "boolean" or valueType == "number" or valueType == "string" then
+        return value
+    end
+    if valueType == "table" then
+        local result = {}
+        for key, item in pairs(value) do
+            local serializable = GetSerializableValue(item)
+            if serializable ~= nil then
+                result[key] = serializable
+            end
+        end
+        return result
+    end
+    return nil
+end
+
 -- Teleport Preset Coordinates
 local DESTINATIONS = {
     ["Spawn Area"] = Vector3.new(0, 10, 0),
@@ -939,7 +971,7 @@ ConfigSec:AddButton({
     Title = "Save Current Settings to Profile",
     Icon = "arrow-up",
     Callback = function()
-        local serialized = HttpService:JSONEncode(CONFIG)
+        local serialized = HttpService:JSONEncode(GetSerializableValue(CONFIG))
         local filePath = ProfileFolder .. "/" .. ProfileNameInput .. ".json"
         local saved = false
         pcall(function()
@@ -966,7 +998,11 @@ ConfigSec:AddButton({
             if readfile and isfile and isfile(filePath) then
                 local data = HttpService:JSONDecode(readfile(filePath))
                 if type(data) == "table" then
-                    for k, v in pairs(data) do CONFIG[k] = v end
+                    ResetConfigToDefaults()
+                    for k, v in pairs(data) do
+                        CONFIG[k] = v
+                    end
+                    CONFIG.CurrentProfile = ProfileNameInput
                     loaded = true
                 end
             end
@@ -1140,10 +1176,10 @@ SocialSec:AddSeperator("CREDITS")
 -- Multi-select demo: both MediaPara AND this card can be open at the same time
 local CreditsPara = SocialSec:AddParagraph({
     Title = "PinatHub Credits & Team",
-    Content = "<b>Creator & Lead Developer:</b> <font color='#a855f7'>vinzee (@viunzee1)</font>\n" ..
-              "<b>UI Engine:</b> PinatHub Neon Glassmorphism Architecture (v3.1)\n" ..
-              "<b>New in v3.1:</b> <font color='#4ade80'>Multi-Select Collapsible Paragraphs</font>\n" ..
-              "<b>Special Thanks:</b> XploitForce Community & All Active Supporters.",
+    Content = "<b>Thank you for using PinatHub!</b>\n" ..
+              "We sincerely appreciate your support and trust in this script.\n" ..
+              "Thank you to the XploitForce Community and everyone who helps test, improve, and share PinatHub.\n" ..
+              "Your feedback and continued support keep this project growing.",
     DefaultOpen = true  -- Auto-expanded on load
 })
 
