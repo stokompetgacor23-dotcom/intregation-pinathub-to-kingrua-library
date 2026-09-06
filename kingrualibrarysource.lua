@@ -1591,9 +1591,10 @@ function Library:NewWindow(ConfigWindow)
 		local function AddSectionGapLine()
 			local gapLine = Instance.new("Frame")
 			gapLine.Name = "SectionNeonGapLine"
-			gapLine.BackgroundColor3 = Color3.fromRGB(40, 30, 55)
+			gapLine.BackgroundColor3 = Color3.fromRGB(110, 55, 170)
 			gapLine.BorderSizePixel = 0
-			gapLine.Size = UDim2.new(1, 0, 0, 1)
+			gapLine.Size = UDim2.new(1, -18, 0, 2)
+			gapLine.Position = UDim2.new(0, 9, 0, 0)
 			gapLine.LayoutOrder = sectionOrder * 2 - 1
 			gapLine.ZIndex = 3
 			gapLine.Parent = Page
@@ -1601,22 +1602,22 @@ function Library:NewWindow(ConfigWindow)
 			local gapGradient = Instance.new("UIGradient")
 			gapGradient.Name = "MovingNeonTrace"
 			gapGradient.Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 30, 55)),
-				ColorSequenceKeypoint.new(0.42, Color3.fromRGB(40, 30, 55)),
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 35, 115)),
+				ColorSequenceKeypoint.new(0.42, Color3.fromRGB(75, 35, 115)),
 				ColorSequenceKeypoint.new(0.49, Color3.fromRGB(168, 85, 247)),
 				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(235, 210, 255)),
 				ColorSequenceKeypoint.new(0.51, Color3.fromRGB(168, 85, 247)),
-				ColorSequenceKeypoint.new(0.58, Color3.fromRGB(40, 30, 55)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 30, 55)),
+				ColorSequenceKeypoint.new(0.58, Color3.fromRGB(75, 35, 115)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(75, 35, 115)),
 			})
 			gapGradient.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.82),
-				NumberSequenceKeypoint.new(0.42, 0.82),
-				NumberSequenceKeypoint.new(0.49, 0.1),
+				NumberSequenceKeypoint.new(0, 0.35),
+				NumberSequenceKeypoint.new(0.42, 0.35),
+				NumberSequenceKeypoint.new(0.49, 0.05),
 				NumberSequenceKeypoint.new(0.50, 0),
-				NumberSequenceKeypoint.new(0.51, 0.1),
-				NumberSequenceKeypoint.new(0.58, 0.82),
-				NumberSequenceKeypoint.new(1, 0.82),
+				NumberSequenceKeypoint.new(0.51, 0.05),
+				NumberSequenceKeypoint.new(0.58, 0.35),
+				NumberSequenceKeypoint.new(1, 0.35),
 			})
 			gapGradient.Parent = gapLine
 			table.insert(sectionGapLines, gapGradient)
