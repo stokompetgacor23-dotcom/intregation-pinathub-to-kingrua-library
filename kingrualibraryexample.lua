@@ -17,27 +17,84 @@ local LocalPlayer = Players.LocalPlayer
 local PINATHUB_LOGO = "rbxassetid://118264723961739"
 
 local TabIcons = {
-	Main = "rbxassetid://10723407389",       -- Home / Dashboard
-	Info = "rbxassetid://10747373176",       -- User / Info
-	Survivor = "rbxassetid://10734923549",   -- Sword / Survivor
-	Killer = "rbxassetid://10723415766",     -- Skull / Killer
-	ESP = "rbxassetid://10723415766",        -- Eye / ESP
-	Visuals = "rbxassetid://10723415766",    -- Eye / Visuals
-	Emote = "rbxassetid://10747373176",      -- Emote & Skin
-	Aimbot = "rbxassetid://10734943760",     -- Crosshair / Aimbot
-	Settings = "rbxassetid://10734950309",   -- Settings / Gear
-	Configuration = "rbxassetid://10709782497", -- Sliders / Config
-	Player = "rbxassetid://10747373176",     -- User / Player
-	Misc = "rbxassetid://10709782497",       -- Sliders / Misc
-	Credits = "rbxassetid://10723416652",    -- Info / Credits
-	Search = "rbxassetid://10734943760",     -- Search Icon
-	Minimize = "rbxassetid://10734896206",   -- Minimize Icon
-	Maximize = "rbxassetid://10734914561",   -- Maximize Icon
-	Close = "rbxassetid://10747384394",      -- Close Icon
-	ChevronRight = "rbxassetid://10709790948",-- Arrow right
-	ChevronDown = "rbxassetid://10709790948", -- Arrow down (rotation 90)
-	Discord = "rbxassetid://10723416652",    -- Community
-	Cursor = "rbxassetid://10734943760"      -- Cursor
+	-- PinatHub Drain Water Specific Tabs
+	["Auto Farm"] = "rbxassetid://10723344432",   -- Droplet
+	["Farm"] = "rbxassetid://10723344432",        -- Droplet
+	["Upgrades"] = "rbxassetid://10709768939",    -- Arrow Up
+	["Upgrade"] = "rbxassetid://10709768939",     -- Arrow Up
+	["Fish & Pets"] = "rbxassetid://10709761530", -- Anchor (Marine / Aquatic / Fish)
+	["Fish"] = "rbxassetid://10709761530",        -- Anchor
+	["Pets"] = "rbxassetid://10709769841",        -- Backpack / Pet Pack
+	["Auto Sell"] = "rbxassetid://10723343958",   -- Dollar Sign
+	["Sell"] = "rbxassetid://10723343958",        -- Dollar Sign
+	["Advanced"] = "rbxassetid://10747383470",    -- Wrench / Tools
+	["Live Stats"] = "rbxassetid://10709770317",  -- Bar Chart 2
+	["Stats"] = "rbxassetid://10709770317",       -- Bar Chart 2
+	["Community"] = "rbxassetid://10747373426",   -- Users
+
+	-- Standard Lucide Icons by String Name
+	["droplet"] = "rbxassetid://10723344432",
+	["fish"] = "rbxassetid://10709761530",
+	["anchor"] = "rbxassetid://10709761530",
+	["backpack"] = "rbxassetid://10709769841",
+	["arrow-up"] = "rbxassetid://10709768939",
+	["dollar-sign"] = "rbxassetid://10723343958",
+	["coins"] = "rbxassetid://10709811110",
+	["settings"] = "rbxassetid://10734950309",
+	["sliders"] = "rbxassetid://10734963400",
+	["bar-chart"] = "rbxassetid://10709773755",
+	["bar-chart-2"] = "rbxassetid://10709770317",
+	["chart-bar"] = "rbxassetid://10709770317",
+	["users"] = "rbxassetid://10747373426",
+	["user"] = "rbxassetid://10747373176",
+	["crosshair"] = "rbxassetid://10709818534",
+	["target"] = "rbxassetid://10734977012",
+	["skull"] = "rbxassetid://10734962068",
+	["eye"] = "rbxassetid://10723346959",
+	["swords"] = "rbxassetid://10734975692",
+	["sword"] = "rbxassetid://10734975486",
+	["backpack"] = "rbxassetid://10709769841",
+	["shield"] = "rbxassetid://10734951847",
+	["wrench"] = "rbxassetid://10747383470",
+	["cpu"] = "rbxassetid://10709813383",
+	["activity"] = "rbxassetid://10709752035",
+	["heart"] = "rbxassetid://10723406885",
+	["home"] = "rbxassetid://10723407389",
+	["search"] = "rbxassetid://10734943674",
+	["bell"] = "rbxassetid://10709775704",
+	["flame"] = "rbxassetid://10723376114",
+	["database"] = "rbxassetid://10709818996",
+	["discord"] = "rbxassetid://10734950553",
+	["message-circle"] = "rbxassetid://10734888000",
+	["video"] = "rbxassetid://10747374938",
+	["youtube"] = "rbxassetid://10747374938",
+	["globe"] = "rbxassetid://10723404337",
+	["clipboard-check"] = "rbxassetid://10709783474",
+
+	-- General Navigation & UI Icons
+	Main = "rbxassetid://10723407389",
+	Info = "rbxassetid://10723406988",            -- Help / Info circle
+	Survivor = "rbxassetid://10734975692",        -- Swords
+	Killer = "rbxassetid://10734962068",          -- Skull
+	ESP = "rbxassetid://10723346959",             -- Eye
+	Visuals = "rbxassetid://10723346959",         -- Eye
+	["Emote & Skin"] = "rbxassetid://10747373176",-- User
+	Emote = "rbxassetid://10747373176",           -- User
+	Aimbot = "rbxassetid://10709818534",          -- Crosshair (FIXED, NOT BLANK)
+	Settings = "rbxassetid://10734950309",        -- Gear
+	Configuration = "rbxassetid://10734963400",   -- Sliders
+	Config = "rbxassetid://10734963400",          -- Sliders
+	Player = "rbxassetid://10747373176",          -- User
+	Misc = "rbxassetid://10747383470",            -- Wrench
+	Credits = "rbxassetid://10723406988",         -- Help / Info
+	Search = "rbxassetid://10734943674",          -- Search (FIXED)
+	Minimize = "rbxassetid://10734896206",
+	Maximize = "rbxassetid://10734914561",
+	Close = "rbxassetid://10747384394",
+	ChevronRight = "rbxassetid://10709791437",
+	ChevronDown = "rbxassetid://10709790948",
+	Discord = "rbxassetid://10734950553",
+	Cursor = "rbxassetid://10709818534"
 }
 
 -- Detect Executor Name dynamically
@@ -461,19 +518,31 @@ function Library:NewWindow(ConfigWindow)
 	MainStroke.Transparency = 0.4
 	MainStroke.Parent = MainWindow
 
-	-- 4. Floating Launcher Button (52x52 Glass Circle with Pinathub Logo)
+	-- PinatHub Watermark Background Logo (Subtle & Dimmed)
+	local WindowBackgroundLogo = Instance.new("ImageLabel")
+	WindowBackgroundLogo.Name = "WindowBackgroundLogo"
+	WindowBackgroundLogo.Parent = MainWindow
+	WindowBackgroundLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+	WindowBackgroundLogo.Position = UDim2.fromScale(0.5, 0.5)
+	WindowBackgroundLogo.Size = UDim2.new(0.62, 0, 0.62, 0)
+	WindowBackgroundLogo.BackgroundTransparency = 1
+	WindowBackgroundLogo.Image = PINATHUB_LOGO
+	WindowBackgroundLogo.ImageColor3 = Theme.AccentGlow
+	WindowBackgroundLogo.ImageTransparency = 0.93 -- Dimmed subtle lighting
+	WindowBackgroundLogo.ScaleType = Enum.ScaleType.Fit
+	WindowBackgroundLogo.ZIndex = 2
+
+	-- 4. Floating Launcher Button (Modern Sleek Glowing Glass Pill)
 	local LauncherButton = Instance.new("ImageButton")
 	LauncherButton.Name = "LauncherButton"
 	LauncherButton.Parent = ScreenGui
 	LauncherButton.AnchorPoint = Vector2.new(0, 0.5)
-	LauncherButton.Position = UDim2.new(0, 20, 0.5, 0)
+	LauncherButton.Position = UDim2.new(0, 18, 0.5, 0)
 	LauncherButton.Size = UDim2.new(0, 52, 0, 52)
 	LauncherButton.BackgroundColor3 = Theme.Header
-	LauncherButton.BackgroundTransparency = 0.15
+	LauncherButton.BackgroundTransparency = 0.2
 	LauncherButton.BorderSizePixel = 0
-	LauncherButton.Image = PINATHUB_LOGO
-	LauncherButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
-	LauncherButton.ScaleType = Enum.ScaleType.Fit
+	LauncherButton.AutoButtonColor = false
 	LauncherButton.Visible = false
 	LauncherButton.ZIndex = 50
 
@@ -483,33 +552,58 @@ function Library:NewWindow(ConfigWindow)
 
 	local LauncherStroke = Instance.new("UIStroke")
 	LauncherStroke.Color = Theme.Accent
-	LauncherStroke.Thickness = 1.5
-	LauncherStroke.Transparency = 0.2
+	LauncherStroke.Thickness = 1.8
+	LauncherStroke.Transparency = 0.25
 	LauncherStroke.Parent = LauncherButton
+
+	local LauncherLogoImg = Instance.new("ImageLabel")
+	LauncherLogoImg.Name = "Logo"
+	LauncherLogoImg.Parent = LauncherButton
+	LauncherLogoImg.AnchorPoint = Vector2.new(0.5, 0.5)
+	LauncherLogoImg.Position = UDim2.fromScale(0.5, 0.5)
+	LauncherLogoImg.Size = UDim2.new(0, 32, 0, 32)
+	LauncherLogoImg.BackgroundTransparency = 1
+	LauncherLogoImg.Image = PINATHUB_LOGO
+	LauncherLogoImg.ImageColor3 = Color3.fromRGB(255, 255, 255)
+	LauncherLogoImg.ScaleType = Enum.ScaleType.Fit
 
 	local LauncherShadow = Instance.new("ImageLabel")
 	LauncherShadow.Name = "Shadow"
 	LauncherShadow.Parent = LauncherButton
 	LauncherShadow.AnchorPoint = Vector2.new(0.5, 0.5)
 	LauncherShadow.Position = UDim2.fromScale(0.5, 0.5)
-	LauncherShadow.Size = UDim2.new(1, 20, 1, 20)
+	LauncherShadow.Size = UDim2.new(1, 24, 1, 24)
 	LauncherShadow.BackgroundTransparency = 1
 	LauncherShadow.Image = "rbxassetid://6015897843"
 	LauncherShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	LauncherShadow.ImageTransparency = 0.4
+	LauncherShadow.ImageTransparency = 0.45
 	LauncherShadow.ScaleType = Enum.ScaleType.Slice
 	LauncherShadow.SliceCenter = Rect.new(49, 49, 450, 450)
 	LauncherShadow.ZIndex = 49
 
 	self:MakeDraggable(LauncherButton, LauncherButton)
 
+	-- Pulse / Breathing Glow Idle Animation
+	task.spawn(function()
+		while ScreenGui and ScreenGui.Parent do
+			local t1 = TweenService:Create(LauncherStroke, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Transparency = 0.55, Color = Theme.Accent })
+			t1:Play()
+			task.wait(1.6)
+			local t2 = TweenService:Create(LauncherStroke, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Transparency = 0.15, Color = Theme.AccentGlow })
+			t2:Play()
+			task.wait(1.6)
+		end
+	end)
+
 	LauncherButton.MouseEnter:Connect(function()
 		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 58, 0, 58) }):Play()
-		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.AccentGlow, Transparency = 0.1 }):Play()
+		TweenService:Create(LauncherLogoImg, TweenInfoSpring, { Size = UDim2.new(0, 36, 0, 36), Rotation = 8 }):Play()
+		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.AccentGlow, Transparency = 0.05 }):Play()
 	end)
 	LauncherButton.MouseLeave:Connect(function()
 		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 52, 0, 52) }):Play()
-		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.Accent, Transparency = 0.2 }):Play()
+		TweenService:Create(LauncherLogoImg, TweenInfoSpring, { Size = UDim2.new(0, 32, 0, 32), Rotation = 0 }):Play()
+		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.Accent, Transparency = 0.25 }):Play()
 	end)
 
 	-- 5. Window State Controllers
@@ -605,7 +699,7 @@ function Library:NewWindow(ConfigWindow)
 	BrandLogo.ScaleType = Enum.ScaleType.Fit
 	BrandLogo.LayoutOrder = 1
 
-	-- Title "Pinathub" / "Meng Hub"
+	-- Title "Pinathub | Drain Water" (Clean, No Subtitle)
 	local BrandName = Instance.new("TextLabel")
 	BrandName.Name = "BrandName"
 	BrandName.Parent = LeftHeaderContainer
@@ -615,35 +709,9 @@ function Library:NewWindow(ConfigWindow)
 	BrandName.Font = Enum.Font.GothamBold
 	BrandName.Text = Config.Title
 	BrandName.TextColor3 = Theme.Text
-	BrandName.TextSize = 14
+	BrandName.TextSize = 13
 	BrandName.TextXAlignment = Enum.TextXAlignment.Left
 	BrandName.LayoutOrder = 2
-
-	-- Separator "|"
-	local SepLabel = Instance.new("TextLabel")
-	SepLabel.Name = "Sep"
-	SepLabel.Parent = LeftHeaderContainer
-	SepLabel.BackgroundTransparency = 1
-	SepLabel.Size = UDim2.new(0, 8, 1, 0)
-	SepLabel.Font = Enum.Font.Gotham
-	SepLabel.Text = "|"
-	SepLabel.TextColor3 = Theme.TextMuted
-	SepLabel.TextSize = 13
-	SepLabel.LayoutOrder = 3
-
-	-- Subtitle "Peacefull Community" / "Control Center"
-	local SubtitleLabel = Instance.new("TextLabel")
-	SubtitleLabel.Name = "Subtitle"
-	SubtitleLabel.Parent = LeftHeaderContainer
-	SubtitleLabel.BackgroundTransparency = 1
-	SubtitleLabel.Size = UDim2.new(0, 0, 1, 0)
-	SubtitleLabel.AutomaticSize = Enum.AutomaticSize.X
-	SubtitleLabel.Font = Enum.Font.Gotham
-	SubtitleLabel.Text = Config.Description
-	SubtitleLabel.TextColor3 = Theme.TextSecondary
-	SubtitleLabel.TextSize = 11
-	SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-	SubtitleLabel.LayoutOrder = 4
 
 	-- Right Header Container (Badges + Minimize & Close Buttons)
 	local RightHeaderContainer = Instance.new("Frame")
@@ -702,54 +770,92 @@ function Library:NewWindow(ConfigWindow)
 		return pill, pText
 	end
 
-	-- Badge 1: [ VD | Premium ] / [ Pinathub | Premium ]
-	CreatePillBadge("VD | Premium", 1)
-
-	-- Badge 2: [ Executor: <Name> ]
+	-- Executor Badge Only (VD | Premium Removed)
 	local currentExecutor = DetectExecutor()
-	CreatePillBadge("Executor: " .. currentExecutor, 2)
+	local execPill, execText = CreatePillBadge("Executor: " .. currentExecutor, 1)
+	execText.RichText = true
+	execText.Text = "<font color='#4ade80'>●</font> " .. currentExecutor
 
-	-- Window Control Buttons (Minimize & Close)
-	local function CreateActionBtn(text, callback, isDanger, order)
-		local btn = Instance.new("TextButton")
-		btn.Name = "Btn_" .. text
-		btn.Parent = RightHeaderContainer
-		btn.Size = UDim2.new(0, 24, 0, 24)
-		btn.BackgroundColor3 = Theme.Surface
-		btn.BackgroundTransparency = 1
-		btn.BorderSizePixel = 0
-		btn.Font = Enum.Font.GothamBold
-		btn.Text = text
-		btn.TextColor3 = Theme.TextSecondary
-		btn.TextSize = 13
-		btn.AutoButtonColor = false
-		btn.LayoutOrder = order
-
-		local bCorner = Instance.new("UICorner")
-		bCorner.CornerRadius = UDim.new(0, 5)
-		bCorner.Parent = btn
-
-		btn.MouseEnter:Connect(function()
-			if isDanger then
-				TweenService:Create(btn, TweenInfoFast, { BackgroundTransparency = 0, BackgroundColor3 = Theme.Danger }):Play()
-				btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			else
-				TweenService:Create(btn, TweenInfoFast, { BackgroundTransparency = 0.3, BackgroundColor3 = Theme.SurfaceHover }):Play()
-				btn.TextColor3 = Theme.Text
-			end
+	local onCloseCallbacks = {}
+	local function FullShutdownWindow()
+		for _, cb in ipairs(onCloseCallbacks) do
+			pcall(cb)
+		end
+		local closeTween = TweenService:Create(UIScale, TweenInfoFast, { Scale = 0.8 })
+		TweenService:Create(MainWindow, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(DropShadow, TweenInfoFast, { ImageTransparency = 1 }):Play()
+		closeTween:Play()
+		closeTween.Completed:Connect(function()
+			pcall(function()
+				if LauncherButton then LauncherButton:Destroy() end
+				if ScreenGui then ScreenGui:Destroy() end
+			end)
 		end)
-
-		btn.MouseLeave:Connect(function()
-			TweenService:Create(btn, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
-			btn.TextColor3 = Theme.TextSecondary
-		end)
-
-		btn.MouseButton1Click:Connect(callback)
-		return btn
 	end
 
-	CreateActionBtn("—", CloseWindow, false, 3)
-	CreateActionBtn("✕", CloseWindow, true, 4)
+	-- Window Control Buttons (Minimize & True Close Icon)
+	local MinimizeBtn = Instance.new("TextButton")
+	MinimizeBtn.Name = "Btn_Minimize"
+	MinimizeBtn.Parent = RightHeaderContainer
+	MinimizeBtn.Size = UDim2.new(0, 24, 0, 24)
+	MinimizeBtn.BackgroundColor3 = Theme.Surface
+	MinimizeBtn.BackgroundTransparency = 1
+	MinimizeBtn.BorderSizePixel = 0
+	MinimizeBtn.Font = Enum.Font.GothamBold
+	MinimizeBtn.Text = "—"
+	MinimizeBtn.TextColor3 = Theme.TextSecondary
+	MinimizeBtn.TextSize = 13
+	MinimizeBtn.AutoButtonColor = false
+	MinimizeBtn.LayoutOrder = 2
+
+	local MinCorner = Instance.new("UICorner")
+	MinCorner.CornerRadius = UDim.new(0, 5)
+	MinCorner.Parent = MinimizeBtn
+
+	MinimizeBtn.MouseEnter:Connect(function()
+		TweenService:Create(MinimizeBtn, TweenInfoFast, { BackgroundTransparency = 0.3, BackgroundColor3 = Theme.SurfaceHover }):Play()
+		MinimizeBtn.TextColor3 = Theme.Text
+	end)
+	MinimizeBtn.MouseLeave:Connect(function()
+		TweenService:Create(MinimizeBtn, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
+		MinimizeBtn.TextColor3 = Theme.TextSecondary
+	end)
+	MinimizeBtn.MouseButton1Click:Connect(CloseWindow)
+
+	-- Proper Close Icon Button with Lucide Close Asset
+	local CloseBtn = Instance.new("ImageButton")
+	CloseBtn.Name = "Btn_Close"
+	CloseBtn.Parent = RightHeaderContainer
+	CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+	CloseBtn.BackgroundColor3 = Theme.Surface
+	CloseBtn.BackgroundTransparency = 1
+	CloseBtn.BorderSizePixel = 0
+	CloseBtn.Image = "rbxassetid://10747384394" -- Genuine Lucide X Close Icon
+	CloseBtn.ImageColor3 = Theme.TextSecondary
+	CloseBtn.ScaleType = Enum.ScaleType.Fit
+	CloseBtn.AutoButtonColor = false
+	CloseBtn.LayoutOrder = 3
+
+	local CloseCorner = Instance.new("UICorner")
+	CloseCorner.CornerRadius = UDim.new(0, 5)
+	CloseCorner.Parent = CloseBtn
+
+	local ClosePadding = Instance.new("UIPadding")
+	ClosePadding.Parent = CloseBtn
+	ClosePadding.PaddingTop = UDim.new(0, 5)
+	ClosePadding.PaddingBottom = UDim.new(0, 5)
+	ClosePadding.PaddingLeft = UDim.new(0, 5)
+	ClosePadding.PaddingRight = UDim.new(0, 5)
+
+	CloseBtn.MouseEnter:Connect(function()
+		TweenService:Create(CloseBtn, TweenInfoFast, { BackgroundTransparency = 0, BackgroundColor3 = Theme.Danger }):Play()
+		TweenService:Create(CloseBtn, TweenInfoFast, { ImageColor3 = Color3.fromRGB(255, 255, 255) }):Play()
+	end)
+	CloseBtn.MouseLeave:Connect(function()
+		TweenService:Create(CloseBtn, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(CloseBtn, TweenInfoFast, { ImageColor3 = Theme.TextSecondary }):Play()
+	end)
+	CloseBtn.MouseButton1Click:Connect(FullShutdownWindow)
 
 	-- 7. Sidebar Setup (Meng Hub Width: 155px)
 	local Sidebar = Instance.new("Frame")
@@ -1025,8 +1131,18 @@ function Library:NewWindow(ConfigWindow)
 		glassSheen.Visible = not disabled
 	end
 
+	function Window:OnClose(cb)
+		if type(cb) == "function" then
+			table.insert(onCloseCallbacks, cb)
+		end
+	end
+
 	function Window:Destroy()
-		ScreenGui:Destroy()
+		FullShutdownWindow()
+	end
+
+	function Window:FullShutdown()
+		FullShutdownWindow()
 	end
 
 	function Window:Open()
@@ -1065,7 +1181,33 @@ function Library:NewWindow(ConfigWindow)
 			icon = tabIcon
 			descText = tabDesc or title
 		end
-		icon = icon or TabIcons[title] or TabIcons.Main
+		local function ResolveIcon(iconInput, fallbackTitle)
+			if type(iconInput) == "string" then
+				local trimmed = string.match(iconInput, "^%s*(.-)%s*$") or iconInput
+				if string.sub(trimmed, 1, 13) == "rbxassetid://" or string.sub(trimmed, 1, 10) == "rbxasset://" or string.sub(trimmed, 1, 4) == "http" then
+					return trimmed
+				end
+				if TabIcons[trimmed] then
+					return TabIcons[trimmed]
+				end
+				local lowerName = string.lower(trimmed)
+				if TabIcons[lowerName] then
+					return TabIcons[lowerName]
+				end
+			end
+			if fallbackTitle then
+				if TabIcons[fallbackTitle] then
+					return TabIcons[fallbackTitle]
+				end
+				local lowerTitle = string.lower(fallbackTitle)
+				if TabIcons[lowerTitle] then
+					return TabIcons[lowerTitle]
+				end
+			end
+			return PINATHUB_LOGO
+		end
+
+		icon = ResolveIcon(icon, title)
 		descText = descText or title
 
 		-- Tab Button in Sidebar (Meng Hub: Left Accent Indicator Bar on Active)
@@ -2742,311 +2884,2029 @@ function Library:AddTheme(...) end
 function Library:SetNotificationLower(...) end
 
 
+-- ================================================================
+-- PINATHUB | DRAIN WATER - COMPLETE EDITION
+-- WindUI v2 | Full Auto Farm + Advanced Features (Independent)
+-- ================================================================
+repeat task.wait() until game:IsLoaded()
 
--- ==============================================================================
--- 13. PINATHUB MENG HUB EDITION — DEMONSTRATION & EXAMPLE SCRIPT
--- ==============================================================================
+-- ================================================================
+-- ANTI-AFK
+-- ================================================================
+local VirtualUser = game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+    warn("anti-afk")
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- ================================================================
+-- SERVICES
+-- ================================================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local LocalPlayer = Players.LocalPlayer
+
+-- ================================================================
+-- EXECUTOR COMPATIBILITY
+-- ================================================================
+local function noop() end
+local set_clipboard = setclipboard or (syn and syn.setclipboard) or noop
+
+-- ================================================================
+-- LIGHTING SETUP
+-- ================================================================
+Lighting.ClockTime = 14
+Lighting.GlobalShadows = false
+
+-- ================================================================
+
+-- GENERATION GUARD
+-- ================================================================
+_G.__DRAINWATER = (_G.__DRAINWATER or 0) + 1
+local GEN = _G.__DRAINWATER
+local function alive() return _G.__DRAINWATER == GEN end
+
+-- ================================================================
+-- SAFE LOAD CONFIGURATIONS
+-- ================================================================
+local function safeRequire(module)
+    local success, result = pcall(require, module)
+    if success then
+        return result
+    else
+        warn("Failed to load module:", module, tostring(result))
+        return nil
+    end
+end
+
+local TrainingAreaHelper = safeRequire(ReplicatedStorage:FindFirstChild("Config") and ReplicatedStorage.Config:FindFirstChild("TrainingAreaHelper"))
+local ShopHelper = safeRequire(ReplicatedStorage:FindFirstChild("Config") and ReplicatedStorage.Config:FindFirstChild("ShopHelper"))
+local PetHelper = safeRequire(ReplicatedStorage:FindFirstChild("Config") and ReplicatedStorage.Config:FindFirstChild("PetHelper"))
+local TrainingAreaConfig = safeRequire(ReplicatedStorage:FindFirstChild("Config") and ReplicatedStorage.Config:FindFirstChild("TrainingAreaHelper") and ReplicatedStorage.Config.TrainingAreaHelper:FindFirstChild("TrainingAreaConfig"))
+
+local SpinHelper = nil
+pcall(function()
+    SpinHelper = require(ReplicatedStorage.Config.SpinHelper)
+end)
+
+-- ================================================================
+-- CONFIG
+-- ================================================================
+local CONFIG = {
+    -- Master Switch
+    auto = false,
+    
+    -- Farm Components
+    drain = false,
+    click = false,
+    fish = false,
+    display = false,
+    sell = false,
+    
+    -- AUTO SELL FISH (NEW)
+    autoSellFish = false,
+    sellProtected = false,
+    sellThreshold = 0.92,
+    sellInterval = 30,
+    
+    -- Upgrade Components
+    pumps = false,
+    auras = false,
+    upgrades = false,
+    eggs = false,
+    pets = false,
+    merge = false,
+    rebirth = false,
+    offline = false,
+    
+    -- Settings
+    clickRate = 20,
+    fillRatio = 0.92,
+    rebirthUntil = 0,
+    spendEvery = 10,
+    diveSeconds = 30,
+    harvestAfter = 15,
+    stallSeconds = 30,
+    claimShare = 0.35,
+    topupShare = 0.1,
+    pumpReach = 2.5,
+    claimRadius = 14,
+    settle = 0.5,
+    
+    -- Advanced Features
+    autoTrainingArea = false,
+    autoSpin = false,
+    autoShopItems = false,
+    autoPetUpgrade = false,
+    autoFishTraining = false,
+    autoClaimLimitedFish = false,
+    autoBuyStamina = false,
+    maxTrainingArea = 9,
+    spinInterval = 60,
+}
+
+-- ================================================================
+-- STATE
+-- ================================================================
+local STATE = {
+    phase = "idle", note = "",
+    stage = 1, remaining = 0, water = 0, cash = 0, level = 0, rebirth = 0,
+    displayed = 0, slots = 0, backpack = 0, capacity = 0,
+    pump = 1, pumpMult = 1, aura = 0, claimed = 0, sold = 0, placed = 0,
+    rate = 0,
+    deepest = 1, lastProgress = 0, reserve = 0,
+    busy = false,
+    trainingArea = 1,
+    spinCount = 0,
+    limitedFishClaimed = 0,
+    lastSellTime = 0,
+}
+
+-- ================================================================
+-- ORIGINAL DRAIN WATER LOGIC
+-- ================================================================
+
+local function short(n)
+    n = tonumber(n) or 0
+    local units = { { 1e12, "T" }, { 1e9, "B" }, { 1e6, "M" }, { 1e3, "K" } }
+    for _, u in ipairs(units) do
+        if math.abs(n) >= u[1] then return string.format("%.2f%s", n / u[1], u[2]) end
+    end
+    return string.format("%d", n)
+end
+
+local function note(text) STATE.note = text end
+
+local abbConvert
+local function num(v)
+    if type(v) == "number" then return v end
+    if type(v) ~= "string" then return nil end
+    local plain = tonumber(v)
+    if plain then return plain end
+    if abbConvert == nil then
+        local utils = ReplicatedStorage:FindFirstChild("Utils")
+        local module = utils and utils:FindFirstChild("AbbNumber")
+        local ok, loaded = pcall(require, module)
+        abbConvert = (ok and type(loaded) == "table" and loaded.ConvertToNumber) or false
+    end
+    if not abbConvert then return nil end
+    local ok, parsed = pcall(abbConvert, v)
+    return (ok and type(parsed) == "number") and parsed or nil
+end
+
+local function value(folder, key, default)
+    local f = LocalPlayer:FindFirstChild(folder)
+    local v = f and f:FindFirstChild(key)
+    return v and v.Value or default
+end
+
+local function char()
+    local model = LocalPlayer.Character
+    if not model then return nil, nil, nil end
+    return model, model:FindFirstChild("HumanoidRootPart"), model:FindFirstChildOfClass("Humanoid")
+end
+
+local function pin(getPos)
+    local stop, conn = false, nil
+    conn = RunService.Heartbeat:Connect(function()
+        if stop or GEN ~= _G.__DRAINWATER then conn:Disconnect() return end
+        local _, hrp = char()
+        local pos = getPos()
+        if hrp and pos then hrp.CFrame = CFrame.new(pos) end
+    end)
+    return function() stop = true pcall(function() conn:Disconnect() end) end
+end
+
+local function withLock(name, fn)
+    if STATE.busy then return false end
+    STATE.busy = true
+    local ok, err = pcall(fn)
+    STATE.busy = false
+    if not ok then note(name .. " failed: " .. tostring(err)) end
+    return ok
+end
+
+local function invoke(fn, ...)
+    if not fn then return nil end
+    local args = table.pack(...)
+    local out, done = nil, false
+    task.spawn(function()
+        local ok, res = pcall(function() return fn:InvokeServer(table.unpack(args, 1, args.n)) end)
+        out, done = ok and res or nil, true
+    end)
+    local t0 = os.clock()
+    while not done and os.clock() - t0 < 5 do task.wait(0.05) end
+    return out
+end
+
+local Remote = ReplicatedStorage:WaitForChild("Remote", 10)
+local EV, FN = Remote:WaitForChild("Event", 10), Remote:WaitForChild("Function", 10)
+
+local function ev(category, name)
+    local folder = EV:FindFirstChild(category)
+    return folder and folder:FindFirstChild(name)
+end
+
+local function fn(category, name)
+    local folder = FN:FindFirstChild(category)
+    return folder and folder:FindFirstChild(name)
+end
+
+local SCENE = "\228\184\187\229\156\186\230\153\175"
+local VERIFY = "\233\170\140\232\175\129\229\156\186\230\153\175"
+local STAGE_PREFIX = "\229\133\179\229\141\161"
+local WATER_PART = "\230\176\180\233\157\162"
+local PLACE_BUTTON = "\230\148\190\231\189\174\230\140\137\233\146\174"
+local COLLECT_BUTTON = "\230\148\182\233\155\134\230\140\137\233\146\174"
+
+local function verifyFolder()
+    local scene = workspace:FindFirstChild(SCENE)
+    return scene and scene:FindFirstChild(VERIFY)
+end
+
+local function poolOf(stageId)
+    local verify = verifyFolder()
+    local stage = verify and verify:FindFirstChild(STAGE_PREFIX .. tostring(stageId))
+    return stage and stage:FindFirstChild(WATER_PART)
+end
+
+local function poolStand(part)
+    if not part then return nil end
+    return part.Position + Vector3.new(0, part.Size.Y / 2 + 3, 0)
+end
+
+local function stageRows()
+    local out = invoke(fn("Stage", "[C-S]GetStageState"))
+    return type(out) == "table" and out or {}
+end
+
+local function remainingOf(stageId)
+    for _, row in ipairs(stageRows()) do
+        if row.stageId == stageId then return row.remaining, row.required end
+    end
+    return nil
+end
+
+-- state
+local function refresh()
+    STATE.stage = value("Stage", "stage", 1)
+    STATE.water = value("Level", "water", 0)
+    STATE.cash = value("Cash", "cash", 0)
+    STATE.level = value("Level", "level", 0)
+    STATE.rebirth = value("Rebirth", "rebirth", 0)
+    STATE.backpack = value("BackpackData", "amount", 0)
+    STATE.capacity = value("BackpackData", "capacity", 0)
+    STATE.pump = LocalPlayer:GetAttribute("EquippedPumpId") or 1
+    STATE.aura = LocalPlayer:GetAttribute("EquippedAuraId") or 0
+    local cfg = rawget(_G, "__DRAINWATER_PUMPCFG")
+    local row = cfg and (cfg[tostring(STATE.pump)] or cfg[STATE.pump])
+    if row then STATE.pumpMult = num(row.multiplier) or STATE.pumpMult end
+end
+
+-- click (INDEPENDENT)
+local function clickLoop()
+    local remote = ev("Level", "[C-S]Click")
+    while GEN == _G.__DRAINWATER do
+        if CONFIG.click and remote then
+            pcall(function() remote:FireServer() end)
+            task.wait(1 / math.max(1, CONFIG.clickRate))
+        else
+            task.wait(0.4)
+        end
+    end
+end
+
+-- fish
+local function worldFish()
+    local verify = verifyFolder()
+    local folder = verify and verify:FindFirstChild("WorldFish")
+    return folder
+end
+
+local function clearedStages()
+    local done = {}
+    for _, row in ipairs(stageRows()) do
+        if row.completed then done[tostring(row.stageId)] = true end
+    end
+    for id = 1, 15 do
+        if LocalPlayer:GetAttribute("StageCompleted_" .. id) then done[tostring(id)] = true end
+    end
+    return done
+end
+
+local function claimableFish()
+    local out = {}
+    local folder = worldFish()
+    if not folder then return out end
+    local cleared = clearedStages()
+    for _, model in ipairs(folder:GetChildren()) do
+        if model:GetAttribute("Claimed") ~= true then
+            local prompt = model:FindFirstChildWhichIsA("ProximityPrompt", true)
+            local stageId = tostring(model:GetAttribute("StageId"))
+            if prompt and prompt.Enabled and cleared[stageId] then
+                local parent = prompt.Parent
+                local pos = parent:IsA("BasePart") and parent.Position
+                    or (parent:IsA("Model") and parent:GetPivot().Position)
+                if pos then
+                    local mutation = model:GetAttribute("Mutation")
+                    local mutMult = num(model:GetAttribute("MutationMultiplier")) or 1
+                    out[#out + 1] = {
+                        model = model, prompt = prompt, pos = pos,
+                        price = num(model:GetAttribute("Price")) or 0,
+                        rarity = model:GetAttribute("Rarity"),
+                        mutation = mutation, mutMult = mutMult,
+                    }
+                end
+            end
+        end
+    end
+    table.sort(out, function(a, b)
+        if a.price ~= b.price then return a.price > b.price end
+        return (a.mutMult or 1) > (b.mutMult or 1)
+    end)
+    return out
+end
+
+local function carried()
+    local data = invoke(fn("Fish", "[C-S]GetCarryFishData"))
+    if type(data) ~= "table" then return {}, 0, 0 end
+    return data.Items or {}, tonumber(data.Count) or 0, tonumber(data.Capacity) or 0
+end
+
+local function tankState()
+    local ui = invoke(fn("FishShow", "[C-S]GetUIState"))
+    if type(ui) ~= "table" then return nil end
+    STATE.displayed = tonumber(ui.displayedCount) or 0
+    STATE.slots = tonumber(ui.unlockedSlots) or 0
+    return ui
+end
+
+local function claimNearby(budgetSeconds, minPrice)
+    local list = claimableFish()
+    if #list == 0 then return 0 end
+    if minPrice and minPrice > 0 then
+        local keep = {}
+        for _, fish in ipairs(list) do
+            if fish.price >= minPrice then keep[#keep + 1] = fish end
+        end
+        list = keep
+        if #list == 0 then return 0 end
+    end
+    local _, count, capacity = carried()
+    local taken = 0
+    local t0 = os.clock()
+    for _, fish in ipairs(list) do
+        if count + taken >= math.max(1, capacity) then break end
+        if os.clock() - t0 > (budgetSeconds or 8) then break end
+        local _, had = carried()
+        local unpin = pin(function() return fish.pos + Vector3.new(0, 3, 0) end)
+        task.wait(CONFIG.settle)
+        pcall(function() fireproximityprompt(fish.prompt) end)
+        task.wait(0.3)
+        unpin()
+        local _, now = carried()
+        if now > had then
+            taken = taken + 1
+            STATE.claimed = STATE.claimed + 1
+            note("claimed " .. tostring(fish.rarity) .. " " .. short(fish.price))
+        else
+            break
+        end
+    end
+    return taken
+end
+
+local function plotButtons()
+    local plot = workspace:FindFirstChild(tostring(LocalPlayer:GetAttribute("FishShowPlotId")))
+    if not plot then return nil, nil end
+    local function posOf(name)
+        local part = plot:FindFirstChild(name, true)
+        if not part then return nil end
+        if part:IsA("BasePart") then return part.Position end
+        if part:IsA("Model") then return part:GetPivot().Position end
+        local inner = part:FindFirstChildWhichIsA("BasePart", true)
+        return inner and inner.Position
+    end
+    return posOf(PLACE_BUTTON), posOf(COLLECT_BUTTON)
+end
+
+-- ================================================================
+-- AUTO SELL FISH (DARI DECOMPILE SCRIPTS)
+-- ================================================================
+
+-- Sell all fish function
+local function sellAllFish(force)
+    local before = STATE.cash
+    local sellRemote = fn("Fish", "[C-S]SellAllFish")
+    
+    if not sellRemote then
+        note("Sell remote not found!")
+        return false
+    end
+    
+    -- Jika force enabled, kita coba sell dengan parameter
+    if force or CONFIG.sellProtected then
+        -- Coba sell semua termasuk protected
+        local result = invoke(sellRemote)
+        task.wait(0.3)
+        refresh()
+        local gained = STATE.cash - before
+        if gained > 0 then
+            STATE.sold = STATE.sold + 1
+            note("Force sold fish for " .. short(gained))
+            return true
+        end
+    end
+    
+    -- Sell normal (tidak menjual protected)
+    local result = invoke(sellRemote)
+    task.wait(0.3)
+    refresh()
+    local gained = STATE.cash - before
+    if gained > 0 then
+        STATE.sold = STATE.sold + 1
+        note("Sold fish for " .. short(gained))
+        return true
+    end
+    
+    return false
+end
+
+-- Auto Sell Loop (Independent)
+local function autoSellLoop()
+    while GEN == _G.__DRAINWATER do
+        if not CONFIG.autoSellFish then
+            task.wait(0.5)
+            continue
+        end
+        
+        local _, count, capacity = carried()
+        
+        -- Cek apakah sudah waktunya sell (berdasarkan threshold)
+        if capacity > 0 and count >= capacity * CONFIG.sellThreshold then
+            withLock("auto_sell", function()
+                sellAllFish(CONFIG.sellProtected)
+                STATE.lastSellTime = os.clock()
+            end)
+        elseif CONFIG.autoSellFish and os.clock() - STATE.lastSellTime > CONFIG.sellInterval then
+            -- Sell periodik jika ada fish dan belum sell dalam interval
+            if count > 0 then
+                withLock("auto_sell", function()
+                    sellAllFish(CONFIG.sellProtected)
+                    STATE.lastSellTime = os.clock()
+                end)
+            end
+        end
+        
+        task.wait(1)
+    end
+end
+
+-- ================================================================
+-- PLOT TRIP (DENGAN AUTO SELL)
+-- ================================================================
+local function plotTrip()
+    local placePos, collectPos = plotButtons()
+    if not placePos then note("no plot found") return false end
+
+    local unpin = pin(function() return placePos + Vector3.new(0, 4, 0) end)
+    task.wait(CONFIG.settle + 0.4)
+    local ui = tankState()
+
+    local inventory = {}
+    if ui and type(ui.items) == "table" then
+        for _, item in pairs(ui.items) do
+            if type(item) == "table" and item.uid then inventory[#inventory + 1] = item end
+        end
+    end
+    table.sort(inventory, function(a, b)
+        return (tonumber(a.price) or 0) > (tonumber(b.price) or 0)
+    end)
+
+    local free = math.max(0, (STATE.slots or 0) - (STATE.displayed or 0))
+    for _, item in ipairs(inventory) do
+        if free <= 0 or not CONFIG.display then break end
+        local reply = invoke(fn("FishShow", "[C-S]PlaceFishUI"), item.uid)
+        if type(reply) == "table" and reply.success then
+            STATE.placed = STATE.placed + 1
+            free = free - 1
+            note("displayed " .. tostring(item.name) .. " " .. short(item.price))
+        end
+        task.wait(0.15)
+    end
+    invoke(fn("FishShow", "[C-S]BestFishUI"))
+
+    -- AUTO SELL (dari display)
+    if CONFIG.sell or CONFIG.autoSellFish then
+        sellAllFish(CONFIG.sellProtected)
+    end
+
+    if collectPos then
+        unpin()
+        unpin = pin(function() return collectPos + Vector3.new(0, 4, 0) end)
+        task.wait(CONFIG.settle)
+        refresh()
+    end
+    unpin()
+    tankState()
+    return true
+end
+
+-- ================================================================
+-- DRAIN LOOP (INDEPENDENT)
+-- ================================================================
+local function drainLoop()
+    while GEN == _G.__DRAINWATER do
+        if not CONFIG.drain then
+            task.wait(0.5)
+            continue
+        end
+        
+        refresh()
+        local stageId = STATE.stage
+        local pool = poolOf(stageId)
+        if not pool then note("no pool for stage " .. stageId) task.wait(1) continue end
+
+        local unpin = pin(function()
+            local current = value("Stage", "stage", stageId)
+            local part = (current == stageId) and pool or poolOf(current)
+            if part then
+                if current ~= stageId then stageId, pool = current, part end
+                return poolStand(part)
+            end
+            return nil
+        end)
+
+        local t0 = os.clock()
+        while CONFIG.drain and GEN == _G.__DRAINWATER do
+            task.wait(0.5)
+            refresh()
+            local left = remainingOf(STATE.stage)
+            STATE.remaining = left or 0
+            local dt = os.clock() - t0
+            if left and dt > 0.5 then
+                STATE.rate = math.max(0, left / dt)
+            end
+            note(string.format("stage %d   %s left   %s/s   pump x%s",
+                STATE.stage, short(STATE.remaining), short(STATE.rate), short(STATE.pumpMult)))
+            local _, count, capacity = carried()
+            
+            -- Auto sell check dalam drain loop
+            if CONFIG.autoSellFish and capacity > 0 and count >= capacity * CONFIG.sellThreshold then
+                unpin()
+                withLock("auto_sell", function()
+                    sellAllFish(CONFIG.sellProtected)
+                    STATE.lastSellTime = os.clock()
+                end)
+                -- Re-pin setelah sell
+                unpin = pin(function()
+                    local current = value("Stage", "stage", stageId)
+                    local part = (current == stageId) and pool or poolOf(current)
+                    if part then
+                        if current ~= stageId then stageId, pool = current, part end
+                        return poolStand(part)
+                    end
+                    return nil
+                end)
+            end
+            
+            if count >= math.max(1, capacity) then break end
+            if os.clock() - t0 > CONFIG.diveSeconds then break end
+        end
+        unpin()
+        
+        if not CONFIG.drain then break end
+        
+        if CONFIG.fish then
+            withLock("harvest", function()
+                local best = 0
+                for _, fish in ipairs(claimableFish()) do
+                    if fish.price > best then best = fish.price end
+                end
+                claimNearby(12, best * CONFIG.claimShare)
+            end)
+        end
+        
+        local _, count, capacity = carried()
+        if CONFIG.fish and count > 0 and (capacity > 0 and count >= capacity * CONFIG.fillRatio) then
+            withLock("plot", function() plotTrip() end)
+        end
+        
+        task.wait(0.5)
+    end
+end
+
+-- ================================================================
+-- ADVANCED FEATURES (INDEPENDENT)
+-- ================================================================
+
+local function autoUpgradeTrainingArea()
+    if not CONFIG.autoTrainingArea then return end
+    if not TrainingAreaHelper then return end
+    if not TrainingAreaConfig then return end
+    
+    local currentArea = STATE.trainingArea or 1
+    local nextArea = currentArea + 1
+    
+    if nextArea > CONFIG.maxTrainingArea then return end
+    
+    local config = TrainingAreaConfig[tostring(nextArea)]
+    if not config then return end
+    
+    local rebirthRequired = config.rebirthRequired or 0
+    if STATE.rebirth < rebirthRequired then return end
+    
+    local price = TrainingAreaHelper.GetMiningPrice and TrainingAreaHelper.GetMiningPrice(nextArea)
+    if price and STATE.cash >= price then
+        local remote = ev("Training", "[C-S]BuyTrainingArea")
+        if remote then
+            pcall(function() remote:FireServer(nextArea) end)
+            task.wait(0.5)
+            refresh()
+            STATE.trainingArea = nextArea
+            note("Upgraded to Training Area " .. nextArea .. " (x" .. config.multiplier .. ")")
+        end
+    end
+end
+
+local function autoSpin()
+    if not CONFIG.autoSpin then return end
+    if not SpinHelper then return end
+    
+    local spinData = invoke(fn("Spin", "[C-S]GetSpinData"))
+    if not spinData or spinData.availableSpins <= 0 then return end
+    
+    local remote = ev("Spin", "[C-S]Spin")
+    if remote then
+        local success, reward = pcall(function() return remote:InvokeServer() end)
+        if success and reward then
+            STATE.spinCount = STATE.spinCount + 1
+            note("Spin reward: " .. tostring(reward))
+        end
+    end
+end
+
+local function autoBuyShopItems()
+    if not CONFIG.autoShopItems then return end
+    if not ShopHelper then return end
+    
+    local configs = ShopHelper.GetAllConfig and ShopHelper.GetAllConfig()
+    if not configs then return end
+    
+    for key, item in pairs(configs) do
+        if item.kind == "CashMultiplier" and CONFIG.autoBuyStamina then
+            local remote = ev("Shop", "[C-S]BuyProduct")
+            if remote then
+                pcall(function() remote:FireServer(key) end)
+                task.wait(0.3)
+            end
+        elseif item.kind == "RepeatableProduct" and CONFIG.autoClaimLimitedFish then
+            local stock = Workspace:GetAttribute("MechaGaiokaRemaining") or 0
+            if stock > 0 then
+                local remote = ev("Shop", "[C-S]BuyProduct")
+                if remote then
+                    pcall(function() remote:FireServer(key) end)
+                    STATE.limitedFishClaimed = STATE.limitedFishClaimed + 1
+                    task.wait(0.5)
+                end
+            end
+        end
+    end
+end
+
+local function autoUpgradePets()
+    if not CONFIG.autoPetUpgrade then return end
+    if not PetHelper then return end
+    
+    local equip = ev("Pet", "EquipBest")
+    if equip then pcall(function() equip:FireServer() end) end
+    
+    local petData = invoke(fn("Pet", "GetPlayerPetData"))
+    if not petData then return end
+    
+    local allPets = PetHelper.GetAllPetConfig and PetHelper.GetAllPetConfig()
+    if not allPets then return end
+    
+    local bestPet = nil
+    local bestValue = 0
+    
+    for id, config in pairs(allPets) do
+        local value = (config.add or 0) * (config.luckWeight or 1)
+        if value > bestValue then
+            bestValue = value
+            bestPet = id
+        end
+    end
+    
+    if bestPet then
+        for _, pet in pairs(petData.UnEquipPet or {}) do
+            if pet.ID == tonumber(bestPet) and pet.Star < 3 then
+                local upgrade = ev("Pet", "UpgradePet")
+                if upgrade then
+                    pcall(function() upgrade:FireServer(pet.UID) end)
+                    task.wait(0.2)
+                end
+            end
+        end
+    end
+end
+
+local function autoFishTraining()
+    if not CONFIG.autoFishTraining then return end
+    
+    local plotId = LocalPlayer:GetAttribute("FishShowPlotId")
+    if not plotId then return end
+    
+    local remote = ev("Fish", "[C-S]TrainFish")
+    if remote then
+        pcall(function() remote:FireServer() end)
+        task.wait(0.3)
+    end
+end
+
+local function autoClaimLimitedFish()
+    if not CONFIG.autoClaimLimitedFish then return end
+    
+    local available = Workspace:GetAttribute("MechaGaiokaStockAvailable") == true
+    local soldOut = Workspace:GetAttribute("MechaGaiokaSoldOut") == true
+    local remaining = Workspace:GetAttribute("MechaGaiokaRemaining") or 0
+    
+    if available and not soldOut and remaining > 0 then
+        local buy = ev("Fish", "[C-S]BuyLimitedFish")
+        if buy then
+            pcall(function() buy:FireServer() end)
+            task.wait(0.5)
+            STATE.limitedFishClaimed = STATE.limitedFishClaimed + 1
+            note("Claimed limited fish! Remaining: " .. (remaining - 1))
+        end
+    end
+end
+
+local function autoClaimBestFishReward()
+    local state = invoke(fn("FishShow", "[C-S]GetState"))
+    if state and state.bestFishReward and state.bestFishReward.amount > 0 then
+        local claim = fn("FishShow", "[C-S]ClaimBestFishReward")
+        if claim then
+            local result = invoke(claim)
+            if result and result.success then
+                note("Claimed Best Fish Reward")
+            end
+        end
+    end
+end
+
+local function autoClaimOfflineCash()
+    if not CONFIG.offline then return end
+    
+    local state = invoke(fn("FishShow", "[C-S]GetState"))
+    if state and state.offlinePendingCash and state.offlinePendingCash > 0 then
+        local claim = fn("FishShow", "[C-S]ClaimOfflineCash")
+        if claim then
+            local result = invoke(claim)
+            if result and result.success then
+                note("Claimed offline cash: " .. short(state.offlinePendingCash))
+            end
+        end
+    end
+end
+
+-- ================================================================
+-- SPENDING (INDEPENDENT)
+-- ================================================================
+local function configModule(name)
+    local root = ReplicatedStorage:FindFirstChild("Config") or ReplicatedStorage
+    local module = root:FindFirstChild(name, true)
+    if not module then return nil end
+    local ok, loaded = pcall(require, module)
+    return ok and loaded or nil
+end
+
+local function ladderBuy(helper, getter, buyEvent, equipEvent, ownedGetter, label)
+    local cfg = configModule(helper)
+    local all = cfg and cfg[getter] and select(2, pcall(cfg[getter]))
+    if type(all) ~= "table" then return false end
+
+    local owned = {}
+    local data = invoke(ownedGetter)
+    if type(data) == "table" and type(data.Owned) == "table" then
+        for id, flag in pairs(data.Owned) do
+            if flag then owned[tostring(id)] = true end
+        end
+    end
+    local equipped = type(data) == "table" and data.Equipped or nil
+
+    local best
+    for id, entry in pairs(all) do
+        local price = num(entry.cashPrice)
+        local mult = num(entry.multiplier) or 0
+        if price and price <= STATE.cash then
+            if not best or mult > best.mult then best = { id = id, mult = mult, price = price,
+                name = tostring(entry.name or id) }
+            end
+        end
+    end
+    if not best then return false end
+
+    local currentMult = 0
+    for id, entry in pairs(all) do
+        if tostring(id) == tostring(equipped) then currentMult = num(entry.multiplier) or 0 end
+    end
+    if best.mult <= currentMult then return false end
+
+    local before = STATE.cash
+    if not owned[tostring(best.id)] then
+        pcall(function() buyEvent:FireServer(best.id) end)
+        task.wait(0.2)
+    end
+    pcall(function() equipEvent:FireServer(best.id) end)
+    task.wait(0.3)
+    refresh()
+    if STATE.cash < before or best.mult > currentMult then
+        note(label .. " " .. best.name .. "  x" .. tostring(best.mult))
+        return true
+    end
+    return false
+end
+
+local function buyPump()
+    if not CONFIG.pumps then return false end
+    if not rawget(_G, "__DRAINWATER_PUMPCFG") then
+        local cfg = configModule("PumpHelper")
+        local all = cfg and cfg.GetAllPumpConfig and select(2, pcall(cfg.GetAllPumpConfig))
+        if type(all) == "table" then _G.__DRAINWATER_PUMPCFG = all end
+    end
+    return ladderBuy("PumpHelper", "GetAllPumpConfig",
+        ev("Pump", "[C-S]BuyCashPump"), ev("Pump", "[C-S]EquipPump"),
+        fn("Pump", "[C-S]GetPumpData"), "pump")
+end
+
+local function buyAura()
+    if not CONFIG.auras then return false end
+    return ladderBuy("AuraHelper", "GetAllAuraConfig",
+        ev("Aura", "[C-S]BuyCashAura"), ev("Aura", "[C-S]EquipAura"),
+        fn("Aura", "[C-S]GetAuraData"), "aura")
+end
+
+local function pumpReserve()
+    local cfg = rawget(_G, "__DRAINWATER_PUMPCFG")
+    if type(cfg) ~= "table" then return 0 end
+    local cheapest
+    for id, entry in pairs(cfg) do
+        local price = num(entry.cashPrice)
+        local mult = num(entry.multiplier) or 0
+        if price and price > 0 and mult > (STATE.pumpMult or 0) then
+            if not cheapest or price < cheapest then cheapest = price end
+        end
+    end
+    if not cheapest then return 0 end
+    return (cheapest <= STATE.cash * CONFIG.pumpReach) and cheapest or 0
+end
+
+local function spendable()
+    local reserve = pumpReserve()
+    STATE.reserve = reserve
+    return math.max(0, STATE.cash - reserve)
+end
+
+local UPGRADE_ORDER = { "Backpack", "FishDisplay", "Speed" }
+
+local function buyUpgrades()
+    if not CONFIG.upgrades then return false end
+    local data = invoke(fn("Upgrade", "[C-S]GetUpgradeData"))
+    if type(data) ~= "table" then return false end
+    local remote = ev("Upgrade", "[C-S]BuyCashUpgrade")
+    if not remote then return false end
+    local bought = false
+    for _, name in ipairs(UPGRADE_ORDER) do
+        local row = data[name]
+        local price = num(row and (row.price or row.cost))
+        local blocked = price and price > spendable()
+        if type(row) == "table" and not blocked
+            and (num(row.level) or 0) < (num(row.maxLevel) or 0) then
+            local before = STATE.cash
+            pcall(function() remote:FireServer(name) end)
+            task.wait(0.3)
+            refresh()
+            if STATE.cash < before then
+                note("upgrade " .. name .. " -> " .. tostring((num(row.level) or 0) + 1))
+                bought = true
+            end
+        end
+    end
+    return bought
+end
+
+local function openEggs()
+    if not CONFIG.eggs then return false end
+    local cfg = configModule("EggHelper")
+    local all = cfg and cfg.GetAllEggConfig and select(2, pcall(cfg.GetAllEggConfig))
+    if type(all) ~= "table" then return false end
+    local best
+    for id, entry in pairs(all) do
+        local price = num(entry.cashPrice)
+        if price and price <= spendable() then
+            if not best or price > best.price then best = { id = id, price = price } end
+        end
+    end
+    if not best then return false end
+    local can = invoke(fn("Egg", "[C-S]CanOpenEgg"), best.id, 1)
+    if can == false then return false end
+    local before = STATE.cash
+    invoke(fn("Egg", "[C-S]OpenEgg"), best.id, 1)
+    task.wait(0.5)
+    refresh()
+    if STATE.cash < before then
+        note("egg " .. tostring(best.id) .. " opened")
+        if CONFIG.pets then
+            local equip = ev("Pet", "EquipBest")
+            if equip then pcall(function() equip:FireServer() end) end
+        end
+        return true
+    end
+    return false
+end
+
+local function mergePets()
+    if not CONFIG.merge then return false end
+    local getData = fn("Pet", "GetPlayerPetData")
+    local craft = ev("Pet", "CraftPet")
+    if not (getData and craft) then return false end
+
+    local merged = 0
+    for _ = 1, 10 do
+        local data = invoke(getData)
+        if type(data) ~= "table" then break end
+        local groups, total = {}, 0
+        for _, list in ipairs({ data.UnEquipPet or {}, data.EquipPet or {} }) do
+            for _, pet in pairs(list) do
+                if not pet.isLock then
+                    local key = tostring(pet.ID) .. "*" .. tostring(pet.Star)
+                    groups[key] = groups[key] or { id = pet.ID, count = 0, name = pet.Name }
+                    groups[key].count = groups[key].count + 1
+                end
+                total = total + 1
+            end
+        end
+        local pick
+        for _, group in pairs(groups) do
+            if group.count >= 3 and (not pick or group.count > pick.count) then pick = group end
+        end
+        if not pick then break end
+
+        pcall(function() craft:FireServer(pick.id) end)
+        task.wait(0.5)
+        local after = invoke(getData)
+        local newTotal = 0
+        if type(after) == "table" then
+            for _, list in ipairs({ after.UnEquipPet or {}, after.EquipPet or {} }) do
+                for _ in pairs(list) do newTotal = newTotal + 1 end
+            end
+        end
+        if newTotal >= total then break end
+        merged = merged + 1
+        note("merged 3x " .. tostring(pick.name))
+    end
+    if merged > 0 then
+        local equip = ev("Pet", "EquipBest")
+        if equip then pcall(function() equip:FireServer() end) end
+    end
+    return merged > 0
+end
+
+local function doRebirth()
+    if not CONFIG.rebirth then return false end
+    local remote = ev("Rebirth", "[C - S]TryRebirth")
+        or ev("Rebirth", "[C-S]TryRebirth")
+    if not remote then return false end
+    local before = STATE.rebirth
+    if CONFIG.rebirthUntil > 0 and before >= CONFIG.rebirthUntil then return false end
+    pcall(function() remote:FireServer() end)
+    task.wait(0.8)
+    refresh()
+    if STATE.rebirth > before then
+        note("rebirth " .. STATE.rebirth)
+        return true
+    end
+    return false
+end
+
+-- ================================================================
+-- ADVANCED INDEPENDENT LOOPS
+-- ================================================================
+
+task.spawn(function()
+    while GEN == _G.__DRAINWATER do
+        pcall(autoUpgradeTrainingArea)
+        pcall(autoBuyShopItems)
+        pcall(autoClaimLimitedFish)
+        pcall(autoFishTraining)
+        pcall(autoClaimBestFishReward)
+        
+        if SpinHelper and CONFIG.autoSpin and STATE.spinCount % CONFIG.spinInterval == 0 then
+            pcall(autoSpin)
+        end
+        
+        task.wait(5)
+    end
+end)
+
+task.spawn(function()
+    while GEN == _G.__DRAINWATER do
+        if CONFIG.autoPetUpgrade then
+            pcall(autoUpgradePets)
+        end
+        task.wait(10)
+    end
+end)
+
+-- ================================================================
+-- MAIN FARM LOOP
+-- ================================================================
+task.spawn(function()
+    while GEN == _G.__DRAINWATER do
+        if CONFIG.auto then
+            local lastSpend = 0
+            
+            while CONFIG.auto and GEN == _G.__DRAINWATER do
+                refresh()
+                
+                if CONFIG.offline then
+                    pcall(autoClaimOfflineCash)
+                end
+                
+                if CONFIG.pumps then pcall(buyPump) end
+                if CONFIG.upgrades then pcall(buyUpgrades) end
+                if CONFIG.auras then pcall(buyAura) end
+                if CONFIG.eggs then pcall(openEggs) end
+                if CONFIG.pets then
+                    if CONFIG.merge then pcall(mergePets) end
+                end
+                if CONFIG.display then pcall(function() invoke(fn("FishShow", "[C-S]BestFishUI")) end) end
+                if CONFIG.rebirth then pcall(doRebirth) end
+                
+                task.wait(1)
+            end
+        else
+            task.wait(0.5)
+        end
+    end
+end)
+
+-- ================================================================
+-- BACKGROUND LOOPS
+-- ================================================================
+
+task.spawn(clickLoop)
+task.spawn(drainLoop)
+task.spawn(autoSellLoop) -- Auto sell loop independent
+
+task.spawn(function()
+    while GEN == _G.__DRAINWATER do
+        refresh()
+        task.wait(0.5)
+    end
+end)
+
+-- Load pump config
+do
+    local cfg = configModule("PumpHelper")
+    local all = cfg and cfg.GetAllPumpConfig and select(2, pcall(cfg.GetAllPumpConfig))
+    if type(all) == "table" then _G.__DRAINWATER_PUMPCFG = all end
+end
+
+
+
+-- ================================================================
+-- MOVEMENT & PLAYER UTILITY HOOKS
+-- ================================================================
+RunService.Stepped:Connect(function()
+    if CONFIG.noclip then
+        local c = LocalPlayer.Character
+        if c then
+            for _, part in ipairs(c:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if CONFIG.infiniteJump then
+        local _, _, h = char()
+        if h then
+            h:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+
+-- ================================================================
+-- CREATE WINDOW (PINATHUB BRANDING - MENG HUB MODERN STYLE)
+-- ================================================================
 local Window = Library:NewWindow({
-    Title = "Pinathub",
-    Description = "Peacefull Community",
-    Size = UDim2.fromOffset(630, 390) -- Meng Hub Modern Compact Dimensions
+    Title = "PinatHub | Drain Water",
+    Description = "Control Center",
+    Size = UDim2.fromOffset(630, 390)
 })
+
+Window:SetToggleKey(Enum.KeyCode.RightShift)
+
+-- FULL SHUTDOWN HOOK ON CLOSE
+Window:OnClose(function()
+    _G.__DRAINWATER = (_G.__DRAINWATER or 0) + 1
+    for k, _ in pairs(CONFIG) do
+        if type(CONFIG[k]) == "boolean" then
+            CONFIG[k] = false
+        end
+    end
+    pcall(function()
+        local _, _, h = char()
+        if h then
+            h.WalkSpeed = 16
+            h.JumpPower = 50
+        end
+    end)
+    warn("[PinatHub] Full shutdown completed. All features and loops stopped.")
+end)
 
 -- Welcome Toast Notification
 Library:Notify({
-    Title = "Pinathub Initialized",
-    Content = "Meng Hub Modern Edition loaded! Press the floating logo to toggle.",
+    Title = "PinatHub | Drain Water",
+    Content = "Successfully initialized!\nPress RightShift or click floating logo to toggle.",
     Type = "Success",
-    Duration = 3.5
+    Duration = 4
 })
 
--- Tabs with Icons (Info, Survivor, Killer, ESP, Emote & Skin, Aimbot, Settings, Configuration)
-local InfoTab = Window:T("Info", "rbxassetid://10747373176")
-local SurvivorTab = Window:T("Survivor", "rbxassetid://10734923549")
-local KillerTab = Window:T("Killer", "rbxassetid://10723415766")
-local ESPTab = Window:T("ESP", "rbxassetid://10723415766")
-local EmoteTab = Window:T("Emote & Skin", "rbxassetid://10747373176")
-local AimbotTab = Window:T("Aimbot", "rbxassetid://10734943760")
-local SettingsTab = Window:T("Settings", "rbxassetid://10734950309")
-local ConfigTab = Window:T("Configuration", "rbxassetid://10709782497")
+-- ================================================================
+-- CREATE TABS (100% UNIQUE ICONS - NO DUPLICATES, NO BLANKS)
+-- ================================================================
+local Tabs = {}
 
--- ==============================================================================
--- 1. INFO TAB (About Section, Discord Card, Actions — Screenshot 3)
--- ==============================================================================
-local AboutSection = InfoTab:AddSection("About MengHub?")
+Tabs.Farm = Window:T("Auto Farm", "rbxassetid://10723344432", "Drain Water Controls")
+Tabs.Upgrades = Window:T("Upgrades", "rbxassetid://10709768939", "Upgrade Settings")
+Tabs.Fish = Window:T("Fish & Pets", "rbxassetid://10709761530", "Fish and Pet Settings")
+Tabs.Sell = Window:T("Auto Sell", "rbxassetid://10723343958", "Auto Sell Fish Settings")
+Tabs.Advanced = Window:T("Advanced", "rbxassetid://10747383470", "Advanced & Utilities")
+Tabs.Stats = Window:T("Live Stats", "rbxassetid://10709770317", "Real-time Telemetry")
+Tabs.Community = Window:T("Community", "rbxassetid://10747373426", "Join PinatHub Community")
 
--- Rich Multi-line Paragraph Card (Screenshot 3)
-local AboutPara = AboutSection:AddParagraph({
-    Title = "What is MengHub?",
-    Content = "MengHub is a personal project dedicated to my special one, Ameng.\nThis script is built with passion and serves as a milestone in my coding journey.\nAs I am currently in the early stages of development and still learning the ropes of Luau, you might encounter some bugs. I am committed to continuously improving this tool to provide the most seamless experience possible.\nThank you for being part of my learning process!"
-})
+-- ================================================================
+-- 1. AUTO FARM TAB
+-- ================================================================
+local farmSection = Tabs.Farm:AddSection("Auto Farm")
 
--- Community / Discord Card with Live Stats & "COPY LINK" (Screenshot 3)
-AboutSection:AddDiscordCard({
-    Title = "Meng Hub | Peacefull Community",
-    Members = "30522",
-    Online = "2309",
-    Invite = "https://discord.gg/pinathub"
-})
-
--- Action Buttons (Screenshot 3)
-AboutSection:AddButton({
-    Title = "Return To Lobby",
-    Description = "Safely teleports character back to main lobby",
-    Callback = function()
-        Library:Notify({
-            Title = "Lobby",
-            Content = "Returning to lobby...",
-            Type = "Info",
-            Duration = 2.5
-        })
-    end
-})
-
-AboutSection:AddButton({
-    Title = "Reset Character",
-    Description = "Refreshes your character state",
-    Callback = function()
-        local char = game.Players.LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        if hum then hum.Health = 0 end
-        Library:Notify({
-            Title = "Character",
-            Content = "Character reset triggered.",
-            Type = "Warning",
-            Duration = 2.5
-        })
-    end
-})
-
--- ==============================================================================
--- 2. SURVIVOR TAB (Global Features & Movement — Screenshot 1 & 2)
--- ==============================================================================
-local GlobalSection = SurvivorTab:AddSection("Global Features")
-local MovementSection = SurvivorTab:AddSection("Invisible And Movement Features")
-
--- Global Features with Inline Keybind [None] (Screenshot 1)
-GlobalSection:AddToggle({
-    Title = "Instant TP Gate",
-    HasKeybind = true,
-    Default = false,
+farmSection:AddToggle({
+    Title = "MASTER SWITCH",
+    Description = "Enable/Disable all auto farm components",
+    Default = CONFIG.auto,
     Callback = function(v)
-        print("Instant TP Gate:", v)
-    end
-})
-
-GlobalSection:AddToggle({
-    Title = "Troll Teleport",
-    Description = "Teleport balik ke posisi lama setelah gate trigger",
-    HasKeybind = true,
-    Default = false,
-    Callback = function(v)
-        print("Troll Teleport:", v)
-    end
-})
-
-GlobalSection:AddToggle({
-    Title = "Instant Heal Bandage",
-    HasKeybind = true,
-    Default = false,
-    Callback = function(v)
-        print("Instant Heal Bandage:", v)
-    end
-})
-
--- Popout Dropdown Drawer (Screenshot 1 & 2: "Moonwalk Mode" -> "Default", "Attribute", "Custom")
-GlobalSection:AddDropdown({
-    Title = "Moonwalk Mode",
-    Values = {"Default", "Attribute", "Custom"},
-    Default = "Default",
-    Callback = function(mode)
+        CONFIG.auto = v
+        note(v and "auto running" or "auto stopped")
         Library:Notify({
-            Title = "Moonwalk Mode",
-            Content = "Selected mode: " .. tostring(mode),
-            Type = "Info",
+            Title = "Master Switch",
+            Content = v and "All Auto Features ENABLED!" or "All Auto Features DISABLED",
+            Type = v and "Success" or "Info",
             Duration = 2
         })
     end
 })
 
-GlobalSection:AddToggle({
-    Title = "Moonwalk",
-    HasKeybind = true,
-    Default = false,
+farmSection:AddSeperator()
+
+farmSection:AddToggle({
+    Title = "Drain pools",
+    Description = "Stand in the current stage pool - presence alone drains it",
+    Default = CONFIG.drain,
     Callback = function(v)
-        print("Moonwalk active:", v)
+        CONFIG.drain = v
+        if v then Library:Notify({ Title = "Drain", Content = "Drain ACTIVE (Independent)", Type = "Success", Duration = 2 }) end
     end
 })
 
-GlobalSection:AddToggle({
-    Title = "Unlock Jump",
-    Default = false,
+farmSection:AddToggle({
+    Title = "Click",
+    Description = "Only feeds the level bar; server credits about 15/s at most",
+    Default = CONFIG.click,
     Callback = function(v)
-        print("Unlock Jump:", v)
+        CONFIG.click = v
+        if v then Library:Notify({ Title = "Click", Content = "Click ACTIVE (Independent)", Type = "Success", Duration = 2 }) end
     end
 })
 
--- Invisible and Movement Features (Screenshot 2)
-MovementSection:AddToggle({
-    Title = "Invisible",
-    Default = false,
-    Callback = function(v)
-        Library:Notify({
-            Title = "Invisibility",
-            Content = v and "Character is now invisible" or "Character is visible",
-            Type = v and "Success" or "Info",
-            Duration = 2.5
-        })
-    end
-})
-
-MovementSection:AddDropdown({
-    Title = "Speed Boost Mode",
-    Values = {"Attribute", "Custom", "CFrame", "Velocity"},
-    Default = "Attribute",
-    Callback = function(mode)
-        print("Speed Boost Mode:", mode)
-    end
-})
-
-MovementSection:AddSlider({
-    Title = "Speed Changer",
-    Min = 16,
-    Max = 150,
+farmSection:AddSlider({
+    Title = "Clicks/sec",
+    Min = 4,
+    Max = 50,
+    Default = CONFIG.clickRate,
     Increment = 1,
-    Default = 40,
-    Callback = function(speed)
-        local char = game.Players.LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        if hum then hum.WalkSpeed = speed end
-    end
+    Callback = function(v) CONFIG.clickRate = math.floor(v) end
 })
 
-MovementSection:AddToggle({
-    Title = "Speed Boost",
-    Default = false,
+farmSection:AddToggle({
+    Title = "Claim fish",
+    Description = "Only pools you have already drained hand their fish over",
+    Default = CONFIG.fish,
     Callback = function(v)
-        print("Speed Boost:", v)
+        CONFIG.fish = v
+        if v then Library:Notify({ Title = "Claim Fish", Content = "Fish Claim ACTIVE (Independent)", Type = "Success", Duration = 2 }) end
     end
 })
 
-MovementSection:AddToggle({
-    Title = "Auto Run [PC]",
-    Default = false,
+farmSection:AddToggle({
+    Title = "Display best fish",
+    Description = "A displayed fish pays 10% of its price every minute, forever",
+    Default = CONFIG.display,
     Callback = function(v)
-        print("Auto Run:", v)
+        CONFIG.display = v
+        if v then Library:Notify({ Title = "Display", Content = "Display ACTIVE (Independent)", Type = "Success", Duration = 2 }) end
     end
 })
 
-MovementSection:AddToggle({
-    Title = "Auto Parry",
-    Default = false,
+farmSection:AddSeperator()
+
+farmSection:AddToggle({
+    Title = "Auto rebirth",
+    Description = "Resets the stage run, multiplies water and cash",
+    Default = CONFIG.rebirth,
     Callback = function(v)
-        print("Auto Parry:", v)
+        CONFIG.rebirth = v
+        if v then Library:Notify({ Title = "Rebirth", Content = "Auto Rebirth ACTIVE", Type = "Success", Duration = 2 }) end
     end
 })
 
--- ==============================================================================
--- 3. ESP TAB (Visuals)
--- ==============================================================================
-local VisualSection = ESPTab:AddSection("Visual Sensors")
+farmSection:AddSlider({
+    Title = "Dive seconds",
+    Min = 10,
+    Max = 120,
+    Default = CONFIG.diveSeconds,
+    Increment = 1,
+    Callback = function(v) CONFIG.diveSeconds = v end
+})
 
-VisualSection:AddToggle({
-    Title = "Player ESP",
-    Description = "Highlights all entities through walls",
-    HasKeybind = true,
-    Default = false,
+-- Extended Farm Tuning Section
+local farmSettingsSection = Tabs.Farm:AddSection("Farm Tuning & Radius")
+
+farmSettingsSection:AddSlider({
+    Title = "Claim Radius (studs)",
+    Min = 5,
+    Max = 50,
+    Default = CONFIG.claimRadius,
+    Increment = 1,
+    Callback = function(v) CONFIG.claimRadius = math.floor(v) end
+})
+
+farmSettingsSection:AddSlider({
+    Title = "Pump Reach Multiplier",
+    Min = 1,
+    Max = 10,
+    Default = math.floor(CONFIG.pumpReach),
+    Increment = 0.5,
+    Callback = function(v) CONFIG.pumpReach = v end
+})
+
+farmSettingsSection:AddSlider({
+    Title = "Rebirth Target Stage",
+    Min = 0,
+    Max = 100,
+    Default = CONFIG.rebirthUntil,
+    Increment = 1,
+    Callback = function(v) CONFIG.rebirthUntil = math.floor(v) end
+})
+
+farmSettingsSection:AddSlider({
+    Title = "Plot Settle Delay (s)",
+    Min = 0.1,
+    Max = 3,
+    Default = CONFIG.settle,
+    Increment = 0.1,
+    Callback = function(v) CONFIG.settle = v end
+})
+
+farmSettingsSection:AddButton({
+    Title = "Unstuck Character",
+    Description = "Stop auto and reset character busy state",
+    Callback = function()
+        CONFIG.auto = false
+        STATE.busy = false
+        note("unstuck, auto off")
+        Library:Notify({ Title = "Unstuck", Content = "Auto disabled and state reset", Type = "Warning", Duration = 2 })
+    end
+})
+
+-- ================================================================
+-- 2. UPGRADES TAB
+-- ================================================================
+local upgradeSection = Tabs.Upgrades:AddSection("Upgrades")
+
+upgradeSection:AddToggle({
+    Title = "Buy pumps",
+    Description = "The pump multiplies the drain, bought first",
+    Default = CONFIG.pumps,
     Callback = function(v)
-        print("Player ESP:", v)
+        CONFIG.pumps = v
+        if v then Library:Notify({ Title = "Pumps", Content = "Auto Pumps ACTIVE", Type = "Success", Duration = 2 }) end
     end
 })
 
-VisualSection:AddToggle({
-    Title = "Tracers",
-    Default = false,
+upgradeSection:AddToggle({
+    Title = "Buy upgrades",
+    Description = "FishDisplay and Backpack first, widen the pipeline",
+    Default = CONFIG.upgrades,
     Callback = function(v)
-        print("Tracers:", v)
+        CONFIG.upgrades = v
+        if v then Library:Notify({ Title = "Upgrades", Content = "Auto Upgrades ACTIVE", Type = "Success", Duration = 2 }) end
     end
 })
 
-VisualSection:AddToggle({
-    Title = "Show Health & Distance",
-    Default = true,
+upgradeSection:AddToggle({
+    Title = "Buy auras",
+    Description = "Buy aura upgrades",
+    Default = CONFIG.auras,
     Callback = function(v)
-        print("Health/Distance:", v)
+        CONFIG.auras = v
+        if v then Library:Notify({ Title = "Auras", Content = "Auto Auras ACTIVE", Type = "Success", Duration = 2 }) end
     end
 })
 
--- ==============================================================================
--- 4. SETTINGS TAB (Preferences & Notifications)
--- ==============================================================================
-local InterfaceSection = SettingsTab:AddSection("Interface Preferences")
-local ToastTestSection = SettingsTab:AddSection("Notification Test Center")
+upgradeSection:AddToggle({
+    Title = "Open eggs",
+    Description = "Cash eggs only; Robux eggs have no cash price and are skipped",
+    Default = CONFIG.eggs,
+    Callback = function(v)
+        CONFIG.eggs = v
+        if v then Library:Notify({ Title = "Eggs", Content = "Auto Eggs ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
 
-InterfaceSection:AddKeybind({
-    Title = "Menu Toggle Hotkey",
-    Default = Enum.KeyCode.RightShift,
-    Callback = function(newKey)
-        Window:SetToggleKey(newKey)
+upgradeSection:AddToggle({
+    Title = "Free rewards",
+    Description = "Offline earnings and tank pending cash",
+    Default = CONFIG.offline,
+    Callback = function(v)
+        CONFIG.offline = v
+        if v then Library:Notify({ Title = "Free Rewards", Content = "Auto Claim Rewards ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+upgradeSection:AddToggle({
+    Title = "Merge pets",
+    Description = "Three of a kind into one better one, locked pets are left alone",
+    Default = CONFIG.merge,
+    Callback = function(v)
+        CONFIG.merge = v
+        if v then Library:Notify({ Title = "Merge Pets", Content = "Auto Merge Pets ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+upgradeSection:AddToggle({
+    Title = "Pets",
+    Description = "Equip best pet after every hatch",
+    Default = CONFIG.pets,
+    Callback = function(v)
+        CONFIG.pets = v
+        if v then Library:Notify({ Title = "Pets", Content = "Auto Pets ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+upgradeSection:AddSlider({
+    Title = "Spend every (seconds)",
+    Min = 3,
+    Max = 60,
+    Default = CONFIG.spendEvery,
+    Increment = 1,
+    Callback = function(v) CONFIG.spendEvery = v end
+})
+
+-- ================================================================
+-- 3. FISH & PETS TAB
+-- ================================================================
+local fishSection = Tabs.Fish:AddSection("Fish & Pets Settings")
+
+fishSection:AddToggle({
+    Title = "Display best fish",
+    Description = "A displayed fish pays 10% of its price every minute, forever",
+    Default = CONFIG.display,
+    Callback = function(v) CONFIG.display = v end
+})
+
+fishSection:AddToggle({
+    Title = "Merge pets",
+    Description = "Three of a kind into one better one, locked pets are left alone",
+    Default = CONFIG.merge,
+    Callback = function(v) CONFIG.merge = v end
+})
+
+fishSection:AddToggle({
+    Title = "Pets",
+    Description = "Equip best pet after every hatch",
+    Default = CONFIG.pets,
+    Callback = function(v) CONFIG.pets = v end
+})
+
+fishSection:AddSlider({
+    Title = "Harvest after (seconds)",
+    Min = 5,
+    Max = 45,
+    Default = CONFIG.harvestAfter,
+    Increment = 1,
+    Callback = function(v) CONFIG.harvestAfter = v end
+})
+
+fishSection:AddSlider({
+    Title = "Stall seconds",
+    Min = 10,
+    Max = 90,
+    Default = CONFIG.stallSeconds,
+    Increment = 1,
+    Callback = function(v) CONFIG.stallSeconds = v end
+})
+
+fishSection:AddSlider({
+    Title = "Claim share (%)",
+    Min = 5,
+    Max = 90,
+    Default = math.floor(CONFIG.claimShare * 100),
+    Increment = 1,
+    Callback = function(v) CONFIG.claimShare = v / 100 end
+})
+
+fishSection:AddSlider({
+    Title = "Topup share (%)",
+    Min = 5,
+    Max = 90,
+    Default = math.floor(CONFIG.topupShare * 100),
+    Increment = 1,
+    Callback = function(v) CONFIG.topupShare = v / 100 end
+})
+
+fishSection:AddSlider({
+    Title = "Backpack Fill Ratio (%)",
+    Min = 50,
+    Max = 100,
+    Default = math.floor(CONFIG.fillRatio * 100),
+    Increment = 1,
+    Callback = function(v) CONFIG.fillRatio = v / 100 end
+})
+
+-- ================================================================
+-- 4. AUTO SELL TAB
+-- ================================================================
+local sellSection = Tabs.Sell:AddSection("Auto Sell Fish")
+
+sellSection:AddToggle({
+    Title = "Auto Sell Fish",
+    Description = "Enable automatic fish selling when backpack is full",
+    Default = CONFIG.autoSellFish,
+    Callback = function(v)
+        CONFIG.autoSellFish = v
         Library:Notify({
-            Title = "Hotkey Changed",
-            Content = "Toggle key set to: " .. newKey.Name,
-            Type = "Info",
-            Duration = 2.5
+            Title = "Auto Sell",
+            Content = v and "Auto Sell Fish ACTIVE" or "Auto Sell Fish DISABLED",
+            Type = v and "Success" or "Info",
+            Duration = 2
         })
     end
 })
 
-InterfaceSection:AddToggle({
-    Title = "Frosted Glass Sheen",
-    Description = "High-depth glass reflection overlay",
-    Default = true,
-    Callback = function(enabled)
-        Window:ToggleTransparency(not enabled)
+sellSection:AddToggle({
+    Title = "Sell Protected Fish",
+    Description = "⚠️ Sell fish even if protected (risky!)",
+    Default = CONFIG.sellProtected,
+    Callback = function(v)
+        CONFIG.sellProtected = v
+        if v then Library:Notify({ Title = "Warning", Content = "Sell Protected Fish ENABLED - Risky!", Type = "Warning", Duration = 3 }) end
     end
 })
 
-ToastTestSection:AddButton({
-    Title = "Show Success Toast",
-    Description = "Displays green glass card with animated progress timer",
+sellSection:AddSlider({
+    Title = "Sell Threshold (%)",
+    Min = 50,
+    Max = 100,
+    Default = math.floor(CONFIG.sellThreshold * 100),
+    Increment = 1,
+    Callback = function(v) CONFIG.sellThreshold = v / 100 end
+})
+
+sellSection:AddSlider({
+    Title = "Sell Interval (seconds)",
+    Min = 5,
+    Max = 120,
+    Default = CONFIG.sellInterval,
+    Increment = 1,
+    Callback = function(v) CONFIG.sellInterval = v end
+})
+
+sellSection:AddSeperator()
+
+sellSection:AddButton({
+    Title = "Sell All Fish Now",
+    Description = "Force sell all fish immediately",
     Callback = function()
+        task.spawn(function()
+            withLock("manual_sell", function()
+                local result = sellAllFish(true)
+                if result then
+                    Library:Notify({ Title = "Sell", Content = "Fish sold successfully!", Type = "Success", Duration = 2 })
+                else
+                    Library:Notify({ Title = "Sell", Content = "No fish to sell or failed", Type = "Warning", Duration = 2 })
+                end
+            end)
+        end)
+    end
+})
+
+-- ================================================================
+-- 5. ADVANCED TAB & UTILITIES
+-- ================================================================
+local advancedSection = Tabs.Advanced:AddSection("Advanced Automation")
+
+advancedSection:AddToggle({
+    Title = "Auto Training Area",
+    Description = "Upgrade training area for pump multiplier (x1.5 to x100)",
+    Default = CONFIG.autoTrainingArea,
+    Callback = function(v)
+        CONFIG.autoTrainingArea = v
+        if v then Library:Notify({ Title = "Training Area", Content = "Auto Training Area ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddToggle({
+    Title = "Auto Spin",
+    Description = "Auto use available spins",
+    Default = CONFIG.autoSpin,
+    Callback = function(v)
+        CONFIG.autoSpin = v
+        if v then Library:Notify({ Title = "Spin", Content = "Auto Spin ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddToggle({
+    Title = "Auto Shop Items",
+    Description = "Buy Stamina, Trophy and other shop items",
+    Default = CONFIG.autoShopItems,
+    Callback = function(v)
+        CONFIG.autoShopItems = v
+        if v then Library:Notify({ Title = "Shop Items", Content = "Auto Shop Items ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddToggle({
+    Title = "Auto Pet Upgrade",
+    Description = "Auto upgrade best pet stars to max",
+    Default = CONFIG.autoPetUpgrade,
+    Callback = function(v)
+        CONFIG.autoPetUpgrade = v
+        if v then Library:Notify({ Title = "Pet Upgrade", Content = "Auto Pet Upgrade ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddToggle({
+    Title = "Auto Fish Training",
+    Description = "Train fish in training area",
+    Default = CONFIG.autoFishTraining,
+    Callback = function(v)
+        CONFIG.autoFishTraining = v
+        if v then Library:Notify({ Title = "Fish Training", Content = "Auto Fish Training ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddToggle({
+    Title = "Auto Claim Limited Fish",
+    Description = "Auto claim Mecha Kunka limited fish",
+    Default = CONFIG.autoClaimLimitedFish,
+    Callback = function(v)
+        CONFIG.autoClaimLimitedFish = v
+        if v then Library:Notify({ Title = "Limited Fish", Content = "Auto Claim Limited Fish ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddToggle({
+    Title = "Auto Buy Stamina",
+    Description = "Auto buy 2x Cash multiplier",
+    Default = CONFIG.autoBuyStamina,
+    Callback = function(v)
+        CONFIG.autoBuyStamina = v
+        if v then Library:Notify({ Title = "Stamina", Content = "Auto Buy Stamina ACTIVE", Type = "Success", Duration = 2 }) end
+    end
+})
+
+advancedSection:AddSlider({
+    Title = "Max Training Area",
+    Min = 1,
+    Max = 9,
+    Default = CONFIG.maxTrainingArea,
+    Increment = 1,
+    Callback = function(v) CONFIG.maxTrainingArea = math.floor(v) end
+})
+
+advancedSection:AddSlider({
+    Title = "Spin Interval (spins)",
+    Min = 1,
+    Max = 20,
+    Default = CONFIG.spinInterval,
+    Increment = 1,
+    Callback = function(v) CONFIG.spinInterval = math.floor(v) end
+})
+
+-- Section: Player & World Utilities
+local utilSection = Tabs.Advanced:AddSection("Player & World Utilities")
+
+utilSection:AddToggle({
+    Title = "Anti-AFK Protection",
+    Description = "Prevents Roblox 20-minute idle disconnect",
+    Default = true,
+    Callback = function(v)
         Library:Notify({
-            Title = "Mission Accomplished",
-            Content = "All target data has been synchronized.",
+            Title = "Anti-AFK",
+            Content = v and "Anti-AFK is ACTIVE" or "Anti-AFK disabled",
+            Type = v and "Success" or "Info",
+            Duration = 2
+        })
+    end
+})
+
+utilSection:AddToggle({
+    Title = "Disable Shadows",
+    Description = "Improves FPS and makes visibility clearer",
+    Default = true,
+    Callback = function(v)
+        pcall(function() Lighting.GlobalShadows = not v end)
+    end
+})
+
+utilSection:AddToggle({
+    Title = "Fullbright Mode",
+    Description = "Maximizes ambient lighting for clear vision",
+    Default = false,
+    Callback = function(v)
+        pcall(function()
+            if v then
+                Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+                Lighting.Brightness = 2
+            else
+                Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+                Lighting.Brightness = 1
+            end
+        end)
+    end
+})
+
+utilSection:AddToggle({
+    Title = "Infinite Jump",
+    Description = "Jump continuously even while in mid-air",
+    Default = false,
+    Callback = function(v) CONFIG.infiniteJump = v end
+})
+
+utilSection:AddToggle({
+    Title = "Noclip",
+    Description = "Walk through walls and barriers smoothly",
+    Default = false,
+    Callback = function(v) CONFIG.noclip = v end
+})
+
+utilSection:AddSlider({
+    Title = "WalkSpeed",
+    Min = 16,
+    Max = 120,
+    Default = 16,
+    Increment = 1,
+    Callback = function(v)
+        local _, _, h = char()
+        if h then h.WalkSpeed = v end
+    end
+})
+
+utilSection:AddSlider({
+    Title = "JumpPower",
+    Min = 50,
+    Max = 200,
+    Default = 50,
+    Increment = 1,
+    Callback = function(v)
+        local _, _, h = char()
+        if h then h.JumpPower = v end
+    end
+})
+
+utilSection:AddButton({
+    Title = "Rejoin Server",
+    Description = "Reconnect to the same server instance",
+    Callback = function()
+        pcall(function()
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+        end)
+    end
+})
+
+-- ================================================================
+-- 6. LIVE STATS TAB (MODERN REAL-TIME WEBSITE STATS DASHBOARD)
+-- ================================================================
+local statsHeaderSec = Tabs.Stats:AddSection("Telemetry Control Center")
+
+-- Status Header Pill
+local statusPill = statsHeaderSec:AddParagraph({
+    Title = "● LIVE TELEMETRY ENGINE",
+    Content = "Streaming real-time water throughput, stage pipeline, and currency metrics..."
+})
+
+-- MODERN REAL-TIME DATA GRAPH SECTION
+local graphSection = Tabs.Stats:AddSection("Live Water Drain Rate Graph (L/s)")
+
+-- Custom Real-Time Graph Component
+local graphHistory = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+local graphBars = {}
+
+local graphContainer = Instance.new("Frame")
+graphContainer.Name = "RealTimeGraphContainer"
+graphContainer.Size = UDim2.new(1, 0, 0, 110)
+graphContainer.BackgroundColor3 = Library.Theme.SurfaceHover
+graphContainer.BackgroundTransparency = 0.5
+graphContainer.BorderSizePixel = 0
+
+local gCorner = Instance.new("UICorner")
+gCorner.CornerRadius = UDim.new(0, 8)
+gCorner.Parent = graphContainer
+
+local gStroke = Instance.new("UIStroke")
+gStroke.Color = Library.Theme.BorderSoft
+gStroke.Thickness = 1
+gStroke.Parent = graphContainer
+
+-- Graph Header Info
+local gTitle = Instance.new("TextLabel")
+gTitle.Name = "Title"
+gTitle.Parent = graphContainer
+gTitle.BackgroundTransparency = 1
+gTitle.Position = UDim2.new(0, 12, 0, 8)
+gTitle.Size = UDim2.new(0.6, 0, 0, 16)
+gTitle.Font = Enum.Font.GothamBold
+gTitle.Text = "DRAIN RATE THROUGHPUT"
+gTitle.TextColor3 = Library.Theme.TextSecondary
+gTitle.TextSize = 10
+gTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local gValue = Instance.new("TextLabel")
+gValue.Name = "Value"
+gValue.Parent = graphContainer
+gValue.AnchorPoint = Vector2.new(1, 0)
+gValue.Position = UDim2.new(1, -12, 0, 8)
+gValue.Size = UDim2.new(0.35, 0, 0, 16)
+gValue.BackgroundTransparency = 1
+gValue.Font = Enum.Font.GothamBold
+gValue.Text = "0/s"
+gValue.TextColor3 = Library.Theme.AccentGlow
+gValue.TextSize = 11
+gValue.TextXAlignment = Enum.TextXAlignment.Right
+
+-- Bar Chart Frame
+local chartFrame = Instance.new("Frame")
+chartFrame.Name = "Bars"
+chartFrame.Parent = graphContainer
+chartFrame.Position = UDim2.new(0, 12, 0, 32)
+chartFrame.Size = UDim2.new(1, -24, 0, 68)
+chartFrame.BackgroundTransparency = 1
+
+local chartLayout = Instance.new("UIListLayout")
+chartLayout.Parent = chartFrame
+chartLayout.FillDirection = Enum.FillDirection.Horizontal
+chartLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+chartLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+chartLayout.Padding = UDim.new(0, 6)
+
+for i = 1, #graphHistory do
+    local barTrack = Instance.new("Frame")
+    barTrack.Name = "BarTrack_" .. i
+    barTrack.Parent = chartFrame
+    barTrack.BackgroundColor3 = Library.Theme.SurfaceActive
+    barTrack.BackgroundTransparency = 0.4
+    barTrack.BorderSizePixel = 0
+    barTrack.Size = UDim2.new(0, 22, 1, 0)
+
+    local btCorner = Instance.new("UICorner")
+    btCorner.CornerRadius = UDim.new(0, 4)
+    btCorner.Parent = barTrack
+
+    local barFill = Instance.new("Frame")
+    barFill.Name = "Fill"
+    barFill.Parent = barTrack
+    barFill.AnchorPoint = Vector2.new(0, 1)
+    barFill.Position = UDim2.new(0, 0, 1, 0)
+    barFill.Size = UDim2.new(1, 0, 0.08, 0)
+    barFill.BackgroundColor3 = Library.Theme.Accent
+    barFill.BorderSizePixel = 0
+
+    local bfCorner = Instance.new("UICorner")
+    bfCorner.CornerRadius = UDim.new(0, 4)
+    bfCorner.Parent = barFill
+
+    local barGrad = Instance.new("UIGradient")
+    barGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Library.Theme.AccentGlow),
+        ColorSequenceKeypoint.new(1, Library.Theme.Accent)
+    })
+    barGrad.Rotation = 90
+    barGrad.Parent = barFill
+
+    table.insert(graphBars, barFill)
+end
+
+-- Insert graph into section container
+pcall(function()
+    local page = Tabs.Stats.Page
+    if page then
+        local secFrame = page:FindFirstChild("Section_Live Water Drain Rate Graph (L/s)")
+        if secFrame then
+            local ctrls = secFrame:FindFirstChild("Controls")
+            if ctrls then
+                graphContainer.Parent = ctrls
+            end
+        end
+    end
+end)
+
+-- KPI METRICS CARDS
+local metricsSec = Tabs.Stats:AddSection("Key Performance Metrics")
+
+local ecoCard = metricsSec:AddParagraph({
+    Title = "💰 Treasury & Resources",
+    Content = "Cash: $0  |  Water: 0 L  |  Rate: 0/s"
+})
+
+local stageCard = metricsSec:AddParagraph({
+    Title = "⚡ Stage Pipeline & Drain Power",
+    Content = "Stage: 1 (Deepest: 1)  |  Remaining: 0\nPump: #1 (Multiplier: x1.00)"
+})
+
+local storageCard = metricsSec:AddParagraph({
+    Title = "🎒 Aquarium & Backpack Storage",
+    Content = "Displayed Fish: 0/0  |  Backpack: 0/0\nTotal Claimed: 0  |  Total Sold: 0"
+})
+
+local autoCard = metricsSec:AddParagraph({
+    Title = "🏆 Automation & Progress",
+    Content = "Level: 0  |  Rebirth: 0\nTraining Area: 1  |  Spins Used: 0"
+})
+
+local diagnosticCard = metricsSec:AddParagraph({
+    Title = "⚙️ Diagnostics & Activity State",
+    Content = "Phase: idle\nNote: Initialized"
+})
+
+-- REAL-TIME ANIMATED TELEMETRY WORKER
+task.spawn(function()
+    while alive() do
+        local rate = tonumber(STATE.rate) or 0
+        table.remove(graphHistory, 1)
+        table.insert(graphHistory, rate)
+
+        -- Find peak rate in history for dynamic scaling
+        local maxVal = 1
+        for _, val in ipairs(graphHistory) do
+            if val > maxVal then maxVal = val end
+        end
+
+        gValue.Text = short(rate) .. "/s"
+
+        -- Animate bars smoothly
+        for i, fill in ipairs(graphBars) do
+            local heightRatio = math.clamp(graphHistory[i] / maxVal, 0.08, 1)
+            TweenService:Create(fill, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Size = UDim2.new(1, 0, heightRatio, 0)
+            }):Play()
+        end
+
+        -- Update KPI Cards
+        ecoCard:Set("💰 Treasury & Resources", string.format(
+            "Total Cash: <font color='#4ade80'>$%s</font>\nTotal Water: <font color='#93c5fd'>%s L</font>\nReal-time Drain Flow: <font color='#c084fc'>%s/s</font>",
+            short(STATE.cash), short(STATE.water), short(STATE.rate)
+        ))
+
+        stageCard:Set("⚡ Stage Pipeline & Drain Power", string.format(
+            "Current Stage: Stage %d  (Deepest Record: Stage %d)\nRemaining Pool Water: %s\nEquipped Pump: #%d  |  Pump Multiplier: <font color='#fbbf24'>x%s</font>",
+            STATE.stage, STATE.deepest, short(STATE.remaining), STATE.pump, short(STATE.pumpMult)
+        ))
+
+        local tankPct = (STATE.slots > 0) and math.floor((STATE.displayed / STATE.slots) * 100) or 0
+        local bagPct = (STATE.capacity > 0) and math.floor((STATE.backpack / STATE.capacity) * 100) or 0
+        storageCard:Set("🎒 Aquarium & Backpack Storage", string.format(
+            "Tank Displayed: %d/%d (%d%% Filled)\nBackpack Storage: %d/%d (%d%% Filled)\nLifetime Fish Claimed: %d  |  Lifetime Fish Sold: %d",
+            STATE.displayed, STATE.slots, tankPct,
+            STATE.backpack, STATE.capacity, bagPct,
+            STATE.claimed, STATE.sold
+        ))
+
+        autoCard:Set("🏆 Automation & Progress", string.format(
+            "Player Level: %d  |  Rebirth Level: %d\nTraining Area: Area %d\nLucky Wheel Spins: %d  |  Limited Fish Caught: %d",
+            STATE.level, STATE.rebirth,
+            STATE.trainingArea or 1, STATE.spinCount or 0, STATE.limitedFishClaimed or 0
+        ))
+
+        local phaseColor = (STATE.phase == "idle") and "#94a3b8" or "#4ade80"
+        diagnosticCard:Set("⚙️ Diagnostics & Activity State", string.format(
+            "Active State: <font color='%s'><b>%s</b></font>\nLive Stream: %s",
+            phaseColor, string.upper(tostring(STATE.phase)), tostring(STATE.note or "Standing by")
+        ))
+
+        task.wait(0.6)
+    end
+end)
+
+-- ================================================================
+-- 7. COMMUNITY TAB (ORIGINAL PINATHUB SOCIALS)
+-- ================================================================
+local communitySection = Tabs.Community:AddSection("Join PinatHub Community")
+
+communitySection:AddParagraph({
+    Title = "PinatHub Community",
+    Content = "Join our community for updates, support, and the latest scripts!\nCreated with passion by @viunze on TikTok."
+})
+
+communitySection:AddDiscordCard({
+    Title = "PinatHub | Community Hub",
+    Members = "10.000+",
+    Online = "500+",
+    Invite = "https://discord.gg/eDbaHKEf7G"
+})
+
+communitySection:AddSeperator()
+
+communitySection:AddButton({
+    Title = "WhatsApp Group",
+    Description = "Join our official WhatsApp community",
+    Callback = function()
+        if set_clipboard then
+            set_clipboard("https://chat.whatsapp.com/I8hG44FLgrRAwQcS3lvEft")
+        end
+        Library:Notify({
+            Title = "Copied!",
+            Content = "WhatsApp link copied to clipboard!",
             Type = "Success",
             Duration = 3
         })
     end
 })
 
-ToastTestSection:AddButton({
-    Title = "Show Warning Toast",
-    Description = "Displays amber warning glass card",
+communitySection:AddButton({
+    Title = "Discord Server",
+    Description = "https://discord.gg/eDbaHKEf7G",
     Callback = function()
+        if set_clipboard then
+            set_clipboard("https://discord.gg/eDbaHKEf7G")
+        end
         Library:Notify({
-            Title = "Latency Warning",
-            Content = "Network ping is currently exceeding 180ms.",
-            Type = "Warning",
+            Title = "Copied!",
+            Content = "Discord invite copied to clipboard!",
+            Type = "Success",
             Duration = 3
         })
     end
 })
 
-ToastTestSection:AddButton({
-    Title = "Show Danger Toast",
-    Description = "Displays crimson red alert glass card",
+communitySection:AddButton({
+    Title = "TikTok @viunze",
+    Description = "Follow on TikTok for script updates & tutorials",
     Callback = function()
+        if set_clipboard then
+            set_clipboard("https://tiktok.com/@viunze")
+        end
         Library:Notify({
-            Title = "Critical Failure",
-            Content = "Unable to connect to selected server instance.",
-            Type = "Danger",
+            Title = "Copied!",
+            Content = "TikTok profile link copied!",
+            Type = "Success",
             Duration = 3
         })
     end
 })
 
--- Dynamic update demonstration for AddParagraph
-task.spawn(function()
-    task.wait(4)
-    AboutPara:SetTitle("What is MengHub? (Pinathub Modern v3.0)")
-end)
+communitySection:AddButton({
+    Title = "YouTube Channel",
+    Description = "Subscribe for video showcases & tutorials",
+    Callback = function()
+        if set_clipboard then
+            set_clipboard("https://youtube.com/@viunze")
+        end
+        Library:Notify({
+            Title = "Copied!",
+            Content = "YouTube link copied!",
+            Type = "Success",
+            Duration = 3
+        })
+    end
+})
+
+communitySection:AddSeperator()
+
+communitySection:AddParagraph({
+    Title = "Support PinatHub",
+    Content = "Kalau script ini membantu, like & share ke teman-teman! ❤️\nDukung developer dengan follow @viunze di TikTok & YouTube!"
+})

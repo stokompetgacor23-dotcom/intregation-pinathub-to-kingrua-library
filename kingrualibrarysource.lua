@@ -17,27 +17,84 @@ local LocalPlayer = Players.LocalPlayer
 local PINATHUB_LOGO = "rbxassetid://118264723961739"
 
 local TabIcons = {
-	Main = "rbxassetid://10723407389",       -- Home / Dashboard
-	Info = "rbxassetid://10747373176",       -- User / Info
-	Survivor = "rbxassetid://10734923549",   -- Sword / Survivor
-	Killer = "rbxassetid://10723415766",     -- Skull / Killer
-	ESP = "rbxassetid://10723415766",        -- Eye / ESP
-	Visuals = "rbxassetid://10723415766",    -- Eye / Visuals
-	Emote = "rbxassetid://10747373176",      -- Emote & Skin
-	Aimbot = "rbxassetid://10734943760",     -- Crosshair / Aimbot
-	Settings = "rbxassetid://10734950309",   -- Settings / Gear
-	Configuration = "rbxassetid://10709782497", -- Sliders / Config
-	Player = "rbxassetid://10747373176",     -- User / Player
-	Misc = "rbxassetid://10709782497",       -- Sliders / Misc
-	Credits = "rbxassetid://10723416652",    -- Info / Credits
-	Search = "rbxassetid://10734943760",     -- Search Icon
-	Minimize = "rbxassetid://10734896206",   -- Minimize Icon
-	Maximize = "rbxassetid://10734914561",   -- Maximize Icon
-	Close = "rbxassetid://10747384394",      -- Close Icon
-	ChevronRight = "rbxassetid://10709790948",-- Arrow right
-	ChevronDown = "rbxassetid://10709790948", -- Arrow down (rotation 90)
-	Discord = "rbxassetid://10723416652",    -- Community
-	Cursor = "rbxassetid://10734943760"      -- Cursor
+	-- PinatHub Drain Water Specific Tabs
+	["Auto Farm"] = "rbxassetid://10723344432",   -- Droplet
+	["Farm"] = "rbxassetid://10723344432",        -- Droplet
+	["Upgrades"] = "rbxassetid://10709768939",    -- Arrow Up
+	["Upgrade"] = "rbxassetid://10709768939",     -- Arrow Up
+	["Fish & Pets"] = "rbxassetid://10709761530", -- Anchor (Marine / Aquatic / Fish)
+	["Fish"] = "rbxassetid://10709761530",        -- Anchor
+	["Pets"] = "rbxassetid://10709769841",        -- Backpack / Pet Pack
+	["Auto Sell"] = "rbxassetid://10723343958",   -- Dollar Sign
+	["Sell"] = "rbxassetid://10723343958",        -- Dollar Sign
+	["Advanced"] = "rbxassetid://10747383470",    -- Wrench / Tools
+	["Live Stats"] = "rbxassetid://10709770317",  -- Bar Chart 2
+	["Stats"] = "rbxassetid://10709770317",       -- Bar Chart 2
+	["Community"] = "rbxassetid://10747373426",   -- Users
+
+	-- Standard Lucide Icons by String Name
+	["droplet"] = "rbxassetid://10723344432",
+	["fish"] = "rbxassetid://10709761530",
+	["anchor"] = "rbxassetid://10709761530",
+	["backpack"] = "rbxassetid://10709769841",
+	["arrow-up"] = "rbxassetid://10709768939",
+	["dollar-sign"] = "rbxassetid://10723343958",
+	["coins"] = "rbxassetid://10709811110",
+	["settings"] = "rbxassetid://10734950309",
+	["sliders"] = "rbxassetid://10734963400",
+	["bar-chart"] = "rbxassetid://10709773755",
+	["bar-chart-2"] = "rbxassetid://10709770317",
+	["chart-bar"] = "rbxassetid://10709770317",
+	["users"] = "rbxassetid://10747373426",
+	["user"] = "rbxassetid://10747373176",
+	["crosshair"] = "rbxassetid://10709818534",
+	["target"] = "rbxassetid://10734977012",
+	["skull"] = "rbxassetid://10734962068",
+	["eye"] = "rbxassetid://10723346959",
+	["swords"] = "rbxassetid://10734975692",
+	["sword"] = "rbxassetid://10734975486",
+	["backpack"] = "rbxassetid://10709769841",
+	["shield"] = "rbxassetid://10734951847",
+	["wrench"] = "rbxassetid://10747383470",
+	["cpu"] = "rbxassetid://10709813383",
+	["activity"] = "rbxassetid://10709752035",
+	["heart"] = "rbxassetid://10723406885",
+	["home"] = "rbxassetid://10723407389",
+	["search"] = "rbxassetid://10734943674",
+	["bell"] = "rbxassetid://10709775704",
+	["flame"] = "rbxassetid://10723376114",
+	["database"] = "rbxassetid://10709818996",
+	["discord"] = "rbxassetid://10734950553",
+	["message-circle"] = "rbxassetid://10734888000",
+	["video"] = "rbxassetid://10747374938",
+	["youtube"] = "rbxassetid://10747374938",
+	["globe"] = "rbxassetid://10723404337",
+	["clipboard-check"] = "rbxassetid://10709783474",
+
+	-- General Navigation & UI Icons
+	Main = "rbxassetid://10723407389",
+	Info = "rbxassetid://10723406988",            -- Help / Info circle
+	Survivor = "rbxassetid://10734975692",        -- Swords
+	Killer = "rbxassetid://10734962068",          -- Skull
+	ESP = "rbxassetid://10723346959",             -- Eye
+	Visuals = "rbxassetid://10723346959",         -- Eye
+	["Emote & Skin"] = "rbxassetid://10747373176",-- User
+	Emote = "rbxassetid://10747373176",           -- User
+	Aimbot = "rbxassetid://10709818534",          -- Crosshair (FIXED, NOT BLANK)
+	Settings = "rbxassetid://10734950309",        -- Gear
+	Configuration = "rbxassetid://10734963400",   -- Sliders
+	Config = "rbxassetid://10734963400",          -- Sliders
+	Player = "rbxassetid://10747373176",          -- User
+	Misc = "rbxassetid://10747383470",            -- Wrench
+	Credits = "rbxassetid://10723406988",         -- Help / Info
+	Search = "rbxassetid://10734943674",          -- Search (FIXED)
+	Minimize = "rbxassetid://10734896206",
+	Maximize = "rbxassetid://10734914561",
+	Close = "rbxassetid://10747384394",
+	ChevronRight = "rbxassetid://10709791437",
+	ChevronDown = "rbxassetid://10709790948",
+	Discord = "rbxassetid://10734950553",
+	Cursor = "rbxassetid://10709818534"
 }
 
 -- Detect Executor Name dynamically
@@ -461,55 +518,111 @@ function Library:NewWindow(ConfigWindow)
 	MainStroke.Transparency = 0.4
 	MainStroke.Parent = MainWindow
 
-	-- 4. Floating Launcher Button (52x52 Glass Circle with Pinathub Logo)
+	-- PinatHub Watermark Background Logo (Subtle & Dimmed)
+	local WindowBackgroundLogo = Instance.new("ImageLabel")
+	WindowBackgroundLogo.Name = "WindowBackgroundLogo"
+	WindowBackgroundLogo.Parent = MainWindow
+	WindowBackgroundLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+	WindowBackgroundLogo.Position = UDim2.fromScale(0.5, 0.5)
+	WindowBackgroundLogo.Size = UDim2.new(0.62, 0, 0.62, 0)
+	WindowBackgroundLogo.BackgroundTransparency = 1
+	WindowBackgroundLogo.Image = PINATHUB_LOGO
+	WindowBackgroundLogo.ImageColor3 = Theme.AccentGlow
+	WindowBackgroundLogo.ImageTransparency = 0.93 -- Dimmed subtle lighting
+	WindowBackgroundLogo.ScaleType = Enum.ScaleType.Fit
+	WindowBackgroundLogo.ZIndex = 2
+
+	-- 4. Floating Launcher Button (Pinathub Exact Spec: 50x50, white bg, green stroke, draggable)
+	-- LauncherGui is a separate ScreenGui parented to PlayerGui so it can be fully destroyed on close
+	local LauncherGui = Instance.new("ScreenGui")
+	LauncherGui.Name = "PinathubLauncherGui"
+	LauncherGui.ResetOnSpawn = false
+	LauncherGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	LauncherGui.IgnoreGuiInset = true
+	LauncherGui.DisplayOrder = 999998
+	pcall(function() LauncherGui.Parent = game:GetService("CoreGui") end)
+	if not LauncherGui.Parent then
+		LauncherGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+	end
+
 	local LauncherButton = Instance.new("ImageButton")
 	LauncherButton.Name = "LauncherButton"
-	LauncherButton.Parent = ScreenGui
-	LauncherButton.AnchorPoint = Vector2.new(0, 0.5)
-	LauncherButton.Position = UDim2.new(0, 20, 0.5, 0)
-	LauncherButton.Size = UDim2.new(0, 52, 0, 52)
-	LauncherButton.BackgroundColor3 = Theme.Header
-	LauncherButton.BackgroundTransparency = 0.15
+	LauncherButton.Parent = LauncherGui
+	LauncherButton.Size = UDim2.new(0, 50, 0, 50)
+	LauncherButton.Position = UDim2.new(0.5, -25, 0.5, -25)
+	LauncherButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	LauncherButton.BackgroundTransparency = 0
 	LauncherButton.BorderSizePixel = 0
-	LauncherButton.Image = PINATHUB_LOGO
-	LauncherButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+	LauncherButton.AutoButtonColor = false
+	LauncherButton.Image = PINATHUB_LOGO   -- Icon permanen PinatHub
 	LauncherButton.ScaleType = Enum.ScaleType.Fit
 	LauncherButton.Visible = false
 	LauncherButton.ZIndex = 50
 
+	-- Round corner
 	local LauncherCorner = Instance.new("UICorner")
 	LauncherCorner.CornerRadius = UDim.new(1, 0)
 	LauncherCorner.Parent = LauncherButton
 
+	-- Green outline stroke
 	local LauncherStroke = Instance.new("UIStroke")
-	LauncherStroke.Color = Theme.Accent
-	LauncherStroke.Thickness = 1.5
-	LauncherStroke.Transparency = 0.2
+	LauncherStroke.Color = Color3.fromRGB(0, 255, 0)
+	LauncherStroke.Thickness = 2
 	LauncherStroke.Parent = LauncherButton
 
-	local LauncherShadow = Instance.new("ImageLabel")
-	LauncherShadow.Name = "Shadow"
-	LauncherShadow.Parent = LauncherButton
-	LauncherShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-	LauncherShadow.Position = UDim2.fromScale(0.5, 0.5)
-	LauncherShadow.Size = UDim2.new(1, 20, 1, 20)
-	LauncherShadow.BackgroundTransparency = 1
-	LauncherShadow.Image = "rbxassetid://6015897843"
-	LauncherShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	LauncherShadow.ImageTransparency = 0.4
-	LauncherShadow.ScaleType = Enum.ScaleType.Slice
-	LauncherShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-	LauncherShadow.ZIndex = 49
+	-- Draggable logic (user-exact spec)
+	local _launchDragging = false
+	local _launchDragStart = nil
+	local _launchStartPos = nil
 
-	self:MakeDraggable(LauncherButton, LauncherButton)
+	LauncherButton.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or
+		   input.UserInputType == Enum.UserInputType.Touch then
+			_launchDragging = true
+			_launchDragStart = input.Position
+			_launchStartPos = LauncherButton.Position
+		end
+	end)
+
+	LauncherButton.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or
+		   input.UserInputType == Enum.UserInputType.Touch then
+			_launchDragging = false
+		end
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if _launchDragging and (
+			input.UserInputType == Enum.UserInputType.MouseMovement or
+			input.UserInputType == Enum.UserInputType.Touch
+		) then
+			local Delta = input.Position - _launchDragStart
+			LauncherButton.Position = UDim2.new(
+				_launchStartPos.X.Scale,
+				_launchStartPos.X.Offset + Delta.X,
+				_launchStartPos.Y.Scale,
+				_launchStartPos.Y.Offset + Delta.Y
+			)
+		end
+	end)
+
+	-- Subtle pulse animation on green stroke (breathing effect)
+	task.spawn(function()
+		while LauncherGui and LauncherGui.Parent do
+			task.wait(1.4)
+			TweenService:Create(LauncherStroke, TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{ Transparency = 0.45 }):Play()
+			task.wait(1.4)
+			TweenService:Create(LauncherStroke, TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{ Transparency = 0 }):Play()
+		end
+	end)
 
 	LauncherButton.MouseEnter:Connect(function()
 		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 58, 0, 58) }):Play()
-		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.AccentGlow, Transparency = 0.1 }):Play()
 	end)
 	LauncherButton.MouseLeave:Connect(function()
-		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 52, 0, 52) }):Play()
-		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.Accent, Transparency = 0.2 }):Play()
+		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 50, 0, 50) }):Play()
 	end)
 
 	-- 5. Window State Controllers
@@ -547,7 +660,7 @@ function Library:NewWindow(ConfigWindow)
 			DropShadowHolder.Visible = false
 			LauncherButton.Visible = true
 			LauncherButton.Size = UDim2.new(0, 0, 0, 0)
-			TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 52, 0, 52) }):Play()
+			TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 50, 0, 50) }):Play()
 		end)
 	end
 
@@ -605,7 +718,7 @@ function Library:NewWindow(ConfigWindow)
 	BrandLogo.ScaleType = Enum.ScaleType.Fit
 	BrandLogo.LayoutOrder = 1
 
-	-- Title "Pinathub" / "Meng Hub"
+	-- Title "Pinathub | Drain Water" (Clean, No Subtitle)
 	local BrandName = Instance.new("TextLabel")
 	BrandName.Name = "BrandName"
 	BrandName.Parent = LeftHeaderContainer
@@ -615,35 +728,9 @@ function Library:NewWindow(ConfigWindow)
 	BrandName.Font = Enum.Font.GothamBold
 	BrandName.Text = Config.Title
 	BrandName.TextColor3 = Theme.Text
-	BrandName.TextSize = 14
+	BrandName.TextSize = 13
 	BrandName.TextXAlignment = Enum.TextXAlignment.Left
 	BrandName.LayoutOrder = 2
-
-	-- Separator "|"
-	local SepLabel = Instance.new("TextLabel")
-	SepLabel.Name = "Sep"
-	SepLabel.Parent = LeftHeaderContainer
-	SepLabel.BackgroundTransparency = 1
-	SepLabel.Size = UDim2.new(0, 8, 1, 0)
-	SepLabel.Font = Enum.Font.Gotham
-	SepLabel.Text = "|"
-	SepLabel.TextColor3 = Theme.TextMuted
-	SepLabel.TextSize = 13
-	SepLabel.LayoutOrder = 3
-
-	-- Subtitle "Peacefull Community" / "Control Center"
-	local SubtitleLabel = Instance.new("TextLabel")
-	SubtitleLabel.Name = "Subtitle"
-	SubtitleLabel.Parent = LeftHeaderContainer
-	SubtitleLabel.BackgroundTransparency = 1
-	SubtitleLabel.Size = UDim2.new(0, 0, 1, 0)
-	SubtitleLabel.AutomaticSize = Enum.AutomaticSize.X
-	SubtitleLabel.Font = Enum.Font.Gotham
-	SubtitleLabel.Text = Config.Description
-	SubtitleLabel.TextColor3 = Theme.TextSecondary
-	SubtitleLabel.TextSize = 11
-	SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-	SubtitleLabel.LayoutOrder = 4
 
 	-- Right Header Container (Badges + Minimize & Close Buttons)
 	local RightHeaderContainer = Instance.new("Frame")
@@ -702,54 +789,92 @@ function Library:NewWindow(ConfigWindow)
 		return pill, pText
 	end
 
-	-- Badge 1: [ VD | Premium ] / [ Pinathub | Premium ]
-	CreatePillBadge("VD | Premium", 1)
-
-	-- Badge 2: [ Executor: <Name> ]
+	-- Executor Badge Only (VD | Premium Removed)
 	local currentExecutor = DetectExecutor()
-	CreatePillBadge("Executor: " .. currentExecutor, 2)
+	local execPill, execText = CreatePillBadge("Executor: " .. currentExecutor, 1)
+	execText.RichText = true
+	execText.Text = "<font color='#4ade80'>●</font> " .. currentExecutor
 
-	-- Window Control Buttons (Minimize & Close)
-	local function CreateActionBtn(text, callback, isDanger, order)
-		local btn = Instance.new("TextButton")
-		btn.Name = "Btn_" .. text
-		btn.Parent = RightHeaderContainer
-		btn.Size = UDim2.new(0, 24, 0, 24)
-		btn.BackgroundColor3 = Theme.Surface
-		btn.BackgroundTransparency = 1
-		btn.BorderSizePixel = 0
-		btn.Font = Enum.Font.GothamBold
-		btn.Text = text
-		btn.TextColor3 = Theme.TextSecondary
-		btn.TextSize = 13
-		btn.AutoButtonColor = false
-		btn.LayoutOrder = order
-
-		local bCorner = Instance.new("UICorner")
-		bCorner.CornerRadius = UDim.new(0, 5)
-		bCorner.Parent = btn
-
-		btn.MouseEnter:Connect(function()
-			if isDanger then
-				TweenService:Create(btn, TweenInfoFast, { BackgroundTransparency = 0, BackgroundColor3 = Theme.Danger }):Play()
-				btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			else
-				TweenService:Create(btn, TweenInfoFast, { BackgroundTransparency = 0.3, BackgroundColor3 = Theme.SurfaceHover }):Play()
-				btn.TextColor3 = Theme.Text
-			end
+	local onCloseCallbacks = {}
+	local function FullShutdownWindow()
+		for _, cb in ipairs(onCloseCallbacks) do
+			pcall(cb)
+		end
+		local closeTween = TweenService:Create(UIScale, TweenInfoFast, { Scale = 0.8 })
+		TweenService:Create(MainWindow, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(DropShadow, TweenInfoFast, { ImageTransparency = 1 }):Play()
+		closeTween:Play()
+		closeTween.Completed:Connect(function()
+			pcall(function()
+				if LauncherGui then LauncherGui:Destroy() end
+				if ScreenGui then ScreenGui:Destroy() end
+			end)
 		end)
-
-		btn.MouseLeave:Connect(function()
-			TweenService:Create(btn, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
-			btn.TextColor3 = Theme.TextSecondary
-		end)
-
-		btn.MouseButton1Click:Connect(callback)
-		return btn
 	end
 
-	CreateActionBtn("—", CloseWindow, false, 3)
-	CreateActionBtn("✕", CloseWindow, true, 4)
+	-- Window Control Buttons (Minimize & True Close Icon)
+	local MinimizeBtn = Instance.new("TextButton")
+	MinimizeBtn.Name = "Btn_Minimize"
+	MinimizeBtn.Parent = RightHeaderContainer
+	MinimizeBtn.Size = UDim2.new(0, 24, 0, 24)
+	MinimizeBtn.BackgroundColor3 = Theme.Surface
+	MinimizeBtn.BackgroundTransparency = 1
+	MinimizeBtn.BorderSizePixel = 0
+	MinimizeBtn.Font = Enum.Font.GothamBold
+	MinimizeBtn.Text = "—"
+	MinimizeBtn.TextColor3 = Theme.TextSecondary
+	MinimizeBtn.TextSize = 13
+	MinimizeBtn.AutoButtonColor = false
+	MinimizeBtn.LayoutOrder = 2
+
+	local MinCorner = Instance.new("UICorner")
+	MinCorner.CornerRadius = UDim.new(0, 5)
+	MinCorner.Parent = MinimizeBtn
+
+	MinimizeBtn.MouseEnter:Connect(function()
+		TweenService:Create(MinimizeBtn, TweenInfoFast, { BackgroundTransparency = 0.3, BackgroundColor3 = Theme.SurfaceHover }):Play()
+		MinimizeBtn.TextColor3 = Theme.Text
+	end)
+	MinimizeBtn.MouseLeave:Connect(function()
+		TweenService:Create(MinimizeBtn, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
+		MinimizeBtn.TextColor3 = Theme.TextSecondary
+	end)
+	MinimizeBtn.MouseButton1Click:Connect(CloseWindow)
+
+	-- Proper Close Icon Button with Lucide Close Asset
+	local CloseBtn = Instance.new("ImageButton")
+	CloseBtn.Name = "Btn_Close"
+	CloseBtn.Parent = RightHeaderContainer
+	CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+	CloseBtn.BackgroundColor3 = Theme.Surface
+	CloseBtn.BackgroundTransparency = 1
+	CloseBtn.BorderSizePixel = 0
+	CloseBtn.Image = "rbxassetid://10747384394" -- Genuine Lucide X Close Icon
+	CloseBtn.ImageColor3 = Theme.TextSecondary
+	CloseBtn.ScaleType = Enum.ScaleType.Fit
+	CloseBtn.AutoButtonColor = false
+	CloseBtn.LayoutOrder = 3
+
+	local CloseCorner = Instance.new("UICorner")
+	CloseCorner.CornerRadius = UDim.new(0, 5)
+	CloseCorner.Parent = CloseBtn
+
+	local ClosePadding = Instance.new("UIPadding")
+	ClosePadding.Parent = CloseBtn
+	ClosePadding.PaddingTop = UDim.new(0, 5)
+	ClosePadding.PaddingBottom = UDim.new(0, 5)
+	ClosePadding.PaddingLeft = UDim.new(0, 5)
+	ClosePadding.PaddingRight = UDim.new(0, 5)
+
+	CloseBtn.MouseEnter:Connect(function()
+		TweenService:Create(CloseBtn, TweenInfoFast, { BackgroundTransparency = 0, BackgroundColor3 = Theme.Danger }):Play()
+		TweenService:Create(CloseBtn, TweenInfoFast, { ImageColor3 = Color3.fromRGB(255, 255, 255) }):Play()
+	end)
+	CloseBtn.MouseLeave:Connect(function()
+		TweenService:Create(CloseBtn, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
+		TweenService:Create(CloseBtn, TweenInfoFast, { ImageColor3 = Theme.TextSecondary }):Play()
+	end)
+	CloseBtn.MouseButton1Click:Connect(FullShutdownWindow)
 
 	-- 7. Sidebar Setup (Meng Hub Width: 155px)
 	local Sidebar = Instance.new("Frame")
@@ -1025,8 +1150,18 @@ function Library:NewWindow(ConfigWindow)
 		glassSheen.Visible = not disabled
 	end
 
+	function Window:OnClose(cb)
+		if type(cb) == "function" then
+			table.insert(onCloseCallbacks, cb)
+		end
+	end
+
 	function Window:Destroy()
-		ScreenGui:Destroy()
+		FullShutdownWindow()
+	end
+
+	function Window:FullShutdown()
+		FullShutdownWindow()
 	end
 
 	function Window:Open()
@@ -1065,7 +1200,33 @@ function Library:NewWindow(ConfigWindow)
 			icon = tabIcon
 			descText = tabDesc or title
 		end
-		icon = icon or TabIcons[title] or TabIcons.Main
+		local function ResolveIcon(iconInput, fallbackTitle)
+			if type(iconInput) == "string" then
+				local trimmed = string.match(iconInput, "^%s*(.-)%s*$") or iconInput
+				if string.sub(trimmed, 1, 13) == "rbxassetid://" or string.sub(trimmed, 1, 10) == "rbxasset://" or string.sub(trimmed, 1, 4) == "http" then
+					return trimmed
+				end
+				if TabIcons[trimmed] then
+					return TabIcons[trimmed]
+				end
+				local lowerName = string.lower(trimmed)
+				if TabIcons[lowerName] then
+					return TabIcons[lowerName]
+				end
+			end
+			if fallbackTitle then
+				if TabIcons[fallbackTitle] then
+					return TabIcons[fallbackTitle]
+				end
+				local lowerTitle = string.lower(fallbackTitle)
+				if TabIcons[lowerTitle] then
+					return TabIcons[lowerTitle]
+				end
+			end
+			return PINATHUB_LOGO
+		end
+
+		icon = ResolveIcon(icon, title)
 		descText = descText or title
 
 		-- Tab Button in Sidebar (Meng Hub: Left Accent Indicator Bar on Active)
@@ -1651,6 +1812,7 @@ function Library:NewWindow(ConfigWindow)
 				TitleLabel.TextColor3 = Theme.NeonWhite
 				TitleLabel.TextSize = 12
 				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+				TitleLabel.RichText = true  -- Allow <font color='...'> tags in title
 
 				local ContentLabel = Instance.new("TextLabel")
 				ContentLabel.Name = "Content"
@@ -1665,6 +1827,7 @@ function Library:NewWindow(ConfigWindow)
 				ContentLabel.TextWrapped = true
 				ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
 				ContentLabel.TextYAlignment = Enum.TextYAlignment.Top
+				ContentLabel.RichText = true  -- CRITICAL: Allow <font color='#...'> tags to render
 
 				local function ResizePara()
 					ContentLabel.Size = UDim2.new(1, -24, 0, 1000)
