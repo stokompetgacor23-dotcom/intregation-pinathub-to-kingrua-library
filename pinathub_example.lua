@@ -222,6 +222,8 @@ LocalPlayer.Idled:Connect(function()
 end)
 
 -- [Engine 2] Movement Modifiers (WalkSpeed, JumpPower, Noclip)
+local NoclipCollisionState = {}
+
 RunService.Stepped:Connect(function()
     local char = LocalPlayer.Character
     if not char then return end
@@ -230,18 +232,30 @@ RunService.Stepped:Connect(function()
     if hum then
         if CONFIG.CustomWalkSpeed then
             hum.WalkSpeed = CONFIG.WalkSpeedValue
+        else
+            hum.WalkSpeed = 16
         end
         if CONFIG.CustomJumpPower then
             hum.UseJumpPower = true
             hum.JumpPower = CONFIG.JumpPowerValue
+        else
+            hum.JumpPower = 50
         end
     end
 
     if CONFIG.Noclip then
         for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") and part.CanCollide then
+            if part:IsA("BasePart") and NoclipCollisionState[part] == nil then
+                NoclipCollisionState[part] = part.CanCollide
                 part.CanCollide = false
             end
+        end
+    else
+        for part, canCollide in pairs(NoclipCollisionState) do
+            if part.Parent then
+                part.CanCollide = canCollide
+            end
+            NoclipCollisionState[part] = nil
         end
     end
 end)
@@ -272,6 +286,33 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         end
     end
 end)
+
+local function ApplyConfigState()
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.WalkSpeed = CONFIG.CustomWalkSpeed and CONFIG.WalkSpeedValue or 16
+        hum.UseJumpPower = true
+        hum.JumpPower = CONFIG.CustomJumpPower and CONFIG.JumpPowerValue or 50
+    end
+
+    local lighting = game:GetService("Lighting")
+    if CONFIG.Fullbright then
+        lighting.Brightness = 2
+        lighting.ClockTime = 14
+        lighting.FogEnd = 100000
+    else
+        lighting.Brightness = 1
+        lighting.ClockTime = 12
+        lighting.FogEnd = 1000
+    end
+    lighting.GlobalShadows = not CONFIG.DisableShadows and not CONFIG.Fullbright
+
+    local camera = workspace.CurrentCamera
+    if camera then
+        camera.FieldOfView = CONFIG.CustomFOV and CONFIG.FOVValue or 70
+    end
+end
 
 -- =============================================================================
 -- 5. TAB 1: AUTOMATION & COMBAT
@@ -1003,6 +1044,7 @@ ConfigSec:AddButton({
                         CONFIG[k] = v
                     end
                     CONFIG.CurrentProfile = ProfileNameInput
+                    ApplyConfigState()
                     loaded = true
                 end
             end
