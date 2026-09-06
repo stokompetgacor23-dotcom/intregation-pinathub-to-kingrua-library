@@ -1642,7 +1642,7 @@ function Library:NewWindow(ConfigWindow)
 			for index = #sectionGapLines, 1, -1 do
 				local gradient = sectionGapLines[index]
 				if gradient.Parent then
-					local sweep = (os.clock() * 0.32) % 2 - 1
+					local sweep = (os.clock() * 1.05) % 2 - 1
 					gradient.Offset = Vector2.new(sweep, 0)
 				else
 					table.remove(sectionGapLines, index)
@@ -1790,70 +1790,6 @@ function Library:NewWindow(ConfigWindow)
 			ControlsLayout.Parent = ControlsContainer
 			ControlsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 			ControlsLayout.Padding = UDim.new(0, 4)
-
-			local gapLines = {}
-			local controlOrder = 0
-			local gapNeonConn
-
-			local function AddNeonGapLine()
-				if Config.NeonGapLines == false then return end
-				local gapLine = Instance.new("Frame")
-				gapLine.Name = "NeonGapLine"
-				gapLine.BackgroundColor3 = Color3.fromRGB(125, 55, 205)
-				gapLine.BorderSizePixel = 0
-				gapLine.Size = UDim2.new(1, 0, 0, 1)
-				gapLine.LayoutOrder = controlOrder * 2 - 1
-				gapLine.ZIndex = 1
-				gapLine.Parent = ControlsContainer
-
-				local gapGradient = Instance.new("UIGradient")
-				gapGradient.Name = "MovingNeonTrace"
-				gapGradient.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(90, 40, 155)),
-					ColorSequenceKeypoint.new(0.38, Color3.fromRGB(90, 40, 155)),
-					ColorSequenceKeypoint.new(0.48, Color3.fromRGB(190, 95, 255)),
-					ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 235, 255)),
-					ColorSequenceKeypoint.new(0.52, Color3.fromRGB(190, 95, 255)),
-					ColorSequenceKeypoint.new(0.62, Color3.fromRGB(90, 40, 155)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(90, 40, 155)),
-				})
-				gapGradient.Transparency = NumberSequence.new({
-					NumberSequenceKeypoint.new(0, 0.2),
-					NumberSequenceKeypoint.new(0.38, 0.2),
-					NumberSequenceKeypoint.new(0.48, 0.03),
-					NumberSequenceKeypoint.new(0.50, 0),
-					NumberSequenceKeypoint.new(0.52, 0.03),
-					NumberSequenceKeypoint.new(0.62, 0.2),
-					NumberSequenceKeypoint.new(1, 0.2),
-				})
-				gapGradient.Parent = gapLine
-				table.insert(gapLines, gapGradient)
-			end
-
-			ControlsContainer.ChildAdded:Connect(function(child)
-				if not child:IsA("GuiObject") or child.Name == "NeonGapLine" then return end
-				controlOrder += 1
-				child.LayoutOrder = controlOrder * 2
-				if controlOrder > 1 and Config.NeonGapLines ~= false then
-					AddNeonGapLine()
-				end
-			end)
-
-			gapNeonConn = RunService.RenderStepped:Connect(function(dt)
-				if not ControlsContainer.Parent then
-					gapNeonConn:Disconnect()
-					return
-				end
-				for index = #gapLines, 1, -1 do
-					local gradient = gapLines[index]
-					if gradient.Parent then
-						local sweep = (os.clock() * 0.32) % 2 - 1
-						gradient.Offset = Vector2.new(sweep, 0)
-					else
-						table.remove(gapLines, index)
-					end
-				end
-			end)
 
 			local isCollapsed = false
 			local function UpdateSectionSize()
