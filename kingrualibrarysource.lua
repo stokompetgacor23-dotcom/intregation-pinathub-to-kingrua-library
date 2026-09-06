@@ -1593,9 +1593,9 @@ function Library:NewWindow(ConfigWindow)
 			if Config.NeonGapLines == false then return end
 			local gapLine = Instance.new("Frame")
 			gapLine.Name = "SectionNeonGapLine"
-			gapLine.BackgroundColor3 = Color3.fromRGB(150, 70, 230)
+			gapLine.BackgroundTransparency = 1
 			gapLine.BorderSizePixel = 0
-			gapLine.Size = UDim2.new(1, -18, 0, 2)
+			gapLine.Size = UDim2.new(1, -18, 0, 3)
 			gapLine.Position = UDim2.new(0, 9, 0, 0)
 			gapLine.LayoutOrder = sectionOrder * 2 - 1
 			gapLine.ZIndex = 3
@@ -1604,22 +1604,32 @@ function Library:NewWindow(ConfigWindow)
 			local gapGradient = Instance.new("UIGradient")
 			gapGradient.Name = "MovingNeonTrace"
 			gapGradient.Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(105, 45, 175)),
-				ColorSequenceKeypoint.new(0.38, Color3.fromRGB(105, 45, 175)),
-				ColorSequenceKeypoint.new(0.48, Color3.fromRGB(198, 110, 255)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 235, 255)),
-				ColorSequenceKeypoint.new(0.52, Color3.fromRGB(198, 110, 255)),
-				ColorSequenceKeypoint.new(0.62, Color3.fromRGB(105, 45, 175)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(105, 45, 175)),
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(0.16, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(0.22, Color3.fromRGB(205, 125, 255)),
+				ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 245, 255)),
+				ColorSequenceKeypoint.new(0.28, Color3.fromRGB(205, 125, 255)),
+				ColorSequenceKeypoint.new(0.34, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(0.47, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(0.53, Color3.fromRGB(205, 125, 255)),
+				ColorSequenceKeypoint.new(0.56, Color3.fromRGB(255, 245, 255)),
+				ColorSequenceKeypoint.new(0.59, Color3.fromRGB(205, 125, 255)),
+				ColorSequenceKeypoint.new(0.66, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(168, 85, 247)),
 			})
 			gapGradient.Transparency = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.12),
-				NumberSequenceKeypoint.new(0.38, 0.12),
-				NumberSequenceKeypoint.new(0.48, 0.02),
-				NumberSequenceKeypoint.new(0.50, 0),
-				NumberSequenceKeypoint.new(0.52, 0.02),
-				NumberSequenceKeypoint.new(0.62, 0.12),
-				NumberSequenceKeypoint.new(1, 0.12),
+				NumberSequenceKeypoint.new(0, 1),
+				NumberSequenceKeypoint.new(0.16, 1),
+				NumberSequenceKeypoint.new(0.22, 0.35),
+				NumberSequenceKeypoint.new(0.25, 0),
+				NumberSequenceKeypoint.new(0.28, 0.35),
+				NumberSequenceKeypoint.new(0.34, 1),
+				NumberSequenceKeypoint.new(0.47, 1),
+				NumberSequenceKeypoint.new(0.53, 0.35),
+				NumberSequenceKeypoint.new(0.56, 0),
+				NumberSequenceKeypoint.new(0.59, 0.35),
+				NumberSequenceKeypoint.new(0.66, 1),
+				NumberSequenceKeypoint.new(1, 1),
 			})
 			gapGradient.Parent = gapLine
 			table.insert(sectionGapLines, gapGradient)
