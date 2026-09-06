@@ -1,6 +1,6 @@
 -- ==============================================================================
--- PINATHUB X KINGRUA UI LIBRARY — MENG HUB MODERN EDITION
--- Official Pinathub Neon Identity & Meng Hub Glassmorphism Theme System
+-- PINATHUB X KINGRUA UI LIBRARY — PinatHub MODERN EDITION
+-- Official Pinathub Neon Identity & PinatHub Glassmorphism Theme System
 -- Full Topbar/Menu Overlay Capability (IgnoreGuiInset = true, DisplayOrder = 999999)
 -- Ultra-Smooth Micro-Animations, Rich Elements & Complete KingRua Compatibility
 -- ==============================================================================
@@ -115,7 +115,7 @@ local function DetectExecutor()
 end
 
 -- ==============================================================================
--- 2. COLOR PALETTE: MENG HUB DARK OBSIDIAN & AMETHYST PURPLE
+-- 2. COLOR PALETTE: PinatHub DARK OBSIDIAN & AMETHYST PURPLE
 -- ==============================================================================
 local Theme = {
 	Background = Color3.fromRGB(15, 14, 20),
@@ -359,13 +359,13 @@ function Library:Notify(config)
 end
 
 -- ==============================================================================
--- 5. WINDOW CREATION (MENG HUB COMPACT DIMENSIONS & MODERN STYLING)
+-- 5. WINDOW CREATION (PinatHub COMPACT DIMENSIONS & MODERN STYLING)
 -- ==============================================================================
 function Library:NewWindow(ConfigWindow)
 	local Config = self:MakeConfig({
 		Title = "Pinathub",
-		Description = "Peacefull Community",
-		Size = UDim2.fromOffset(630, 390), -- Compact Meng Hub landscape proportions
+		Description = "PinatHub Community",
+		Size = UDim2.fromOffset(630, 390), -- Compact PinatHub landscape proportions
 		Logo = PINATHUB_LOGO
 	}, ConfigWindow or {})
 
@@ -532,88 +532,49 @@ function Library:NewWindow(ConfigWindow)
 	WindowBackgroundLogo.ScaleType = Enum.ScaleType.Fit
 	WindowBackgroundLogo.ZIndex = 2
 
-	-- 4. Floating Launcher Button (Modern Sleek Glowing Glass Pill)
-	local LauncherButton = Instance.new("ImageButton")
-	LauncherButton.Name = "LauncherButton"
-	LauncherButton.Parent = ScreenGui
-	LauncherButton.AnchorPoint = Vector2.new(0, 0.5)
-	LauncherButton.Position = UDim2.new(0, 18, 0.5, 0)
-	LauncherButton.Size = UDim2.new(0, 52, 0, 52)
-	LauncherButton.BackgroundColor3 = Theme.Header
-	LauncherButton.BackgroundTransparency = 0.2
-	LauncherButton.BorderSizePixel = 0
-	LauncherButton.AutoButtonColor = false
-	LauncherButton.Visible = false
-	LauncherButton.ZIndex = 50
+	-- 4. Floating Launcher Button (PinatHub User Spec: 50x50, white bg, green stroke, draggable)
+	local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+	local MainGui = Instance.new("ScreenGui")
+	MainGui.Name = "MainGui"
+	MainGui.ResetOnSpawn = false
+	MainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	pcall(function() MainGui.Parent = game:GetService("CoreGui") end)
+	if not MainGui.Parent then
+		MainGui.Parent = PlayerGui
+	end
 
-	local LauncherCorner = Instance.new("UICorner")
-	LauncherCorner.CornerRadius = UDim.new(1, 0)
-	LauncherCorner.Parent = LauncherButton
+	-- Buat ImageButton untuk toggle (buka/tutup) dengan 1 icon permanen
+	local ToggleButton = Instance.new("ImageButton")
+	ToggleButton.Name = "ToggleButton"
+	ToggleButton.Parent = MainGui
+	ToggleButton.Size = UDim2.new(0, 50, 0, 50)
+	ToggleButton.Position = UDim2.new(0.5, -25, 0.5, -25)
+	ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ToggleButton.BackgroundTransparency = 0
+	ToggleButton.BorderSizePixel = 0
+	ToggleButton.Image = PINATHUB_LOGO  -- Icon permanen PinatHub
+	ToggleButton.ScaleType = Enum.ScaleType.Fit
+	ToggleButton.ZIndex = 50
 
-	local LauncherStroke = Instance.new("UIStroke")
-	LauncherStroke.Color = Theme.Accent
-	LauncherStroke.Thickness = 1.8
-	LauncherStroke.Transparency = 0.25
-	LauncherStroke.Parent = LauncherButton
+	-- Tambahkan corner biar icon berbentuk bulat
+	local Corner = Instance.new("UICorner")
+	Corner.Parent = ToggleButton
+	Corner.CornerRadius = UDim.new(1, 0)
 
-	local LauncherLogoImg = Instance.new("ImageLabel")
-	LauncherLogoImg.Name = "Logo"
-	LauncherLogoImg.Parent = LauncherButton
-	LauncherLogoImg.AnchorPoint = Vector2.new(0.5, 0.5)
-	LauncherLogoImg.Position = UDim2.fromScale(0.5, 0.5)
-	LauncherLogoImg.Size = UDim2.new(0, 32, 0, 32)
-	LauncherLogoImg.BackgroundTransparency = 1
-	LauncherLogoImg.Image = PINATHUB_LOGO
-	LauncherLogoImg.ImageColor3 = Color3.fromRGB(255, 255, 255)
-	LauncherLogoImg.ScaleType = Enum.ScaleType.Fit
+	-- Tambahkan stroke outline hijau
+	local Stroke = Instance.new("UIStroke")
+	Stroke.Parent = ToggleButton
+	Stroke.Thickness = 2
+	Stroke.Color = Color3.fromRGB(0, 255, 0)
 
-	local LauncherShadow = Instance.new("ImageLabel")
-	LauncherShadow.Name = "Shadow"
-	LauncherShadow.Parent = LauncherButton
-	LauncherShadow.AnchorPoint = Vector2.new(0.5, 0.5)
-	LauncherShadow.Position = UDim2.fromScale(0.5, 0.5)
-	LauncherShadow.Size = UDim2.new(1, 24, 1, 24)
-	LauncherShadow.BackgroundTransparency = 1
-	LauncherShadow.Image = "rbxassetid://6015897843"
-	LauncherShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-	LauncherShadow.ImageTransparency = 0.45
-	LauncherShadow.ScaleType = Enum.ScaleType.Slice
-	LauncherShadow.SliceCenter = Rect.new(49, 49, 450, 450)
-	LauncherShadow.ZIndex = 49
-
-	self:MakeDraggable(LauncherButton, LauncherButton)
-
-	-- Pulse / Breathing Glow Idle Animation
-	task.spawn(function()
-		while ScreenGui and ScreenGui.Parent do
-			local t1 = TweenService:Create(LauncherStroke, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Transparency = 0.55, Color = Theme.Accent })
-			t1:Play()
-			task.wait(1.6)
-			local t2 = TweenService:Create(LauncherStroke, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Transparency = 0.15, Color = Theme.AccentGlow })
-			t2:Play()
-			task.wait(1.6)
-		end
-	end)
-
-	LauncherButton.MouseEnter:Connect(function()
-		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 58, 0, 58) }):Play()
-		TweenService:Create(LauncherLogoImg, TweenInfoSpring, { Size = UDim2.new(0, 36, 0, 36), Rotation = 8 }):Play()
-		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.AccentGlow, Transparency = 0.05 }):Play()
-	end)
-	LauncherButton.MouseLeave:Connect(function()
-		TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 52, 0, 52) }):Play()
-		TweenService:Create(LauncherLogoImg, TweenInfoSpring, { Size = UDim2.new(0, 32, 0, 32), Rotation = 0 }):Play()
-		TweenService:Create(LauncherStroke, TweenInfoFast, { Color = Theme.Accent, Transparency = 0.25 }):Play()
-	end)
-
-	-- 5. Window State Controllers
-	local isWindowOpen = true
+	-- Variable untuk tracking status window
+	local WindowOpen = true
 	local isMaximized = false
 	local originalSize = DropShadowHolder.Size
 
+	-- Fungsi toggle (icon tetap sama)
 	local function OpenWindow()
-		if isWindowOpen then return end
-		isWindowOpen = true
+		WindowOpen = true
 		DropShadowHolder.Visible = true
 		UIScale.Scale = 0.92
 		MainWindow.BackgroundTransparency = 0.5
@@ -622,28 +583,68 @@ function Library:NewWindow(ConfigWindow)
 		TweenService:Create(UIScale, TweenInfoSpring, { Scale = 1 }):Play()
 		TweenService:Create(MainWindow, TweenInfoSmooth, { BackgroundTransparency = 0.08 }):Play()
 		TweenService:Create(DropShadow, TweenInfoSmooth, { ImageTransparency = 0.35 }):Play()
-
-		local hideLauncher = TweenService:Create(LauncherButton, TweenInfoFast, { Size = UDim2.new(0, 0, 0, 0) })
-		hideLauncher:Play()
-		hideLauncher.Completed:Connect(function()
-			LauncherButton.Visible = false
-		end)
 	end
 
 	local function CloseWindow()
-		if not isWindowOpen then return end
-		isWindowOpen = false
+		WindowOpen = false
 		local closeTween = TweenService:Create(UIScale, TweenInfoFast, { Scale = 0.92 })
 		TweenService:Create(MainWindow, TweenInfoFast, { BackgroundTransparency = 1 }):Play()
 		TweenService:Create(DropShadow, TweenInfoFast, { ImageTransparency = 1 }):Play()
 		closeTween:Play()
 		closeTween.Completed:Connect(function()
-			DropShadowHolder.Visible = false
-			LauncherButton.Visible = true
-			LauncherButton.Size = UDim2.new(0, 0, 0, 0)
-			TweenService:Create(LauncherButton, TweenInfoSpring, { Size = UDim2.new(0, 52, 0, 52) }):Play()
+			if not WindowOpen then
+				DropShadowHolder.Visible = false
+			end
 		end)
 	end
+
+	ToggleButton.MouseButton1Click:Connect(function()
+		WindowOpen = not WindowOpen
+		if WindowOpen then
+			OpenWindow()
+		else
+			CloseWindow()
+		end
+	end)
+
+	-- Hover effects on ToggleButton
+	ToggleButton.MouseEnter:Connect(function()
+		TweenService:Create(ToggleButton, TweenInfoSpring, { Size = UDim2.new(0, 56, 0, 56) }):Play()
+	end)
+	ToggleButton.MouseLeave:Connect(function()
+		TweenService:Create(ToggleButton, TweenInfoSpring, { Size = UDim2.new(0, 50, 0, 50) }):Play()
+	end)
+
+	-- Untuk membuat tombol ini draggable (bisa digeser)
+	local Dragging = false
+	local DragStart = nil
+	local StartPos = nil
+
+	ToggleButton.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			Dragging = true
+			DragStart = input.Position
+			StartPos = ToggleButton.Position
+		end
+	end)
+
+	ToggleButton.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			Dragging = false
+		end
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if Dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local Delta = input.Position - DragStart
+			ToggleButton.Position = UDim2.new(
+				StartPos.X.Scale,
+				StartPos.X.Offset + Delta.X,
+				StartPos.Y.Scale,
+				StartPos.Y.Offset + Delta.Y
+			)
+		end
+	end)
 
 	local function ToggleMaximize()
 		isMaximized = not isMaximized
@@ -651,9 +652,7 @@ function Library:NewWindow(ConfigWindow)
 		TweenService:Create(DropShadowHolder, TweenInfoSpring, { Size = targetSize }):Play()
 	end
 
-	LauncherButton.MouseButton1Click:Connect(OpenWindow)
-
-	-- 6. Header (Meng Hub Style: Logo + Title + Separator + Subtitle | Pills & Actions)
+	-- 6. Header (PinatHub Style: Logo + Title + Separator + Subtitle | Pills & Actions)
 	local Header = Instance.new("Frame")
 	Header.Name = "Header"
 	Header.Parent = MainWindow
@@ -787,7 +786,7 @@ function Library:NewWindow(ConfigWindow)
 		closeTween:Play()
 		closeTween.Completed:Connect(function()
 			pcall(function()
-				if LauncherButton then LauncherButton:Destroy() end
+				if MainGui then MainGui:Destroy() end
 				if ScreenGui then ScreenGui:Destroy() end
 			end)
 		end)
@@ -857,7 +856,7 @@ function Library:NewWindow(ConfigWindow)
 	end)
 	CloseBtn.MouseButton1Click:Connect(FullShutdownWindow)
 
-	-- 7. Sidebar Setup (Meng Hub Width: 155px)
+	-- 7. Sidebar Setup (PinatHub Width: 155px)
 	local Sidebar = Instance.new("Frame")
 	Sidebar.Name = "Sidebar"
 	Sidebar.Parent = MainWindow
@@ -876,7 +875,7 @@ function Library:NewWindow(ConfigWindow)
 	SidebarDivider.Position = UDim2.new(1, -1, 0, 0)
 	SidebarDivider.Size = UDim2.new(0, 1, 1, 0)
 
-	-- Search Box in Sidebar (Meng Hub Pill Style)
+	-- Search Box in Sidebar (PinatHub Pill Style)
 	local SearchFrame = Instance.new("Frame")
 	SearchFrame.Name = "SearchFrame"
 	SearchFrame.Parent = Sidebar
@@ -956,7 +955,7 @@ function Library:NewWindow(ConfigWindow)
 
 	self:UpdateScrolling(TabList, TabListLayout)
 
-	-- Bottom User Profile (Meng Hub Feature: Avatar Headshot + "Welcome, <username>")
+	-- Bottom User Profile (PinatHub Feature: Avatar Headshot + "Welcome, <username>")
 	local ProfileFooter = Instance.new("Frame")
 	ProfileFooter.Name = "ProfileFooter"
 	ProfileFooter.Parent = Sidebar
@@ -1035,7 +1034,7 @@ function Library:NewWindow(ConfigWindow)
 	UIPageLayout.EasingDirection = Enum.EasingDirection.Out
 	UIPageLayout.TweenTime = 0.22
 
-	-- 9. Right Popout Drawer for Dropdown (Meng Hub Screenshot 2 Style)
+	-- 9. Right Popout Drawer for Dropdown (PinatHub Screenshot 2 Style)
 	local PopoutDrawer = Instance.new("Frame")
 	PopoutDrawer.Name = "PopoutDrawer"
 	PopoutDrawer.Parent = MainWindow
@@ -1210,7 +1209,7 @@ function Library:NewWindow(ConfigWindow)
 		icon = ResolveIcon(icon, title)
 		descText = descText or title
 
-		-- Tab Button in Sidebar (Meng Hub: Left Accent Indicator Bar on Active)
+		-- Tab Button in Sidebar (PinatHub: Left Accent Indicator Bar on Active)
 		local TabBtn = Instance.new("TextButton")
 		TabBtn.Name = "TabBtn_" .. title
 		TabBtn.Parent = TabList
@@ -1226,7 +1225,7 @@ function Library:NewWindow(ConfigWindow)
 		TabBtnCorner.CornerRadius = UDim.new(0, 6)
 		TabBtnCorner.Parent = TabBtn
 
-		-- Meng Hub Left Accent Indicator Bar
+		-- PinatHub Left Accent Indicator Bar
 		local ActiveIndicator = Instance.new("Frame")
 		ActiveIndicator.Name = "ActiveIndicator"
 		ActiveIndicator.Parent = TabBtn
@@ -1341,7 +1340,7 @@ function Library:NewWindow(ConfigWindow)
 		end
 
 		-- ==============================================================================
-		-- 11. SECTION CREATION (Meng Hub Style: Accent Title + Right Chevron)
+		-- 11. SECTION CREATION (PinatHub Style: Accent Title + Right Chevron)
 		-- ==============================================================================
 		local TabObj = {}
 
@@ -1371,7 +1370,7 @@ function Library:NewWindow(ConfigWindow)
 			SecStroke.Thickness = 1
 			SecStroke.Parent = SectionCard
 
-			-- Section Header (Meng Hub: Bold Purple Title + Right Chevron Down "v")
+			-- Section Header (PinatHub: Bold Purple Title + Right Chevron Down "v")
 			local SecHeader = Instance.new("TextButton")
 			SecHeader.Name = "Header"
 			SecHeader.Parent = SectionCard
@@ -1388,7 +1387,7 @@ function Library:NewWindow(ConfigWindow)
 			SecTitleLabel.Size = UDim2.new(1, -40, 1, 0)
 			SecTitleLabel.Font = Enum.Font.GothamBold
 			SecTitleLabel.Text = secTitle
-			SecTitleLabel.TextColor3 = Theme.AccentGlow -- Meng Hub Purple Accent Title
+			SecTitleLabel.TextColor3 = Theme.AccentGlow -- PinatHub Purple Accent Title
 			SecTitleLabel.TextSize = 13
 			SecTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -1452,11 +1451,11 @@ function Library:NewWindow(ConfigWindow)
 			table.insert(tabData.Sections, secData)
 
 			-- ==============================================================================
-			-- 12. SECTION CONTROLS (MENG HUB MODERN DESIGN)
+			-- 12. SECTION CONTROLS (PinatHub MODERN DESIGN)
 			-- ==============================================================================
 			local SecObj = {}
 
-			-- 12.1 TOGGLE SWITCH (Meng Hub Style: Optional Inline Keybind [None] + Elastic Switch)
+			-- 12.1 TOGGLE SWITCH (PinatHub Style: Optional Inline Keybind [None] + Elastic Switch)
 			function SecObj:AddToggle(toggleConfig)
 				local cfg = Library:MakeConfig({
 					Title = "Toggle",
@@ -1532,7 +1531,7 @@ function Library:NewWindow(ConfigWindow)
 				RCLayout.SortOrder = Enum.SortOrder.LayoutOrder
 				RCLayout.Padding = UDim.new(0, 8)
 
-				-- Keybind Pill [None] (Meng Hub Screenshot 1)
+				-- Keybind Pill [None] (PinatHub Screenshot 1)
 				local currentBind = cfg.Keybind or cfg.Bind
 				local KeybindBtn = nil
 
@@ -1660,7 +1659,7 @@ function Library:NewWindow(ConfigWindow)
 				return ToggleState
 			end
 
-			-- 12.2 ACTION BUTTON (Meng Hub Style: Clean Row with optional Right Icon)
+			-- 12.2 ACTION BUTTON (PinatHub Style: Clean Row with optional Right Icon)
 			function SecObj:AddButton(btnConfig)
 				local cfg = Library:MakeConfig({
 					Title = "Button",
@@ -1753,7 +1752,7 @@ function Library:NewWindow(ConfigWindow)
 				return BtnFrame
 			end
 
-			-- 12.3 RICH PARAGRAPH (Meng Hub Screenshot 3: Multi-line description card)
+			-- 12.3 RICH PARAGRAPH (PinatHub Screenshot 3: Multi-line description card)
 			function SecObj:AddParagraph(paraConfig)
 				local cfg = Library:MakeConfig({
 					Title = "Information",
@@ -1793,6 +1792,7 @@ function Library:NewWindow(ConfigWindow)
 				TitleLabel.TextColor3 = Theme.NeonWhite
 				TitleLabel.TextSize = 12
 				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+				TitleLabel.RichText = true  -- Allow <font color='...'> tags in title
 
 				local ContentLabel = Instance.new("TextLabel")
 				ContentLabel.Name = "Content"
@@ -1807,6 +1807,7 @@ function Library:NewWindow(ConfigWindow)
 				ContentLabel.TextWrapped = true
 				ContentLabel.TextXAlignment = Enum.TextXAlignment.Left
 				ContentLabel.TextYAlignment = Enum.TextYAlignment.Top
+				ContentLabel.RichText = true  -- CRITICAL: Allow <font color='#...'> tags to render
 
 				local function ResizePara()
 					ContentLabel.Size = UDim2.new(1, -24, 0, 1000)
@@ -1844,13 +1845,161 @@ function Library:NewWindow(ConfigWindow)
 				return ParaObj
 			end
 
-			-- 12.4 DISCORD / COMMUNITY CARD (Meng Hub Screenshot 3: Discord card with stats & COPY LINK)
+			-- 12.4 REAL-TIME DATA GRAPH (Animated Bar Chart Telemetry)
+			function SecObj:AddGraph(graphConfig)
+				local cfg = Library:MakeConfig({
+					Title = "Data Graph",
+					BarCount = 14,
+					MaxValue = 100,
+					Height = 110,
+					BarColor = Theme.Accent,
+					BarGlow = Theme.AccentGlow,
+					Unit = "/s"
+				}, graphConfig or {})
+
+				local ItemFrame = Instance.new("Frame")
+				ItemFrame.Name = "Graph_" .. cfg.Title
+				ItemFrame.Parent = ControlsContainer
+				ItemFrame.BackgroundColor3 = Theme.SurfaceHover
+				ItemFrame.BackgroundTransparency = 0.5
+				ItemFrame.BorderSizePixel = 0
+				ItemFrame.Size = UDim2.new(1, 0, 0, cfg.Height)
+				ItemFrame.ClipsDescendants = true
+
+				local ItemCorner = Instance.new("UICorner")
+				ItemCorner.CornerRadius = UDim.new(0, 8)
+				ItemCorner.Parent = ItemFrame
+
+				local ItemStroke = Instance.new("UIStroke")
+				ItemStroke.Color = Theme.BorderSoft
+				ItemStroke.Thickness = 1
+				ItemStroke.Transparency = 0.5
+				ItemStroke.Parent = ItemFrame
+
+				-- Header Info
+				local TitleLabel = Instance.new("TextLabel")
+				TitleLabel.Name = "Title"
+				TitleLabel.Parent = ItemFrame
+				TitleLabel.BackgroundTransparency = 1
+				TitleLabel.Position = UDim2.new(0, 12, 0, 8)
+				TitleLabel.Size = UDim2.new(0.6, 0, 0, 16)
+				TitleLabel.Font = Enum.Font.GothamBold
+				TitleLabel.Text = string.upper(cfg.Title)
+				TitleLabel.TextColor3 = Theme.TextSecondary
+				TitleLabel.TextSize = 10
+				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+				local ValueLabel = Instance.new("TextLabel")
+				ValueLabel.Name = "Value"
+				ValueLabel.Parent = ItemFrame
+				ValueLabel.AnchorPoint = Vector2.new(1, 0)
+				ValueLabel.Position = UDim2.new(1, -12, 0, 8)
+				ValueLabel.Size = UDim2.new(0.35, 0, 0, 16)
+				ValueLabel.BackgroundTransparency = 1
+				ValueLabel.Font = Enum.Font.GothamBold
+				ValueLabel.Text = "0" .. cfg.Unit
+				ValueLabel.TextColor3 = Theme.AccentGlow
+				ValueLabel.TextSize = 11
+				ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+				-- Bars Container
+				local ChartFrame = Instance.new("Frame")
+				ChartFrame.Name = "Bars"
+				ChartFrame.Parent = ItemFrame
+				ChartFrame.Position = UDim2.new(0, 12, 0, 30)
+				ChartFrame.Size = UDim2.new(1, -24, 0, cfg.Height - 38)
+				ChartFrame.BackgroundTransparency = 1
+
+				local ChartLayout = Instance.new("UIListLayout")
+				ChartLayout.Parent = ChartFrame
+				ChartLayout.FillDirection = Enum.FillDirection.Horizontal
+				ChartLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+				ChartLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+				ChartLayout.Padding = UDim.new(0, 5)
+
+				local history = {}
+				local barFills = {}
+				for i = 1, cfg.BarCount do
+					table.insert(history, 0)
+
+					local track = Instance.new("Frame")
+					track.Name = "Track_" .. i
+					track.Parent = ChartFrame
+					track.BackgroundColor3 = Theme.SurfaceActive
+					track.BackgroundTransparency = 0.4
+					track.BorderSizePixel = 0
+					track.Size = UDim2.new(0, 18, 1, 0)
+
+					local trCorner = Instance.new("UICorner")
+					trCorner.CornerRadius = UDim.new(0, 4)
+					trCorner.Parent = track
+
+					local fill = Instance.new("Frame")
+					fill.Name = "Fill"
+					fill.Parent = track
+					fill.AnchorPoint = Vector2.new(0, 1)
+					fill.Position = UDim2.new(0, 0, 1, 0)
+					fill.Size = UDim2.new(1, 0, 0.08, 0)
+					fill.BackgroundColor3 = cfg.BarColor
+					fill.BorderSizePixel = 0
+
+					local fCorner = Instance.new("UICorner")
+					fCorner.CornerRadius = UDim.new(0, 4)
+					fCorner.Parent = fill
+
+					local barGrad = Instance.new("UIGradient")
+					barGrad.Color = ColorSequence.new({
+						ColorSequenceKeypoint.new(0, cfg.BarGlow),
+						ColorSequenceKeypoint.new(1, cfg.BarColor)
+					})
+					barGrad.Rotation = 90
+					barGrad.Parent = fill
+
+					table.insert(barFills, fill)
+				end
+
+				local GraphObj = {
+					MaxValue = cfg.MaxValue,
+					Unit = cfg.Unit
+				}
+
+				function GraphObj:Push(val)
+					val = tonumber(val) or 0
+					table.remove(history, 1)
+					table.insert(history, val)
+					ValueLabel.Text = tostring(math.floor(val)) .. self.Unit
+
+					for i, fill in ipairs(barFills) do
+						local hVal = history[i] or 0
+						local ratio = math.clamp(hVal / math.max(self.MaxValue, 1), 0.08, 1)
+						TweenService:Create(fill, TweenInfoFast, { Size = UDim2.new(1, 0, ratio, 0) }):Play()
+					end
+				end
+
+				function GraphObj:SetRate(val)
+					self:Push(val)
+				end
+
+				function GraphObj:SetMax(newMax)
+					self.MaxValue = tonumber(newMax) or 100
+				end
+
+				function GraphObj:SetTitle(newTitle)
+					TitleLabel.Text = string.upper(tostring(newTitle))
+				end
+
+				table.insert(secData.Elements, { Title = cfg.Title, Frame = ItemFrame })
+				return GraphObj
+			end
+
+
+			-- 12.4 DISCORD / COMMUNITY CARD (PinatHub Screenshot 3: Discord card with stats & COPY LINK)
 			function SecObj:AddDiscordCard(discordConfig)
 				local cfg = Library:MakeConfig({
-					Title = "Pinathub | Peacefull Community",
+					Title = "PinatHub Official Community",
 					Members = "30522",
 					Online = "2309",
-					Invite = "https://discord.gg/pinathub",
+					Invite = "https://discord.gg/ysHZCYFaX7",
 					Callback = function() end
 				}, discordConfig or {})
 
@@ -2098,7 +2247,7 @@ function Library:NewWindow(ConfigWindow)
 				return SliderState
 			end
 
-			-- 12.6 DROPDOWN (Meng Hub Screenshot 1 & 2: Pill Row that triggers Popout Drawer on right)
+			-- 12.6 DROPDOWN (PinatHub Screenshot 1 & 2: Pill Row that triggers Popout Drawer on right)
 			function SecObj:AddDropdown(dropdownConfig)
 				local cfg = Library:MakeConfig({
 					Title = "Dropdown",
@@ -2219,7 +2368,7 @@ function Library:NewWindow(ConfigWindow)
 
 				UpdatePillDisplay()
 
-				-- Open Popout Drawer (Meng Hub Screenshot 2)
+				-- Open Popout Drawer (PinatHub Screenshot 2)
 				local renderedOptions = {}
 				local function OpenDrawer()
 					for _, item in ipairs(renderedOptions) do item:Destroy() end
@@ -2329,7 +2478,7 @@ function Library:NewWindow(ConfigWindow)
 				return DropdownObj
 			end
 
-			-- 12.7 TEXT INPUT (Meng Hub Style)
+			-- 12.7 TEXT INPUT (PinatHub Style)
 			function SecObj:AddInput(inputConfig)
 				local cfg = Library:MakeConfig({
 					Title = "Input",
@@ -2837,6 +2986,8 @@ function Library:NewWindow(ConfigWindow)
 			SecObj.Toggle = SecObj.AddToggle
 			SecObj.Button = SecObj.AddButton
 			SecObj.Paragraph = SecObj.AddParagraph
+			SecObj.Graph = SecObj.AddGraph
+			SecObj.AddGraph = SecObj.AddGraph
 			SecObj.DiscordCard = SecObj.AddDiscordCard
 			SecObj.CommunityCard = SecObj.AddDiscordCard
 			SecObj.AddCommunityCard = SecObj.AddDiscordCard
@@ -2882,7 +3033,6 @@ Library.CreateWindow = Library.NewWindow
 function Library:SetTheme(...) end
 function Library:AddTheme(...) end
 function Library:SetNotificationLower(...) end
-
 
 -- ================================================================
 -- PINATHUB | DRAIN WATER - COMPLETE EDITION
@@ -4010,7 +4160,7 @@ end)
 
 
 -- ================================================================
--- CREATE WINDOW (PINATHUB BRANDING - MENG HUB MODERN STYLE)
+-- CREATE WINDOW (PINATHUB BRANDING - PinatHub MODERN STYLE)
 -- ================================================================
 local Window = Library:NewWindow({
     Title = "PinatHub | Drain Water",
@@ -4622,117 +4772,16 @@ local statusPill = statsHeaderSec:AddParagraph({
 -- MODERN REAL-TIME DATA GRAPH SECTION
 local graphSection = Tabs.Stats:AddSection("Live Water Drain Rate Graph (L/s)")
 
--- Custom Real-Time Graph Component
-local graphHistory = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-local graphBars = {}
-
-local graphContainer = Instance.new("Frame")
-graphContainer.Name = "RealTimeGraphContainer"
-graphContainer.Size = UDim2.new(1, 0, 0, 110)
-graphContainer.BackgroundColor3 = Library.Theme.SurfaceHover
-graphContainer.BackgroundTransparency = 0.5
-graphContainer.BorderSizePixel = 0
-
-local gCorner = Instance.new("UICorner")
-gCorner.CornerRadius = UDim.new(0, 8)
-gCorner.Parent = graphContainer
-
-local gStroke = Instance.new("UIStroke")
-gStroke.Color = Library.Theme.BorderSoft
-gStroke.Thickness = 1
-gStroke.Parent = graphContainer
-
--- Graph Header Info
-local gTitle = Instance.new("TextLabel")
-gTitle.Name = "Title"
-gTitle.Parent = graphContainer
-gTitle.BackgroundTransparency = 1
-gTitle.Position = UDim2.new(0, 12, 0, 8)
-gTitle.Size = UDim2.new(0.6, 0, 0, 16)
-gTitle.Font = Enum.Font.GothamBold
-gTitle.Text = "DRAIN RATE THROUGHPUT"
-gTitle.TextColor3 = Library.Theme.TextSecondary
-gTitle.TextSize = 10
-gTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-local gValue = Instance.new("TextLabel")
-gValue.Name = "Value"
-gValue.Parent = graphContainer
-gValue.AnchorPoint = Vector2.new(1, 0)
-gValue.Position = UDim2.new(1, -12, 0, 8)
-gValue.Size = UDim2.new(0.35, 0, 0, 16)
-gValue.BackgroundTransparency = 1
-gValue.Font = Enum.Font.GothamBold
-gValue.Text = "0/s"
-gValue.TextColor3 = Library.Theme.AccentGlow
-gValue.TextSize = 11
-gValue.TextXAlignment = Enum.TextXAlignment.Right
-
--- Bar Chart Frame
-local chartFrame = Instance.new("Frame")
-chartFrame.Name = "Bars"
-chartFrame.Parent = graphContainer
-chartFrame.Position = UDim2.new(0, 12, 0, 32)
-chartFrame.Size = UDim2.new(1, -24, 0, 68)
-chartFrame.BackgroundTransparency = 1
-
-local chartLayout = Instance.new("UIListLayout")
-chartLayout.Parent = chartFrame
-chartLayout.FillDirection = Enum.FillDirection.Horizontal
-chartLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-chartLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-chartLayout.Padding = UDim.new(0, 6)
-
-for i = 1, #graphHistory do
-    local barTrack = Instance.new("Frame")
-    barTrack.Name = "BarTrack_" .. i
-    barTrack.Parent = chartFrame
-    barTrack.BackgroundColor3 = Library.Theme.SurfaceActive
-    barTrack.BackgroundTransparency = 0.4
-    barTrack.BorderSizePixel = 0
-    barTrack.Size = UDim2.new(0, 22, 1, 0)
-
-    local btCorner = Instance.new("UICorner")
-    btCorner.CornerRadius = UDim.new(0, 4)
-    btCorner.Parent = barTrack
-
-    local barFill = Instance.new("Frame")
-    barFill.Name = "Fill"
-    barFill.Parent = barTrack
-    barFill.AnchorPoint = Vector2.new(0, 1)
-    barFill.Position = UDim2.new(0, 0, 1, 0)
-    barFill.Size = UDim2.new(1, 0, 0.08, 0)
-    barFill.BackgroundColor3 = Library.Theme.Accent
-    barFill.BorderSizePixel = 0
-
-    local bfCorner = Instance.new("UICorner")
-    bfCorner.CornerRadius = UDim.new(0, 4)
-    bfCorner.Parent = barFill
-
-    local barGrad = Instance.new("UIGradient")
-    barGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Library.Theme.AccentGlow),
-        ColorSequenceKeypoint.new(1, Library.Theme.Accent)
-    })
-    barGrad.Rotation = 90
-    barGrad.Parent = barFill
-
-    table.insert(graphBars, barFill)
-end
-
--- Insert graph into section container
-pcall(function()
-    local page = Tabs.Stats.Page
-    if page then
-        local secFrame = page:FindFirstChild("Section_Live Water Drain Rate Graph (L/s)")
-        if secFrame then
-            local ctrls = secFrame:FindFirstChild("Controls")
-            if ctrls then
-                graphContainer.Parent = ctrls
-            end
-        end
-    end
-end)
+-- Built-in Real-Time Graph Component
+local drainGraph = graphSection:AddGraph({
+    Title = "DRAIN RATE THROUGHPUT",
+    BarCount = 14,
+    MaxValue = 100,
+    Height = 110,
+    BarColor = Library.Theme.Accent,
+    BarGlow = Library.Theme.AccentGlow,
+    Unit = "/s"
+})
 
 -- KPI METRICS CARDS
 local metricsSec = Tabs.Stats:AddSection("Key Performance Metrics")
@@ -4764,6 +4813,7 @@ local diagnosticCard = metricsSec:AddParagraph({
 
 -- REAL-TIME ANIMATED TELEMETRY WORKER
 task.spawn(function()
+    local graphHistory = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     while alive() do
         local rate = tonumber(STATE.rate) or 0
         table.remove(graphHistory, 1)
@@ -4775,14 +4825,9 @@ task.spawn(function()
             if val > maxVal then maxVal = val end
         end
 
-        gValue.Text = short(rate) .. "/s"
-
-        -- Animate bars smoothly
-        for i, fill in ipairs(graphBars) do
-            local heightRatio = math.clamp(graphHistory[i] / maxVal, 0.08, 1)
-            TweenService:Create(fill, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Size = UDim2.new(1, 0, heightRatio, 0)
-            }):Play()
+        if drainGraph then
+            drainGraph:SetMax(maxVal)
+            drainGraph:Push(rate)
         end
 
         -- Update KPI Cards
@@ -4835,17 +4880,17 @@ communitySection:AddDiscordCard({
     Title = "PinatHub | Community Hub",
     Members = "10.000+",
     Online = "500+",
-    Invite = "https://discord.gg/eDbaHKEf7G"
+    Invite = "https://discord.gg/ysHZCYFaX7"
 })
 
 communitySection:AddSeperator()
 
 communitySection:AddButton({
-    Title = "WhatsApp Group",
-    Description = "Join our official WhatsApp community",
+    Title = "WhatsApp XploitForce (Komunitas Utama)",
+    Description = "Komunitas Utama XploitForce WhatsApp",
     Callback = function()
         if set_clipboard then
-            set_clipboard("https://chat.whatsapp.com/I8hG44FLgrRAwQcS3lvEft")
+            set_clipboard("https://chat.whatsapp.com/CjbAhfWTAKx1mU3O6KEJgp")
         end
         Library:Notify({
             Title = "Copied!",
@@ -4858,10 +4903,10 @@ communitySection:AddButton({
 
 communitySection:AddButton({
     Title = "Discord Server",
-    Description = "https://discord.gg/eDbaHKEf7G",
+    Description = "https://discord.gg/ysHZCYFaX7",
     Callback = function()
         if set_clipboard then
-            set_clipboard("https://discord.gg/eDbaHKEf7G")
+            set_clipboard("https://discord.gg/ysHZCYFaX7")
         end
         Library:Notify({
             Title = "Copied!",
@@ -4893,7 +4938,7 @@ communitySection:AddButton({
     Description = "Subscribe for video showcases & tutorials",
     Callback = function()
         if set_clipboard then
-            set_clipboard("https://youtube.com/@viunze")
+            set_clipboard("https://www.youtube.com/@viunzee1")
         end
         Library:Notify({
             Title = "Copied!",
