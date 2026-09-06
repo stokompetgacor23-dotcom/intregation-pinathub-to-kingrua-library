@@ -1582,7 +1582,69 @@ function Library:NewWindow(ConfigWindow)
 		local PageListLayout = Instance.new("UIListLayout")
 		PageListLayout.Parent = Page
 		PageListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-		PageListLayout.Padding = UDim.new(0, 10)
+		PageListLayout.Padding = UDim.new(0, 8)
+
+		local sectionOrder = 0
+		local sectionGapLines = {}
+		local sectionNeonConn
+
+		local function AddSectionGapLine()
+			local gapLine = Instance.new("Frame")
+			gapLine.Name = "SectionNeonGapLine"
+			gapLine.BackgroundColor3 = Color3.fromRGB(40, 30, 55)
+			gapLine.BorderSizePixel = 0
+			gapLine.Size = UDim2.new(1, 0, 0, 1)
+			gapLine.LayoutOrder = sectionOrder * 2 - 1
+			gapLine.ZIndex = 3
+			gapLine.Parent = Page
+
+			local gapGradient = Instance.new("UIGradient")
+			gapGradient.Name = "MovingNeonTrace"
+			gapGradient.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 30, 55)),
+				ColorSequenceKeypoint.new(0.42, Color3.fromRGB(40, 30, 55)),
+				ColorSequenceKeypoint.new(0.49, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(235, 210, 255)),
+				ColorSequenceKeypoint.new(0.51, Color3.fromRGB(168, 85, 247)),
+				ColorSequenceKeypoint.new(0.58, Color3.fromRGB(40, 30, 55)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 30, 55)),
+			})
+			gapGradient.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.82),
+				NumberSequenceKeypoint.new(0.42, 0.82),
+				NumberSequenceKeypoint.new(0.49, 0.1),
+				NumberSequenceKeypoint.new(0.50, 0),
+				NumberSequenceKeypoint.new(0.51, 0.1),
+				NumberSequenceKeypoint.new(0.58, 0.82),
+				NumberSequenceKeypoint.new(1, 0.82),
+			})
+			gapGradient.Parent = gapLine
+			table.insert(sectionGapLines, gapGradient)
+		end
+
+		Page.ChildAdded:Connect(function(child)
+			if not child:IsA("GuiObject") or child.Name == "SectionNeonGapLine" then return end
+			sectionOrder += 1
+			child.LayoutOrder = sectionOrder * 2
+			if sectionOrder > 1 then
+				AddSectionGapLine()
+			end
+		end)
+
+		sectionNeonConn = RunService.RenderStepped:Connect(function(dt)
+			if not Page.Parent then
+				sectionNeonConn:Disconnect()
+				return
+			end
+			for index = #sectionGapLines, 1, -1 do
+				local gradient = sectionGapLines[index]
+				if gradient.Parent then
+					gradient.Rotation = (gradient.Rotation + dt * 70) % 360
+				else
+					table.remove(sectionGapLines, index)
+				end
+			end
+		end)
 
 		Library:UpdateScrolling(Page, PageListLayout)
 
