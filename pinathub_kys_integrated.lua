@@ -14,7 +14,7 @@ local Camera            = Workspace.CurrentCamera
 local Character, Humanoid, Root
 local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 local UI = {}
-local function KYS_MakeDraggable(guiObject)
+local function MakeDraggable(guiObject)
     if not guiObject or not guiObject:IsA("GuiObject") then return end
     guiObject.Active = true
     local dragging = false
@@ -77,17 +77,17 @@ if isMobile then UI.Mobile = true end
 print("[Universal] Platform:", isMobile and "MOBILE" or "PC")
 local HttpService = game:GetService("HttpService")
 local UIConfigPath = "PinatHub_HUB_UI_Theme.json"
-local KysUI_Solid = false
-local KysUI_Color = "Red"
+local Solid = false
+local ColorTheme = "Red"
 pcall(function()
     if isfile and readfile and isfile(UIConfigPath) then
         local data = HttpService:JSONDecode(readfile(UIConfigPath))
-        KysUI_Solid = data.Solid
-        KysUI_Color = data.Color or "Red"
+        Solid = data.Solid
+        ColorTheme = data.Color or "Red"
     end
 end)
-if KysUI_Color == "Default" then
-    KysUI_Color = "Red"
+if ColorTheme == "Default" then
+    ColorTheme = "Red"
 end
 local Window
 if PinatHubAdapter then
@@ -294,7 +294,8 @@ getgenv().VD = getgenv().VD or {
     RADAR_ShowWindow      = false,
     RADAR_ShowZombie      = false,
     SURV_WarnKiller       = false,
-    SURV_AutoDodgeSpear   = false
+    SURV_AutoDodgeSpear   = false,
+    InvisibilityColor     = Color3.fromRGB(255, 255, 255),
 }
 local VD = getgenv().VD
 local CrosshairGui = nil
@@ -526,7 +527,7 @@ function GetConfigList()
     if #list == 0 then table.insert(list, "Default") end
     return list
 end
-function KYS_SaveConfig(name)
+function SaveConfig(name)
     name = (name and name ~= "") and name or getgenv().CurrentConfigName
     if not name or name == "" then name = "Default" end
     local path = ConfigFolderName .. "/" .. name .. ".json"
@@ -559,7 +560,7 @@ local VD_To_Flag = {
     SURV_ShowParryCircle = "Show Parry Range Circle",
     SURV_FakeParry      = "Fake Parry (Press V)",
     SURV_FakeParryAnim  = "Fake Parry Animation",
-    SURV_FakeGen        = "Fake Generator (Press B)",
+    SURV_FakeGen        = "Fake Generator",
     SURV_AntiKnock = "Anti Knock",
     KILLER_DestroyPallets = "Destroy Pallets",
     KILLER_AutoBreakGene  = "Auto Kick Generator",
@@ -636,7 +637,7 @@ local VD_To_Flag = {
     VIS_ShowPingFPS = "Show Ping & FPS",
     VIS_ShowHookCounter = "Show Hook Counter",
 }
-function KYS_LoadConfig(name)
+function LoadConfig(name)
     name = (name and name ~= "") and name or getgenv().CurrentConfigName
     if not name or name == "" then name = "Default" end
     local path = ConfigFolderName .. "/" .. name .. ".json"
@@ -653,11 +654,11 @@ function KYS_LoadConfig(name)
                     end)
                 end
             end
-            if getgenv().KYS_SyncLoadedFeatures then pcall(getgenv().KYS_SyncLoadedFeatures) end
+            if getgenv().SyncLoadedFeatures then pcall(getgenv().SyncLoadedFeatures) end
         end
     end)
 end
-function KYS_DeleteConfig(name)
+function DeleteConfig(name)
     name = (name and name ~= "") and name or getgenv().CurrentConfigName
     if not name or name == "" or name == "Default" then return end
     local path = ConfigFolderName .. "/" .. name .. ".json"
@@ -696,7 +697,7 @@ do
 end
 getgenv().VD_CurrentSky = nil
 getgenv().VD_ParticleAnchor = nil
-local KYS_WeatherPresets = {
+local WeatherPresets = {
     ["Default"] = {},
     ["Christmas (Snow)"] = {
         Lighting = { FogColor = Color3.fromRGB(150, 180, 220), FogEnd = 200, ClockTime = 8, OutdoorAmbient = Color3.fromRGB(100, 120, 150) },
@@ -742,8 +743,8 @@ local KYS_WeatherPresets = {
     }
 }
 function VD_ApplyWeather(themeName)
-    local theme = KYS_WeatherPresets[themeName]
-    if not theme then theme = KYS_WeatherPresets["Default"] end
+    local theme = WeatherPresets[themeName]
+    if not theme then theme = WeatherPresets["Default"] end
     if getgenv().VD_CurrentSky and getgenv().VD_CurrentSky.Parent then getgenv().VD_CurrentSky:Destroy() end
     getgenv().VD_CurrentSky = nil
     if getgenv().VD_WeatherCC and getgenv().VD_WeatherCC.Parent then getgenv().VD_WeatherCC:Destroy() end
@@ -946,11 +947,11 @@ end
 function getPlayerColor(player)
     return isTeammate(player) and TeamColor or EnemyColor
 end
-local KYS_WorldReg
-getgenv().KYS_oldNamecall = nil
+local WorldReg
+getgenv().oldNamecall = nil
 function setupAntiFail()
-    if getgenv().KYS_AntiFailHooked then return end
-    getgenv().KYS_AntiFailHooked = true
+    if getgenv().AntiFailHooked then return end
+    getgenv().AntiFailHooked = true
     task.spawn(function()
         local ok, err = pcall(function()
             local Remotes = ReplicatedStorage:WaitForChild("Remotes", 10)
@@ -960,7 +961,7 @@ function setupAntiFail()
                 return
             end
             local _genv = getgenv()
-            _genv.KYS_oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+            _genv.oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
                 local method = getnamecallmethod()
                 if VD.AntiFallDamage and method == "FireServer" then
                     local ok, name = pcall(function() return self.Name:lower() end)
@@ -1001,19 +1002,19 @@ function setupAntiFail()
                                 args[1] = (targetPos - args[2]).Unit
                             end
                             setnamecallmethod(method)
-                            return _genv.KYS_oldNamecall(self, unpack(args))
+                            return _genv.oldNamecall(self, unpack(args))
                         end
                     end
                 end
                 if method == "FireServer" and not checkcaller() then
-                    local flashRemote = _genv.KYS_FlashlightActivateRemote
-                    if flashRemote and self == flashRemote and _genv.KYS_SetFlashlightAimActive then
+                    local flashRemote = _genv.FlashlightActivateRemote
+                    if flashRemote and self == flashRemote and _genv.SetFlashlightAimActive then
                         local args = { ... }
-                        pcall(_genv.KYS_SetFlashlightAimActive, args[2] == true, args[1])
+                        pcall(_genv.SetFlashlightAimActive, args[2] == true, args[1])
                     end
                 end
-                if _genv.KYS_oldNamecall then
-                    return _genv.KYS_oldNamecall(self, ...)
+                if _genv.oldNamecall then
+                    return _genv.oldNamecall(self, ...)
                 end
             end)
             print("AntiFail: hooked")
@@ -1022,16 +1023,16 @@ function setupAntiFail()
     end)
 end
 setupAntiFail()
-getgenv().KYS_fpWasSet = false
-getgenv().KYS_fpOriginal = nil
+getgenv().fpWasSet = false
+getgenv().fpOriginal = nil
 function RestoreFirstPersonCamera()
-    if not getgenv().KYS_fpWasSet then return end
-    getgenv().KYS_fpWasSet = false
+    if not getgenv().fpWasSet then return end
+    getgenv().fpWasSet = false
     pcall(function()
-        if getgenv().KYS_fpOriginal then
-            LocalPlayer.CameraMode = getgenv().KYS_fpOriginal.CameraMode or Enum.CameraMode.Classic
-            LocalPlayer.CameraMaxZoomDistance = getgenv().KYS_fpOriginal.CameraMaxZoomDistance or 128
-            LocalPlayer.CameraMinZoomDistance = getgenv().KYS_fpOriginal.CameraMinZoomDistance or 0.5
+        if getgenv().fpOriginal then
+            LocalPlayer.CameraMode = getgenv().fpOriginal.CameraMode or Enum.CameraMode.Classic
+            LocalPlayer.CameraMaxZoomDistance = getgenv().fpOriginal.CameraMaxZoomDistance or 128
+            LocalPlayer.CameraMinZoomDistance = getgenv().fpOriginal.CameraMinZoomDistance or 0.5
         else
             LocalPlayer.CameraMode = Enum.CameraMode.Classic
             LocalPlayer.CameraMaxZoomDistance = 128
@@ -1048,15 +1049,15 @@ function RestoreFirstPersonCamera()
             end
         end
     end
-    getgenv().KYS_fpOriginal = nil
+    getgenv().fpOriginal = nil
 end
 RunService.RenderStepped:Connect(function()
     pcall(function()
         if VD.SURV_FirstPerson then
             local isSurvivor = LocalPlayer.Team and LocalPlayer.Team.Name == "Survivors"
             if isSurvivor then
-                if not getgenv().KYS_fpWasSet then
-                    getgenv().KYS_fpOriginal = {
+                if not getgenv().fpWasSet then
+                    getgenv().fpOriginal = {
                         CameraMode = LocalPlayer.CameraMode,
                         CameraMaxZoomDistance = LocalPlayer.CameraMaxZoomDistance,
                         CameraMinZoomDistance = LocalPlayer.CameraMinZoomDistance,
@@ -1083,11 +1084,11 @@ RunService.RenderStepped:Connect(function()
                         end
                     end
                 end
-                getgenv().KYS_fpWasSet = true
-            elseif getgenv().KYS_fpWasSet then
+                getgenv().fpWasSet = true
+            elseif getgenv().fpWasSet then
                 RestoreFirstPersonCamera()
             end
-        elseif getgenv().KYS_fpWasSet then
+        elseif getgenv().fpWasSet then
             RestoreFirstPersonCamera()
         end
     end)
@@ -1097,9 +1098,9 @@ do
         pcall(getgenv().PinatHub_VD_VisualESP_Cleanup)
     end
     local LP = LocalPlayer
-    local KYS_Dead = false
-    local KYS_ControlsAdded = false
-    local KYS_ESPState = {
+    local Dead = false
+    local ControlsAdded = false
+    local ESPState = {
         PlayerMasterESP = false,
         WorldMasterESP = false,
         ESPFillTransparency = 0.95,
@@ -1129,8 +1130,8 @@ do
         PalletColor = Color3.fromRGB(255, 140, 0),
         SCPZombieColor = Color3.fromRGB(128, 0, 128),
     }
-    getgenv().PinatHub_VD_VisualESP_State = KYS_ESPState
-    KYS_WorldReg = {
+    getgenv().PinatHub_VD_VisualESP_State = ESPState
+    WorldReg = {
         Generator = {},
         Hook = {},
         Gate = {},
@@ -1138,17 +1139,17 @@ do
         Palletwrong = {},
         SCPZombie = {},
     }
-    local KYS_MapAdd, KYS_MapRem = {}, {}
-    local KYS_PlayerConns = {}
-    local KYS_Connections = {}
-    local KYS_PalletState = setmetatable({}, { __mode = "k" })
-    local KYS_WindowState = setmetatable({}, { __mode = "k" })
-    local KYS_InstanceIds = setmetatable({}, { __mode = "k" })
+    local MapAdd, MapRem = {}, {}
+    local PlayerConns = {}
+    local Connections = {}
+    local PalletState = setmetatable({}, { __mode = "k" })
+    local WindowState = setmetatable({}, { __mode = "k" })
+    local InstanceIds = setmetatable({}, { __mode = "k" })
     local PinatHub_KillerId = 0
-    local KYS_PlayerLoopThread = nil
-    local KYS_WorldLoopThread = nil
-    local KYS_ESPFolder = nil
-    local KYS_DisplayNames = {
+    local PlayerLoopThread = nil
+    local WorldLoopThread = nil
+    local ESPFolder = nil
+    local DisplayNames = {
         ["Motion Tracker"] = true,
         ["Gate"] = true,
         ["Flashlight"] = true,
@@ -1163,32 +1164,32 @@ do
         ["Emperor"] = true,
         ["AWP"] = true,
     }
-    local function KYS_Alive(inst)
+    local function Alive(inst)
         if not inst then return false end
         local ok, parent = pcall(function() return inst.Parent end)
         return ok and parent ~= nil
     end
-    local function KYS_Clamp(n, lo, hi)
+    local function Clamp(n, lo, hi)
         n = tonumber(n) or lo
         if n < lo then return lo end
         if n > hi then return hi end
         return n
     end
-    local function KYS_PlayerKey(player)
+    local function PlayerKey(player)
         local id = player and player.UserId
         if id and id ~= 0 then return tostring(id) end
         return tostring(player and player.Name or "Unknown")
     end
-    local function KYS_EspId(inst)
+    local function EspId(inst)
         if not inst then return "nil" end
-        local id = KYS_InstanceIds[inst]
+        local id = InstanceIds[inst]
         if id then return id end
         PinatHub_KillerId = PinatHub_KillerId + 1
         id = tostring(PinatHub_KillerId)
-        KYS_InstanceIds[inst] = id
+        InstanceIds[inst] = id
         return id
     end
-    local function KYS_GetESPParent()
+    local function GetESPParent()
         local okCore, core = pcall(function() return game:GetService("CoreGui") end)
         if okCore and core then return core end
         if gethui then
@@ -1199,21 +1200,21 @@ do
         if playerGui then return playerGui end
         return Workspace
     end
-    local function KYS_GetESPFolder()
-        if KYS_ESPFolder and KYS_ESPFolder.Parent then
-            return KYS_ESPFolder
+    local function GetESPFolder()
+        if ESPFolder and ESPFolder.Parent then
+            return ESPFolder
         end
-        local parent = KYS_GetESPParent()
+        local parent = GetESPParent()
         local old = parent:FindFirstChild("PinatHub_VisualESP") or parent:FindFirstChild("PinatHub_ESP")
         if old then old:Destroy() end
         local folder = Instance.new("Folder")
         folder.Name = "PinatHub_VisualESP"
         folder.Parent = parent
-        KYS_ESPFolder = folder
+        ESPFolder = folder
         return folder
     end
-    local function KYS_ClearPrefix(prefix, keepName)
-        local folder = KYS_GetESPFolder()
+    local function ClearPrefix(prefix, keepName)
+        local folder = GetESPFolder()
         local keptExact = false
         for _, child in ipairs(folder:GetChildren()) do
             if child.Name:sub(1, #prefix) == prefix then
@@ -1225,7 +1226,7 @@ do
             end
         end
     end
-    local function KYS_SafeNotify(title, content, duration)
+    local function SafeNotify(title, content, duration)
         pcall(function()
             if Window and Window.Notify then
                 Window:Notify({
@@ -1237,54 +1238,54 @@ do
             end
         end)
     end
-    local function KYS_ValidPart(part)
-        return part and KYS_Alive(part) and part:IsA("BasePart")
+    local function ValidPart(part)
+        return part and Alive(part) and part:IsA("BasePart")
     end
-    local function KYS_FirstBasePart(inst)
-        if not KYS_Alive(inst) then return nil end
+    local function FirstBasePart(inst)
+        if not Alive(inst) then return nil end
         if inst:IsA("BasePart") then return inst end
         if inst:IsA("Model") then
-            if inst.PrimaryPart and inst.PrimaryPart:IsA("BasePart") and KYS_Alive(inst.PrimaryPart) then
+            if inst.PrimaryPart and inst.PrimaryPart:IsA("BasePart") and Alive(inst.PrimaryPart) then
                 return inst.PrimaryPart
             end
             local part = inst:FindFirstChildWhichIsA("BasePart", true)
-            if KYS_ValidPart(part) then return part end
+            if ValidPart(part) then return part end
         end
         if inst:IsA("Tool") then
             local handle = inst:FindFirstChild("Handle") or inst:FindFirstChildWhichIsA("BasePart")
-            if KYS_ValidPart(handle) then return handle end
+            if ValidPart(handle) then return handle end
         end
         return nil
     end
-    local function KYS_GetRole(player)
+    local function GetRole(player)
         local teamName = player.Team and player.Team.Name and player.Team.Name:lower() or ""
         if teamName:find("killer") then return "Killer" end
         if teamName:find("survivor") then return "Survivor" end
         if teamName:find("spect") then return "Spectator" end
         return "Survivor"
     end
-    local function KYS_PlayerRoleEnabled(player)
-        local role = KYS_GetRole(player)
-        if role == "Killer" then return KYS_ESPState.KillerESP end
-        if role == "Spectator" then return KYS_ESPState.SpectatorESP end
-        return KYS_ESPState.SurvivorESP
+    local function PlayerRoleEnabled(player)
+        local role = GetRole(player)
+        if role == "Killer" then return ESPState.KillerESP end
+        if role == "Spectator" then return ESPState.SpectatorESP end
+        return ESPState.SurvivorESP
     end
-    local function KYS_PlayerColor(player)
-        local role = KYS_GetRole(player)
-        if role == "Killer" then return KYS_ESPState.KillerColor end
-        if role == "Spectator" then return KYS_ESPState.SpectatorColor end
-        return KYS_ESPState.SurvivorColor
+    local function PlayerColor(player)
+        local role = GetRole(player)
+        if role == "Killer" then return ESPState.KillerColor end
+        if role == "Spectator" then return ESPState.SpectatorColor end
+        return ESPState.SurvivorColor
     end
     getgenv().PinatHub_VD_VisualESP_HasPlayerText = function(player)
         if not player or player == LP then return false end
-        return KYS_ESPState.PlayerMasterESP
-            and KYS_PlayerRoleEnabled(player)
-            and (KYS_ESPState.Nametags or KYS_ESPState.DistanceESP)
+        return ESPState.PlayerMasterESP
+            and PlayerRoleEnabled(player)
+            and (ESPState.Nametags or ESPState.DistanceESP)
     end
-    local function KYS_EnsureHighlight(name, adornee, color, isPlayer)
-        if not (adornee and KYS_Alive(adornee)) then return nil end
-        local folder = KYS_GetESPFolder()
-        KYS_ClearPrefix(name, name)
+    local function EnsureHighlight(name, adornee, color, isPlayer)
+        if not (adornee and Alive(adornee)) then return nil end
+        local folder = GetESPFolder()
+        ClearPrefix(name, name)
         local hl = folder:FindFirstChild(name)
         if not hl then
             hl = Instance.new("Highlight")
@@ -1296,8 +1297,8 @@ do
         hl.FillColor = color
         hl.OutlineColor = color
         if isPlayer then
-            hl.FillTransparency = KYS_ESPState.ESPFillTransparency
-            hl.OutlineTransparency = KYS_ESPState.ESPOutlineTransparency
+            hl.FillTransparency = ESPState.ESPFillTransparency
+            hl.OutlineTransparency = ESPState.ESPOutlineTransparency
         else
             hl.FillTransparency = 0.98
             hl.OutlineTransparency = 0.5
@@ -1305,38 +1306,38 @@ do
         hl.Enabled = true
         return hl
     end
-    local function KYS_DestroyChild(name)
-        local folder = KYS_GetESPFolder()
+    local function DestroyChild(name)
+        local folder = GetESPFolder()
         local child = folder:FindFirstChild(name)
         if child then child:Destroy() end
     end
-    local function KYS_ClearPlayerESP(player)
+    local function ClearPlayerESP(player)
         if not player or player == LP then return end
-        local key = KYS_PlayerKey(player)
-        KYS_DestroyChild("KYS_PlayerHL_" .. key)
-        KYS_DestroyChild("KYS_PlayerTag_" .. key)
-        KYS_DestroyChild("KYS_PlayerItem_" .. key)
+        local key = PlayerKey(player)
+        DestroyChild("PlayerHL_" .. key)
+        DestroyChild("PlayerTag_" .. key)
+        DestroyChild("PlayerItem_" .. key)
     end
-    local function KYS_ClearAllPlayerESP()
+    local function ClearAllPlayerESP()
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LP then
-                KYS_ClearPlayerESP(player)
+                ClearPlayerESP(player)
             end
         end
     end
-    local function KYS_GetSurvivorItem(player)
+    local function GetSurvivorItem(player)
         local character = player.Character
         if not character then return nil end
         for _, obj in ipairs(character:GetDescendants()) do
             if obj:IsA("Tool") or obj:IsA("Accessory") or obj:IsA("Model") then
-                if KYS_DisplayNames[obj.Name] then
+                if DisplayNames[obj.Name] then
                     return obj.Name
                 end
             end
         end
         return nil
     end
-    local function KYS_GetItemImageId(itemName)
+    local function GetItemImageId(itemName)
         local itemsFolder = ReplicatedStorage:FindFirstChild("Items")
         if not itemsFolder then return nil end
         local itemObj = itemsFolder:FindFirstChild(itemName)
@@ -1350,7 +1351,7 @@ do
         end
         return nil
     end
-    local function KYS_SetBillboardLine(parent, index, count, data)
+    local function SetBillboardLine(parent, index, count, data)
         local label = parent:FindFirstChild("Line" .. index)
         if not label then
             label = Instance.new("TextLabel")
@@ -1364,11 +1365,11 @@ do
         end
         label.Size = UDim2.new(1, 0, 1 / count, 0)
         label.Position = UDim2.new(0, 0, (index - 1) / count, 0)
-        label.TextSize = KYS_ESPState.ESPTextSize
+        label.TextSize = ESPState.ESPTextSize
         label.TextColor3 = data.Color
         label.Text = data.Text
     end
-    local function KYS_PruneBillboardLines(parent, count)
+    local function PruneBillboardLines(parent, count)
         for _, child in ipairs(parent:GetChildren()) do
             if child:IsA("TextLabel") then
                 local index = tonumber(child.Name:match("%d+"))
@@ -1378,23 +1379,23 @@ do
             end
         end
     end
-    local function KYS_UpdatePlayerTag(player, character, head, color)
-        local key = KYS_PlayerKey(player)
-        local tagName = "KYS_PlayerTag_" .. key
-        local folder = KYS_GetESPFolder()
-        KYS_ClearPrefix("KYS_PlayerTag_" .. key, tagName)
-        if not KYS_ValidPart(head) then
-            KYS_DestroyChild(tagName)
+    local function UpdatePlayerTag(player, character, head, color)
+        local key = PlayerKey(player)
+        local tagName = "PlayerTag_" .. key
+        local folder = GetESPFolder()
+        ClearPrefix("PlayerTag_" .. key, tagName)
+        if not ValidPart(head) then
+            DestroyChild(tagName)
             return
         end
         local lines = {}
         local root = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
         local targetRoot = character and character:FindFirstChild("HumanoidRootPart")
         local distanceText = ""
-        if KYS_ESPState.DistanceESP and root and targetRoot then
+        if ESPState.DistanceESP and root and targetRoot then
             distanceText = "[" .. tostring(math.floor((root.Position - targetRoot.Position).Magnitude)) .. "m]"
         end
-        local nameText = KYS_ESPState.Nametags and player.Name or ""
+        local nameText = ESPState.Nametags and player.Name or ""
         local mainLine = ""
         if nameText ~= "" and distanceText ~= "" then
             mainLine = nameText .. " " .. distanceText
@@ -1407,7 +1408,7 @@ do
             table.insert(lines, { Text = mainLine, Color = color })
         end
         if #lines == 0 then
-            KYS_DestroyChild(tagName)
+            DestroyChild(tagName)
             return
         end
         local tag = folder:FindFirstChild(tagName)
@@ -1424,23 +1425,23 @@ do
         tag.Size = UDim2.new(0, 220, 0, #lines * 20)
         tag.StudsOffset = Vector3.new(0, 2.65, 0)
         for i, data in ipairs(lines) do
-            KYS_SetBillboardLine(tag, i, #lines, data)
+            SetBillboardLine(tag, i, #lines, data)
         end
-        KYS_PruneBillboardLines(tag, #lines)
+        PruneBillboardLines(tag, #lines)
     end
-    local function KYS_UpdatePlayerItemIcon(player, torso)
-        local key = KYS_PlayerKey(player)
-        local iconName = "KYS_PlayerItem_" .. key
-        local folder = KYS_GetESPFolder()
-        KYS_ClearPrefix("KYS_PlayerItem_" .. key, iconName)
-        if not KYS_ValidPart(torso) then
-            KYS_DestroyChild(iconName)
+    local function UpdatePlayerItemIcon(player, torso)
+        local key = PlayerKey(player)
+        local iconName = "PlayerItem_" .. key
+        local folder = GetESPFolder()
+        ClearPrefix("PlayerItem_" .. key, iconName)
+        if not ValidPart(torso) then
+            DestroyChild(iconName)
             return
         end
-        local itemName = KYS_GetSurvivorItem(player)
-        local imageId = itemName and KYS_GetItemImageId(itemName) or nil
+        local itemName = GetSurvivorItem(player)
+        local imageId = itemName and GetItemImageId(itemName) or nil
         if not imageId then
-            KYS_DestroyChild(iconName)
+            DestroyChild(iconName)
             return
         end
         local icon = folder:FindFirstChild(iconName)
@@ -1464,87 +1465,87 @@ do
         local image = icon:FindFirstChild("ImageLabel")
         if image then image.Image = imageId end
     end
-    local KYS_ApplyPlayerESP
-    KYS_ApplyPlayerESP = function(player)
-        if KYS_Dead or not player or player == LP then return end
+    local ApplyPlayerESP
+    ApplyPlayerESP = function(player)
+        if Dead or not player or player == LP then return end
         local character = player.Character
-        if not (character and KYS_Alive(character)) then
-            KYS_ClearPlayerESP(player)
+        if not (character and Alive(character)) then
+            ClearPlayerESP(player)
             return
         end
-        local key = KYS_PlayerKey(player)
-        local enabled = KYS_ESPState.PlayerMasterESP and KYS_PlayerRoleEnabled(player)
+        local key = PlayerKey(player)
+        local enabled = ESPState.PlayerMasterESP and PlayerRoleEnabled(player)
         if not enabled then
-            KYS_ClearPlayerESP(player)
+            ClearPlayerESP(player)
             return
         end
-        local color = KYS_PlayerColor(player)
+        local color = PlayerColor(player)
         local head = character:FindFirstChild("Head")
         local torso = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
-        KYS_EnsureHighlight("KYS_PlayerHL_" .. key, character, color, true)
-        KYS_UpdatePlayerTag(player, character, head, color)
-        if KYS_GetRole(player) == "Survivor" and KYS_ESPState.SurvivorItemsESP then
-            KYS_UpdatePlayerItemIcon(player, torso)
+        EnsureHighlight("PlayerHL_" .. key, character, color, true)
+        UpdatePlayerTag(player, character, head, color)
+        if GetRole(player) == "Survivor" and ESPState.SurvivorItemsESP then
+            UpdatePlayerItemIcon(player, torso)
         else
-            KYS_DestroyChild("KYS_PlayerItem_" .. key)
+            DestroyChild("PlayerItem_" .. key)
         end
     end
-    local function KYS_RefreshAllPlayers()
+    local function RefreshAllPlayers()
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LP then
-                pcall(KYS_ApplyPlayerESP, player)
+                pcall(ApplyPlayerESP, player)
             end
         end
     end
-    local function KYS_StartPlayerLoop()
-        if KYS_PlayerLoopThread then return end
-        KYS_PlayerLoopThread = task.spawn(function()
-            while not KYS_Dead and KYS_ESPState.PlayerMasterESP do
-                KYS_RefreshAllPlayers()
+    local function StartPlayerLoop()
+        if PlayerLoopThread then return end
+        PlayerLoopThread = task.spawn(function()
+            while not Dead and ESPState.PlayerMasterESP do
+                RefreshAllPlayers()
                 task.wait(0.25)
             end
-            KYS_PlayerLoopThread = nil
+            PlayerLoopThread = nil
         end)
     end
-    local function KYS_WatchPlayer(player)
+    local function WatchPlayer(player)
         if player == LP then return end
-        if KYS_PlayerConns[player] then
-            for _, conn in ipairs(KYS_PlayerConns[player]) do
+        if PlayerConns[player] then
+            for _, conn in ipairs(PlayerConns[player]) do
                 if conn then pcall(function() conn:Disconnect() end) end
             end
         end
-        KYS_PlayerConns[player] = {}
-        table.insert(KYS_PlayerConns[player], player.CharacterAdded:Connect(function(char)
-            KYS_ClearPlayerESP(player)
+        PlayerConns[player] = {}
+        table.insert(PlayerConns[player], player.CharacterAdded:Connect(function(char)
+            ClearPlayerESP(player)
             task.delay(0.15, function()
-                if not KYS_Dead then pcall(KYS_ApplyPlayerESP, player) end
+                if not Dead then pcall(ApplyPlayerESP, player) end
             end)
         end))
-        table.insert(KYS_PlayerConns[player], player.CharacterRemoving:Connect(function()
-            KYS_ClearPlayerESP(player)
+        table.insert(PlayerConns[player], player.CharacterRemoving:Connect(function()
+            ClearPlayerESP(player)
         end))
-        table.insert(KYS_PlayerConns[player], player:GetPropertyChangedSignal("Team"):Connect(function()
-            KYS_ClearPlayerESP(player)
-            pcall(KYS_ApplyPlayerESP, player)
+        table.insert(PlayerConns[player], player:GetPropertyChangedSignal("Team"):Connect(function()
+            ClearPlayerESP(player)
+            pcall(ApplyPlayerESP, player)
         end))
         if player.Character then
-            pcall(KYS_ApplyPlayerESP, player)
+            pcall(ApplyPlayerESP, player)
         end
     end
-    local function KYS_UnwatchPlayer(player)
-        KYS_ClearPlayerESP(player)
-        if KYS_PlayerConns[player] then
-            for _, conn in ipairs(KYS_PlayerConns[player]) do
+    local function UnwatchPlayer(player)
+        ClearPlayerESP(player)
+        if PlayerConns[player] then
+            for _, conn in ipairs(PlayerConns[player]) do
                 if conn then pcall(function() conn:Disconnect() end) end
             end
         end
-        KYS_PlayerConns[player] = nil
+        PlayerConns[player] = nil
     end
-    local function KYS_PickWorldPart(model, cat)
-        if not (model and KYS_Alive(model)) then return nil end
+    local function PickWorldPart(model, cat)
+        if not (model and Alive(model)) then return nil end
         if cat == "Generator" then
             local hitbox = model:FindFirstChild("HitBox", true) or model:FindFirstChild("GeneratorPoint", true)
-            if KYS_ValidPart(hitbox) then return hitbox end
+            if ValidPart(hitbox) then return hitbox end
         elseif cat == "Palletwrong" then
             local candidates = {
                 model:FindFirstChild("HumanoidRootPart", true),
@@ -1555,24 +1556,24 @@ do
                 model:FindFirstChild("PalletPointSlide", true),
             }
             for _, part in ipairs(candidates) do
-                if KYS_ValidPart(part) then return part end
+                if ValidPart(part) then return part end
             end
         elseif cat == "Window" then
             local vault = model:FindFirstChild("VaultPoint", true) or model:FindFirstChild("VaultTrigger", true)
-            if KYS_ValidPart(vault) then return vault end
+            if ValidPart(vault) then return vault end
         elseif cat == "SCPZombie" then
             local root = model:FindFirstChild("HumanoidRootPart", true)
-            if KYS_ValidPart(root) then return root end
+            if ValidPart(root) then return root end
             local torso = model:FindFirstChild("UpperTorso", true) or model:FindFirstChild("Torso", true)
-            if KYS_ValidPart(torso) then return torso end
+            if ValidPart(torso) then return torso end
             return nil
         end
-        return KYS_FirstBasePart(model)
+        return FirstBasePart(model)
     end
-    local function KYS_GeneratorLabel(model)
+    local function GeneratorLabel(model)
         local pct = tonumber(model:GetAttribute("RepairProgress")) or 0
         if pct >= 0 and pct <= 1.001 then pct = pct * 100 end
-        pct = KYS_Clamp(pct, 0, 100)
+        pct = Clamp(pct, 0, 100)
         local repairers = tonumber(model:GetAttribute("PlayersRepairingCount")) or 0
         local paused = model:GetAttribute("ProgressPaused") == true
         local kickcount = tonumber(model:GetAttribute("kickcount")) or 0
@@ -1582,52 +1583,52 @@ do
         if paused then table.insert(parts, "Pause") end
         if abyss50 then table.insert(parts, "Warn") end
         if kickcount > 0 then table.insert(parts, "K:" .. kickcount) end
-        local hue = KYS_Clamp((pct / 100) * 0.33, 0, 0.33)
+        local hue = Clamp((pct / 100) * 0.33, 0, 0.33)
         return table.concat(parts, " "), Color3.fromHSV(hue, 1, 1)
     end
-    local function KYS_HasBasePart(model)
-        if not (model and KYS_Alive(model)) then return false end
+    local function HasBasePart(model)
+        if not (model and Alive(model)) then return false end
         return model:FindFirstChildWhichIsA("BasePart", true) ~= nil
     end
-    local function KYS_IsPalletGone(model)
-        if not KYS_Alive(model) then return true end
+    local function IsPalletGone(model)
+        if not Alive(model) then return true end
         if not model:IsDescendantOf(Workspace) then return true end
-        if KYS_PalletState[model] == "DEST" then return true end
+        if PalletState[model] == "DEST" then return true end
         local ok, destroyed = pcall(function() return model:GetAttribute("Destroyed") end)
         if ok and destroyed == true then return true end
-        return not KYS_HasBasePart(model)
+        return not HasBasePart(model)
     end
-    local function KYS_WorldKey(cat, model)
-        return "KYS_World_" .. cat .. "_" .. KYS_EspId(model)
+    local function WorldKey(cat, model)
+        return "World_" .. cat .. "_" .. EspId(model)
     end
-    local function KYS_ClearWorldVisual(cat, model)
+    local function ClearWorldVisual(cat, model)
         if not model then return end
-        KYS_DestroyChild(KYS_WorldKey(cat, model) .. "_HL")
-        KYS_DestroyChild(KYS_WorldKey(cat, model) .. "_Tag")
+        DestroyChild(WorldKey(cat, model) .. "_HL")
+        DestroyChild(WorldKey(cat, model) .. "_Tag")
     end
-    local function KYS_RemoveWorldEntry(cat, model)
-        if not KYS_WorldReg[cat] or not KYS_WorldReg[cat][model] then return end
-        KYS_ClearWorldVisual(cat, model)
-        KYS_WorldReg[cat][model] = nil
+    local function RemoveWorldEntry(cat, model)
+        if not WorldReg[cat] or not WorldReg[cat][model] then return end
+        ClearWorldVisual(cat, model)
+        WorldReg[cat][model] = nil
     end
-    local function KYS_EnsureWorldEntry(cat, model)
-        if not KYS_Alive(model) or not KYS_WorldReg[cat] or KYS_WorldReg[cat][model] then return end
-        if cat == "Palletwrong" and KYS_IsPalletGone(model) then return end
-        local part = KYS_PickWorldPart(model, cat)
-        if not KYS_ValidPart(part) then return end
-        KYS_WorldReg[cat][model] = { part = part }
+    local function EnsureWorldEntry(cat, model)
+        if not Alive(model) or not WorldReg[cat] or WorldReg[cat][model] then return end
+        if cat == "Palletwrong" and IsPalletGone(model) then return end
+        local part = PickWorldPart(model, cat)
+        if not ValidPart(part) then return end
+        WorldReg[cat][model] = { part = part }
     end
-    local function KYS_RegisterWorldDescendant(obj)
-        if not KYS_Alive(obj) then return end
+    local function RegisterWorldDescendant(obj)
+        if not Alive(obj) then return end
         local validCats = { Generator = true, Hook = true, Gate = true, Window = true, Palletwrong = true }
         if obj:IsA("Model") then
             if validCats[obj.Name] then
-                KYS_EnsureWorldEntry(obj.Name, obj)
+                EnsureWorldEntry(obj.Name, obj)
                 return
             end
             local lower = obj.Name:lower()
             if lower:find("scp") or lower:find("zombie") then
-                KYS_EnsureWorldEntry("SCPZombie", obj)
+                EnsureWorldEntry("SCPZombie", obj)
             end
             return
         end
@@ -1636,12 +1637,12 @@ do
             while parent and parent ~= Workspace do
                 if parent:IsA("Model") then
                     if validCats[parent.Name] then
-                        KYS_EnsureWorldEntry(parent.Name, parent)
+                        EnsureWorldEntry(parent.Name, parent)
                         return
                     end
                     local lower = parent.Name:lower()
                     if lower:find("scp") or lower:find("zombie") then
-                        KYS_EnsureWorldEntry("SCPZombie", parent)
+                        EnsureWorldEntry("SCPZombie", parent)
                         return
                     end
                 end
@@ -1649,114 +1650,114 @@ do
             end
         end
     end
-    local function KYS_UnregisterWorldDescendant(obj)
+    local function UnregisterWorldDescendant(obj)
         if not obj then return end
         local validCats = { Generator = true, Hook = true, Gate = true, Window = true, Palletwrong = true }
         if obj:IsA("Model") then
             if validCats[obj.Name] then
-                KYS_RemoveWorldEntry(obj.Name, obj)
+                RemoveWorldEntry(obj.Name, obj)
                 return
             end
             local lower = obj.Name:lower()
             if lower:find("scp") or lower:find("zombie") then
-                KYS_RemoveWorldEntry("SCPZombie", obj)
+                RemoveWorldEntry("SCPZombie", obj)
             end
             return
         end
         if obj:IsA("BasePart") then
-            for cat, models in pairs(KYS_WorldReg) do
+            for cat, models in pairs(WorldReg) do
                 for model, entry in pairs(models) do
                     if entry.part == obj then
-                        KYS_RemoveWorldEntry(cat, model)
+                        RemoveWorldEntry(cat, model)
                     end
                 end
             end
         end
     end
-    local function KYS_AttachESPRoot(root)
-        if not root or KYS_MapAdd[root] then return end
-        KYS_MapAdd[root] = root.DescendantAdded:Connect(KYS_RegisterWorldDescendant)
-        KYS_MapRem[root] = root.DescendantRemoving:Connect(KYS_UnregisterWorldDescendant)
+    local function AttachESPRoot(root)
+        if not root or MapAdd[root] then return end
+        MapAdd[root] = root.DescendantAdded:Connect(RegisterWorldDescendant)
+        MapRem[root] = root.DescendantRemoving:Connect(UnregisterWorldDescendant)
         for _, descendant in ipairs(root:GetDescendants()) do
-            KYS_RegisterWorldDescendant(descendant)
+            RegisterWorldDescendant(descendant)
         end
     end
-    local function KYS_RefreshESPRoots()
-        for _, conn in pairs(KYS_MapAdd) do
+    local function RefreshESPRoots()
+        for _, conn in pairs(MapAdd) do
             if conn then pcall(function() conn:Disconnect() end) end
         end
-        for _, conn in pairs(KYS_MapRem) do
+        for _, conn in pairs(MapRem) do
             if conn then pcall(function() conn:Disconnect() end) end
         end
-        KYS_MapAdd, KYS_MapRem = {}, {}
-        for cat, models in pairs(KYS_WorldReg) do
+        MapAdd, MapRem = {}, {}
+        for cat, models in pairs(WorldReg) do
             for model in pairs(models) do
-                KYS_ClearWorldVisual(cat, model)
+                ClearWorldVisual(cat, model)
             end
-            KYS_WorldReg[cat] = {}
+            WorldReg[cat] = {}
         end
         local map = Workspace:FindFirstChild("Map")
         local map1 = Workspace:FindFirstChild("Map1")
-        if map then KYS_AttachESPRoot(map) end
-        if map1 then KYS_AttachESPRoot(map1) end
+        if map then AttachESPRoot(map) end
+        if map1 then AttachESPRoot(map1) end
     end
-    local function KYS_LabelForPallet(model)
-        local state = KYS_PalletState[model] or "UP"
+    local function LabelForPallet(model)
+        local state = PalletState[model] or "UP"
         if state == "DOWN" then return "Pallet (down)" end
         if state == "DEST" then return "Pallet (destroyed)" end
         if state == "SLIDE" then return "Pallet (slide)" end
         return "Pallet"
     end
-    local function KYS_LabelForWindow(model)
-        local state = KYS_WindowState[model] or "READY"
+    local function LabelForWindow(model)
+        local state = WindowState[model] or "READY"
         if state == "BUSY" then return "Window (busy)" end
         return "Window"
     end
-    local function KYS_AnyWorldEnabled()
-        return KYS_ESPState.WorldMasterESP and (
-            KYS_ESPState.GeneratorESP or
-            KYS_ESPState.HookESP or
-            KYS_ESPState.GateESP or
-            KYS_ESPState.WindowESP or
-            KYS_ESPState.PalletESP or
-            KYS_ESPState.SCPZombieESP
+    local function AnyWorldEnabled()
+        return ESPState.WorldMasterESP and (
+            ESPState.GeneratorESP or
+            ESPState.HookESP or
+            ESPState.GateESP or
+            ESPState.WindowESP or
+            ESPState.PalletESP or
+            ESPState.SCPZombieESP
         )
     end
-    local function KYS_WorldCategoryData(cat)
-        if cat == "Generator" then return KYS_ESPState.GeneratorESP, KYS_ESPState.GeneratorColor end
-        if cat == "Hook" then return KYS_ESPState.HookESP, KYS_ESPState.HookColor end
-        if cat == "Gate" then return KYS_ESPState.GateESP, KYS_ESPState.GateColor end
-        if cat == "Window" then return KYS_ESPState.WindowESP, KYS_ESPState.WindowColor end
-        if cat == "Palletwrong" then return KYS_ESPState.PalletESP, KYS_ESPState.PalletColor end
-        if cat == "SCPZombie" then return KYS_ESPState.SCPZombieESP, KYS_ESPState.SCPZombieColor end
+    local function WorldCategoryData(cat)
+        if cat == "Generator" then return ESPState.GeneratorESP, ESPState.GeneratorColor end
+        if cat == "Hook" then return ESPState.HookESP, ESPState.HookColor end
+        if cat == "Gate" then return ESPState.GateESP, ESPState.GateColor end
+        if cat == "Window" then return ESPState.WindowESP, ESPState.WindowColor end
+        if cat == "Palletwrong" then return ESPState.PalletESP, ESPState.PalletColor end
+        if cat == "SCPZombie" then return ESPState.SCPZombieESP, ESPState.SCPZombieColor end
         return false, Color3.new(1, 1, 1)
     end
-    local function KYS_UpdateWorldTag(cat, model, part, color)
-        local key = KYS_WorldKey(cat, model)
+    local function UpdateWorldTag(cat, model, part, color)
+        local key = WorldKey(cat, model)
         local tagName = key .. "_Tag"
-        local folder = KYS_GetESPFolder()
-        KYS_ClearPrefix(tagName, tagName)
-        if not KYS_ValidPart(part) then
-            KYS_DestroyChild(tagName)
+        local folder = GetESPFolder()
+        ClearPrefix(tagName, tagName)
+        if not ValidPart(part) then
+            DestroyChild(tagName)
             return
         end
         local lines = {}
         local root = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
         local distanceText = ""
-        if KYS_ESPState.WorldDistanceESP and root then
+        if ESPState.WorldDistanceESP and root then
             distanceText = "[" .. tostring(math.floor((root.Position - part.Position).Magnitude)) .. "m]"
         end
         local nameText = ""
         local labelColor = color
-        if KYS_ESPState.WorldNametags then
+        if ESPState.WorldNametags then
             if cat == "Generator" then
-                local txt, genColor = KYS_GeneratorLabel(model)
+                local txt, genColor = GeneratorLabel(model)
                 nameText = txt
                 labelColor = genColor
             elseif cat == "Palletwrong" then
-                nameText = KYS_LabelForPallet(model)
+                nameText = LabelForPallet(model)
             elseif cat == "Window" then
-                nameText = KYS_LabelForWindow(model)
+                nameText = LabelForWindow(model)
             elseif cat == "SCPZombie" then
                 nameText = model.Name
             else
@@ -1775,7 +1776,7 @@ do
             table.insert(lines, { Text = mainLine, Color = labelColor })
         end
         if #lines == 0 then
-            KYS_DestroyChild(tagName)
+            DestroyChild(tagName)
             return
         end
         local tag = folder:FindFirstChild(tagName)
@@ -1792,59 +1793,59 @@ do
         tag.Size = UDim2.new(0, 220, 0, #lines * 20)
         tag.StudsOffset = Vector3.new(0, 2.5, 0)
         for i, data in ipairs(lines) do
-            KYS_SetBillboardLine(tag, i, #lines, data)
+            SetBillboardLine(tag, i, #lines, data)
         end
-        KYS_PruneBillboardLines(tag, #lines)
+        PruneBillboardLines(tag, #lines)
     end
-    local function KYS_ClearAllWorldESP()
-        for cat, models in pairs(KYS_WorldReg) do
+    local function ClearAllWorldESP()
+        for cat, models in pairs(WorldReg) do
             for model in pairs(models) do
-                KYS_ClearWorldVisual(cat, model)
+                ClearWorldVisual(cat, model)
             end
         end
     end
-    local function KYS_StartWorldLoop()
-        if KYS_WorldLoopThread then return end
-        KYS_WorldLoopThread = task.spawn(function()
-            while not KYS_Dead and KYS_AnyWorldEnabled() do
-                for cat, models in pairs(KYS_WorldReg) do
-                    local enabled, color = KYS_WorldCategoryData(cat)
-                    if enabled and KYS_ESPState.WorldMasterESP then
+    local function StartWorldLoop()
+        if WorldLoopThread then return end
+        WorldLoopThread = task.spawn(function()
+            while not Dead and AnyWorldEnabled() do
+                for cat, models in pairs(WorldReg) do
+                    local enabled, color = WorldCategoryData(cat)
+                    if enabled and ESPState.WorldMasterESP then
                         local n = 0
                         for model, entry in pairs(models) do
-                            if cat == "Palletwrong" and KYS_IsPalletGone(model) then
-                                KYS_RemoveWorldEntry(cat, model)
-                            elseif model and KYS_Alive(model) then
+                            if cat == "Palletwrong" and IsPalletGone(model) then
+                                RemoveWorldEntry(cat, model)
+                            elseif model and Alive(model) then
                                 local part = entry.part
-                                if not KYS_ValidPart(part) or (model:IsA("Model") and not part:IsDescendantOf(model)) then
-                                    entry.part = KYS_PickWorldPart(model, cat)
+                                if not ValidPart(part) or (model:IsA("Model") and not part:IsDescendantOf(model)) then
+                                    entry.part = PickWorldPart(model, cat)
                                     part = entry.part
                                 end
-                                if KYS_ValidPart(part) then
-                                    local key = KYS_WorldKey(cat, model)
-                                    KYS_EnsureHighlight(key .. "_HL", model, color, false)
-                                    KYS_UpdateWorldTag(cat, model, part, color)
+                                if ValidPart(part) then
+                                    local key = WorldKey(cat, model)
+                                    EnsureHighlight(key .. "_HL", model, color, false)
+                                    UpdateWorldTag(cat, model, part, color)
                                 else
-                                    KYS_RemoveWorldEntry(cat, model)
+                                    RemoveWorldEntry(cat, model)
                                 end
                             else
-                                KYS_RemoveWorldEntry(cat, model)
+                                RemoveWorldEntry(cat, model)
                             end
                             n = n + 1
                             if n % 60 == 0 then task.wait() end
                         end
                     else
                         for model in pairs(models) do
-                            KYS_ClearWorldVisual(cat, model)
+                            ClearWorldVisual(cat, model)
                         end
                     end
                 end
                 task.wait(0.25)
             end
-            KYS_WorldLoopThread = nil
+            WorldLoopThread = nil
         end)
     end
-    local function KYS_Selected(selected, name)
+    local function Selected(selected, name)
         if type(selected) ~= "table" then return false end
         if selected[name] ~= nil then return selected[name] == true end
         for _, value in pairs(selected) do
@@ -1852,9 +1853,9 @@ do
         end
         return false
     end
-    getgenv().KYS_AddVisualESPControls = function(VisualTabRef)
-        if not VisualTabRef or KYS_ControlsAdded then return end
-        KYS_ControlsAdded = true
+    getgenv().AddVisualESPControls = function(VisualTabRef)
+        if not VisualTabRef or ControlsAdded then return end
+        ControlsAdded = true
         local settingsSection = VisualTabRef:AddSection({
             Position = "Center",
             Name = "Highlight ESP Settings",
@@ -1865,38 +1866,38 @@ do
         })
         settingsSection:AddSlider({
             Name = "ESP Fill Transparency",
-            Flag = "KYS ESP Fill Transparency",
+            Flag = "ESP Fill Transparency",
             Min = 0,
             Max = 1,
-            Default = KYS_ESPState.ESPFillTransparency,
+            Default = ESPState.ESPFillTransparency,
             Increment = 0.01,
             Callback = function(value)
-                KYS_ESPState.ESPFillTransparency = value
-                KYS_RefreshAllPlayers()
+                ESPState.ESPFillTransparency = value
+                RefreshAllPlayers()
             end,
         })
         settingsSection:AddSlider({
             Name = "ESP Outline Transparency",
-            Flag = "KYS ESP Outline Transparency",
+            Flag = "ESP Outline Transparency",
             Min = 0,
             Max = 1,
-            Default = KYS_ESPState.ESPOutlineTransparency,
+            Default = ESPState.ESPOutlineTransparency,
             Increment = 0.01,
             Callback = function(value)
-                KYS_ESPState.ESPOutlineTransparency = value
-                KYS_RefreshAllPlayers()
+                ESPState.ESPOutlineTransparency = value
+                RefreshAllPlayers()
             end,
         })
         settingsSection:AddSlider({
             Name = "ESP Text Size",
-            Flag = "KYS ESP Text Size",
+            Flag = "ESP Text Size",
             Min = 8,
             Max = 22,
-            Default = KYS_ESPState.ESPTextSize,
+            Default = ESPState.ESPTextSize,
             Increment = 1,
             Callback = function(value)
-                KYS_ESPState.ESPTextSize = value
-                KYS_RefreshAllPlayers()
+                ESPState.ESPTextSize = value
+                RefreshAllPlayers()
             end,
         })
         local playerSection = VisualTabRef:AddSection({
@@ -1909,63 +1910,63 @@ do
         })
         playerSection:AddToggle({
             Name = "Enable Player ESP",
-            Flag = "KYS Enable Player ESP",
+            Flag = "Enable Player ESP",
             Default = false,
             Callback = function(state)
-                KYS_ESPState.PlayerMasterESP = state
+                ESPState.PlayerMasterESP = state
                 if state then
-                    KYS_StartPlayerLoop()
-                    KYS_RefreshAllPlayers()
+                    StartPlayerLoop()
+                    RefreshAllPlayers()
                 else
-                    KYS_ClearAllPlayerESP()
+                    ClearAllPlayerESP()
                 end
             end,
         })
         playerSection:AddDropdown({
             Name = "Select Player ESP",
-            Flag = "KYS Select Player ESP",
+            Flag = "Select Player ESP",
             Values = { "Survivor ESP", "Killer ESP", "Spectator ESP", "Survivor Items ESP" },
             Multi = true,
             AllowNone = true,
             Default = {},
             Callback = function(selected)
-                KYS_ESPState.SurvivorESP = KYS_Selected(selected, "Survivor ESP")
-                KYS_ESPState.KillerESP = KYS_Selected(selected, "Killer ESP")
-                KYS_ESPState.SpectatorESP = KYS_Selected(selected, "Spectator ESP")
-                KYS_ESPState.SurvivorItemsESP = KYS_Selected(selected, "Survivor Items ESP")
-                if KYS_ESPState.PlayerMasterESP then
-                    KYS_StartPlayerLoop()
-                    KYS_RefreshAllPlayers()
+                ESPState.SurvivorESP = Selected(selected, "Survivor ESP")
+                ESPState.KillerESP = Selected(selected, "Killer ESP")
+                ESPState.SpectatorESP = Selected(selected, "Spectator ESP")
+                ESPState.SurvivorItemsESP = Selected(selected, "Survivor Items ESP")
+                if ESPState.PlayerMasterESP then
+                    StartPlayerLoop()
+                    RefreshAllPlayers()
                 else
-                    KYS_ClearAllPlayerESP()
+                    ClearAllPlayerESP()
                 end
             end,
         })
         playerSection:AddToggle({
             Name = "Player Nametags",
-            Flag = "KYS Player Nametags",
+            Flag = "Player Nametags",
             Default = false,
             Callback = function(state)
-                KYS_ESPState.Nametags = state
-                if KYS_ESPState.PlayerMasterESP then
-                    KYS_StartPlayerLoop()
-                    KYS_RefreshAllPlayers()
+                ESPState.Nametags = state
+                if ESPState.PlayerMasterESP then
+                    StartPlayerLoop()
+                    RefreshAllPlayers()
                 else
-                    KYS_ClearAllPlayerESP()
+                    ClearAllPlayerESP()
                 end
             end,
         })
         playerSection:AddToggle({
             Name = "Player Distance ESP",
-            Flag = "KYS Player Distance ESP",
+            Flag = "Player Distance ESP",
             Default = false,
             Callback = function(state)
-                KYS_ESPState.DistanceESP = state
-                if KYS_ESPState.PlayerMasterESP then
-                    KYS_StartPlayerLoop()
-                    KYS_RefreshAllPlayers()
+                ESPState.DistanceESP = state
+                if ESPState.PlayerMasterESP then
+                    StartPlayerLoop()
+                    RefreshAllPlayers()
                 else
-                    KYS_ClearAllPlayerESP()
+                    ClearAllPlayerESP()
                 end
             end,
         })
@@ -1978,9 +1979,9 @@ do
             end,
         })
         pcall(function() playerSection:AddDivider({ Text = "Colors" }) end)
-        playerSection:AddColorPicker({ Name = "Survivor Color", Flag = "KYS Survivor Color", Default = KYS_ESPState.SurvivorColor, Callback = function(color) KYS_ESPState.SurvivorColor = color; KYS_RefreshAllPlayers() end })
-        playerSection:AddColorPicker({ Name = "Killer Color", Flag = "KYS Killer Color", Default = KYS_ESPState.KillerColor, Callback = function(color) KYS_ESPState.KillerColor = color; KYS_RefreshAllPlayers() end })
-        playerSection:AddColorPicker({ Name = "Spectator Color", Flag = "KYS Spectator Color", Default = KYS_ESPState.SpectatorColor, Callback = function(color) KYS_ESPState.SpectatorColor = color; KYS_RefreshAllPlayers() end })
+        playerSection:AddColorPicker({ Name = "Survivor Color", Flag = "Survivor Color", Default = ESPState.SurvivorColor, Callback = function(color) ESPState.SurvivorColor = color; RefreshAllPlayers() end })
+        playerSection:AddColorPicker({ Name = "Killer Color", Flag = "Killer Color", Default = ESPState.KillerColor, Callback = function(color) ESPState.KillerColor = color; RefreshAllPlayers() end })
+        playerSection:AddColorPicker({ Name = "Spectator Color", Flag = "Spectator Color", Default = ESPState.SpectatorColor, Callback = function(color) ESPState.SpectatorColor = color; RefreshAllPlayers() end })
         local worldSection = VisualTabRef:AddSection({
             Position = "Center",
             Name = "World Highlight ESP",
@@ -1991,111 +1992,111 @@ do
         })
         worldSection:AddToggle({
             Name = "Enable World ESP",
-            Flag = "KYS Enable World ESP",
+            Flag = "Enable World ESP",
             Default = false,
             Callback = function(state)
-                KYS_ESPState.WorldMasterESP = state
+                ESPState.WorldMasterESP = state
                 if state then
-                    KYS_RefreshESPRoots()
-                    if KYS_AnyWorldEnabled() then KYS_StartWorldLoop() end
+                    RefreshESPRoots()
+                    if AnyWorldEnabled() then StartWorldLoop() end
                 else
-                    KYS_ClearAllWorldESP()
+                    ClearAllWorldESP()
                 end
             end,
         })
         worldSection:AddDropdown({
             Name = "Select World Objects",
-            Flag = "KYS Select World Objects",
+            Flag = "Select World Objects",
             Values = { "Generators", "Hooks", "Gates", "Windows", "Pallets", "SCP / Zombie" },
             Multi = true,
             AllowNone = true,
             Default = {},
             Callback = function(selected)
-                KYS_ESPState.GeneratorESP = KYS_Selected(selected, "Generators")
-                KYS_ESPState.HookESP = KYS_Selected(selected, "Hooks")
-                KYS_ESPState.GateESP = KYS_Selected(selected, "Gates")
-                KYS_ESPState.WindowESP = KYS_Selected(selected, "Windows")
-                KYS_ESPState.PalletESP = KYS_Selected(selected, "Pallets")
-                KYS_ESPState.SCPZombieESP = KYS_Selected(selected, "SCP / Zombie")
-                if KYS_ESPState.WorldMasterESP and KYS_AnyWorldEnabled() then
-                    KYS_RefreshESPRoots()
-                    KYS_StartWorldLoop()
+                ESPState.GeneratorESP = Selected(selected, "Generators")
+                ESPState.HookESP = Selected(selected, "Hooks")
+                ESPState.GateESP = Selected(selected, "Gates")
+                ESPState.WindowESP = Selected(selected, "Windows")
+                ESPState.PalletESP = Selected(selected, "Pallets")
+                ESPState.SCPZombieESP = Selected(selected, "SCP / Zombie")
+                if ESPState.WorldMasterESP and AnyWorldEnabled() then
+                    RefreshESPRoots()
+                    StartWorldLoop()
                 else
-                    KYS_ClearAllWorldESP()
+                    ClearAllWorldESP()
                 end
             end,
         })
         worldSection:AddToggle({
             Name = "World Nametags",
-            Flag = "KYS World Nametags",
+            Flag = "World Nametags",
             Default = false,
             Callback = function(state)
-                KYS_ESPState.WorldNametags = state
-                if KYS_ESPState.WorldMasterESP and KYS_AnyWorldEnabled() then KYS_StartWorldLoop() else KYS_ClearAllWorldESP() end
+                ESPState.WorldNametags = state
+                if ESPState.WorldMasterESP and AnyWorldEnabled() then StartWorldLoop() else ClearAllWorldESP() end
             end,
         })
         worldSection:AddToggle({
             Name = "World Distance ESP",
-            Flag = "KYS World Distance ESP",
+            Flag = "World Distance ESP",
             Default = false,
             Callback = function(state)
-                KYS_ESPState.WorldDistanceESP = state
-                if KYS_ESPState.WorldMasterESP and KYS_AnyWorldEnabled() then KYS_StartWorldLoop() else KYS_ClearAllWorldESP() end
+                ESPState.WorldDistanceESP = state
+                if ESPState.WorldMasterESP and AnyWorldEnabled() then StartWorldLoop() else ClearAllWorldESP() end
             end,
         })
         pcall(function() worldSection:AddDivider({ Text = "Colors" }) end)
-        worldSection:AddColorPicker({ Name = "Generator Color", Flag = "KYS Generator Color", Default = KYS_ESPState.GeneratorColor, Callback = function(color) KYS_ESPState.GeneratorColor = color end })
-        worldSection:AddColorPicker({ Name = "Hook Color", Flag = "KYS Hook Color", Default = KYS_ESPState.HookColor, Callback = function(color) KYS_ESPState.HookColor = color end })
-        worldSection:AddColorPicker({ Name = "Gate Color", Flag = "KYS Gate Color", Default = KYS_ESPState.GateColor, Callback = function(color) KYS_ESPState.GateColor = color end })
-        worldSection:AddColorPicker({ Name = "Window Color", Flag = "KYS Window Color", Default = KYS_ESPState.WindowColor, Callback = function(color) KYS_ESPState.WindowColor = color end })
-        worldSection:AddColorPicker({ Name = "Pallet Color", Flag = "KYS Pallet Color", Default = KYS_ESPState.PalletColor, Callback = function(color) KYS_ESPState.PalletColor = color end })
-        worldSection:AddColorPicker({ Name = "SCP / Zombie Color", Flag = "KYS SCP Zombie Color", Default = KYS_ESPState.SCPZombieColor, Callback = function(color) KYS_ESPState.SCPZombieColor = color end })
+        worldSection:AddColorPicker({ Name = "Generator Color", Flag = "Generator Color", Default = ESPState.GeneratorColor, Callback = function(color) ESPState.GeneratorColor = color end })
+        worldSection:AddColorPicker({ Name = "Hook Color", Flag = "Hook Color", Default = ESPState.HookColor, Callback = function(color) ESPState.HookColor = color end })
+        worldSection:AddColorPicker({ Name = "Gate Color", Flag = "Gate Color", Default = ESPState.GateColor, Callback = function(color) ESPState.GateColor = color end })
+        worldSection:AddColorPicker({ Name = "Window Color", Flag = "Window Color", Default = ESPState.WindowColor, Callback = function(color) ESPState.WindowColor = color end })
+        worldSection:AddColorPicker({ Name = "Pallet Color", Flag = "Pallet Color", Default = ESPState.PalletColor, Callback = function(color) ESPState.PalletColor = color end })
+        worldSection:AddColorPicker({ Name = "SCP / Zombie Color", Flag = "SCP Zombie Color", Default = ESPState.SCPZombieColor, Callback = function(color) ESPState.SCPZombieColor = color end })
     end
     for _, player in ipairs(Players:GetPlayers()) do
-        KYS_WatchPlayer(player)
+        WatchPlayer(player)
     end
-    table.insert(KYS_Connections, Players.PlayerAdded:Connect(KYS_WatchPlayer))
-    table.insert(KYS_Connections, Players.PlayerRemoving:Connect(KYS_UnwatchPlayer))
-    table.insert(KYS_Connections, Workspace.ChildAdded:Connect(function(child)
+    table.insert(Connections, Players.PlayerAdded:Connect(WatchPlayer))
+    table.insert(Connections, Players.PlayerRemoving:Connect(UnwatchPlayer))
+    table.insert(Connections, Workspace.ChildAdded:Connect(function(child)
         if child.Name == "Map" or child.Name == "Map1" then
-            KYS_AttachESPRoot(child)
-            if KYS_ESPState.WorldMasterESP and KYS_AnyWorldEnabled() then KYS_StartWorldLoop() end
+            AttachESPRoot(child)
+            if ESPState.WorldMasterESP and AnyWorldEnabled() then StartWorldLoop() end
         end
     end))
-    table.insert(KYS_Connections, Workspace.ChildRemoved:Connect(function(child)
+    table.insert(Connections, Workspace.ChildRemoved:Connect(function(child)
         if child.Name == "Map" or child.Name == "Map1" then
-            KYS_RefreshESPRoots()
+            RefreshESPRoots()
         end
     end))
-    KYS_RefreshESPRoots()
+    RefreshESPRoots()
     getgenv().PinatHub_VD_VisualESP_Cleanup = function()
-        KYS_Dead = true
-        KYS_ClearAllPlayerESP()
-        KYS_ClearAllWorldESP()
-        for _, conn in ipairs(KYS_Connections) do
+        Dead = true
+        ClearAllPlayerESP()
+        ClearAllWorldESP()
+        for _, conn in ipairs(Connections) do
             if conn then pcall(function() conn:Disconnect() end) end
         end
-        for _, conns in pairs(KYS_PlayerConns) do
+        for _, conns in pairs(PlayerConns) do
             for _, conn in ipairs(conns) do
                 if conn then pcall(function() conn:Disconnect() end) end
             end
         end
-        for _, conn in pairs(KYS_MapAdd) do
+        for _, conn in pairs(MapAdd) do
             if conn then pcall(function() conn:Disconnect() end) end
         end
-        for _, conn in pairs(KYS_MapRem) do
+        for _, conn in pairs(MapRem) do
             if conn then pcall(function() conn:Disconnect() end) end
         end
-        if KYS_ESPFolder and KYS_ESPFolder.Parent then
-            KYS_ESPFolder:Destroy()
+        if ESPFolder and ESPFolder.Parent then
+            ESPFolder:Destroy()
         end
     end
-    KYS_SafeNotify("Visual ESP", "Highlight ESP V2 loaded. Anti double nametag aktif.", 3)
+    SafeNotify("Visual ESP", "Highlight ESP V2 loaded. Anti double nametag aktif.", 3)
 end
 task.spawn(function()
     while not VD.Destroyed do
         if VD.Fullbright then
-            local weatherTheme = VD.VIS_WeatherTheme and KYS_WeatherPresets[VD.VIS_WeatherTheme]
+            local weatherTheme = VD.VIS_WeatherTheme and WeatherPresets[VD.VIS_WeatherTheme]
             local keepWeatherLighting = VD.VIS_WeatherTheme and VD.VIS_WeatherTheme ~= "Default" and weatherTheme and weatherTheme.Lighting
             if keepWeatherLighting then
                 for k, v in pairs(weatherTheme.Lighting) do
@@ -2124,8 +2125,8 @@ task.spawn(function()
                 if v:IsA("SunRaysEffect") then v.Enabled = false end
             end
         else
-            if VD.VIS_WeatherTheme and VD.VIS_WeatherTheme ~= "Default" and KYS_WeatherPresets[VD.VIS_WeatherTheme] then
-                local theme = KYS_WeatherPresets[VD.VIS_WeatherTheme]
+            if VD.VIS_WeatherTheme and VD.VIS_WeatherTheme ~= "Default" and WeatherPresets[VD.VIS_WeatherTheme] then
+                local theme = WeatherPresets[VD.VIS_WeatherTheme]
                 if theme.Lighting then
                     for k, v in pairs(theme.Lighting) do
                         pcall(function() Lighting[k] = v end)
@@ -2227,7 +2228,7 @@ function VD_Notify(title, content, duration)
     end)
 end
 (function()
-local KYS_ToFState = {
+local ToFState = {
     Connection = nil,
     LaserBeam = nil,
     TargetGui = nil,
@@ -2239,7 +2240,7 @@ local KYS_ToFState = {
     SCPCache = {},
     SCPCacheTimer = 0,
 }
-local KYS_ToFKeyCodes = {
+local ToFKeyCodes = {
     None = nil,
     Q = Enum.KeyCode.Q,
     E = Enum.KeyCode.E,
@@ -2254,7 +2255,7 @@ local KYS_ToFKeyCodes = {
     X = Enum.KeyCode.X,
     Z = Enum.KeyCode.Z,
 }
-local function KYS_ToFGetEvent()
+local function ToFGetEvent()
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
     local items = remotes and remotes:FindFirstChild("Items")
     local tof = items and items:FindFirstChild("Twist of Fate")
@@ -2264,7 +2265,7 @@ local function KYS_ToFGetEvent()
     end
     return nil
 end
-local function KYS_ToFGetGunObject()
+local function ToFGetGunObject()
     local char = LocalPlayer.Character
     if not char then return nil end
     local baseToF = char:FindFirstChild("Twist of Fate", true)
@@ -2278,7 +2279,7 @@ local function KYS_ToFGetGunObject()
     end
     return baseToF
 end
-local function KYS_ToFIsTargetVisible(originPos, targetPos, targetCharacter)
+local function ToFIsTargetVisible(originPos, targetPos, targetCharacter)
     local direction = targetPos - originPos
     local distance = direction.Magnitude
     if distance < 0.1 then return true end
@@ -2288,14 +2289,14 @@ local function KYS_ToFIsTargetVisible(originPos, targetPos, targetCharacter)
     local localChar = LocalPlayer.Character
     if localChar then table.insert(excludeList, localChar) end
     if targetCharacter and targetCharacter ~= localChar then table.insert(excludeList, targetCharacter) end
-    if KYS_ToFState.LaserBeam then table.insert(excludeList, KYS_ToFState.LaserBeam) end
+    if ToFState.LaserBeam then table.insert(excludeList, ToFState.LaserBeam) end
     rayParams.FilterDescendantsInstances = excludeList
     local result = workspace:Raycast(originPos, direction.Unit * distance, rayParams)
     return result == nil
 end
-local function KYS_ToFGetSCPs()
-    if tick() - KYS_ToFState.SCPCacheTimer < 0.5 then
-        return KYS_ToFState.SCPCache
+local function ToFGetSCPs()
+    if tick() - ToFState.SCPCacheTimer < 0.5 then
+        return ToFState.SCPCache
     end
     local newTargets = {}
     local mapFolder = workspace:FindFirstChild("Map")
@@ -2310,12 +2311,12 @@ local function KYS_ToFGetSCPs()
             end
         end
     end
-    KYS_ToFState.SCPCache = newTargets
-    KYS_ToFState.SCPCacheTimer = tick()
-    return KYS_ToFState.SCPCache
+    ToFState.SCPCache = newTargets
+    ToFState.SCPCacheTimer = tick()
+    return ToFState.SCPCache
 end
-local function KYS_ToFGetTargetPosition()
-    local gunObj = KYS_ToFGetGunObject()
+local function ToFGetTargetPosition()
+    local gunObj = ToFGetGunObject()
     local char = LocalPlayer.Character
     if not (gunObj and char) then return nil, nil, nil, nil end
     local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -2333,7 +2334,7 @@ local function KYS_ToFGetTargetPosition()
     end
     local function predictTarget(torso, targetCharacter)
         local targetPos = torso.Position
-        if VD.TOF_WallCheck and not KYS_ToFIsTargetVisible(originPos, targetPos, targetCharacter) then
+        if VD.TOF_WallCheck and not ToFIsTargetVisible(originPos, targetPos, targetCharacter) then
             return nil, nil, nil, nil
         end
         local targetVel = Vector3.new(0, 0, 0)
@@ -2402,7 +2403,7 @@ local function KYS_ToFGetTargetPosition()
         local bestPart, bestDot = nil, -math.huge
         local cam = workspace.CurrentCamera
         local camLook = cam.CFrame.LookVector
-        for _, root in ipairs(KYS_ToFGetSCPs()) do
+        for _, root in ipairs(ToFGetSCPs()) do
             if root and root.Parent then
                 local dirToTarget = root.Position - cam.CFrame.Position
                 if dirToTarget.Magnitude > 0.1 then
@@ -2419,8 +2420,8 @@ local function KYS_ToFGetTargetPosition()
     end
     return nil, nil, nil, nil
 end
-local function KYS_ToFUpdateLaser(originPos, targetPos)
-    if not KYS_ToFState.LaserBeam then
+local function ToFUpdateLaser(originPos, targetPos)
+    if not ToFState.LaserBeam then
         local laser = Instance.new("Part")
         laser.Name = "ToFLaser"
         laser.Anchored = true
@@ -2430,17 +2431,17 @@ local function KYS_ToFUpdateLaser(originPos, targetPos)
         laser.Material = Enum.Material.Neon
         laser.Color = Color3.fromRGB(255, 50, 50)
         laser.Parent = workspace
-        KYS_ToFState.LaserBeam = laser
+        ToFState.LaserBeam = laser
     end
     local dist = (targetPos - originPos).Magnitude
-    KYS_ToFState.LaserBeam.Size = Vector3.new(0.05, 0.05, dist)
-    KYS_ToFState.LaserBeam.CFrame = CFrame.new((originPos + targetPos) / 2, targetPos)
-    KYS_ToFState.LaserBeam.Transparency = 0
+    ToFState.LaserBeam.Size = Vector3.new(0.05, 0.05, dist)
+    ToFState.LaserBeam.CFrame = CFrame.new((originPos + targetPos) / 2, targetPos)
+    ToFState.LaserBeam.Transparency = 0
 end
-local function KYS_ToFClearLaser()
-    if KYS_ToFState.LaserBeam then
-        pcall(function() KYS_ToFState.LaserBeam:Destroy() end)
-        KYS_ToFState.LaserBeam = nil
+local function ToFClearLaser()
+    if ToFState.LaserBeam then
+        pcall(function() ToFState.LaserBeam:Destroy() end)
+        ToFState.LaserBeam = nil
     end
 end
 local AimConfig = {
@@ -2452,7 +2453,7 @@ local function IsDowned(char)
     local state = char:GetAttribute("State")
     return state == "Downed" or state == "Dead"
 end
-local function KYS_ToFGetMobileShootButton()
+local function ToFGetMobileShootButton()
     local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
     local survivorMob = playerGui and playerGui:FindFirstChild("Survivor-mob")
     local controls = survivorMob and survivorMob:FindFirstChild("Controls")
@@ -2470,8 +2471,8 @@ local function KYS_ToFGetMobileShootButton()
     end
     return guiMob:IsA("GuiObject") and guiMob or nil
 end
-local function KYS_ToFIsTouchOnShootButton(input)
-    local shootButton = KYS_ToFGetMobileShootButton()
+local function ToFIsTouchOnShootButton(input)
+    local shootButton = ToFGetMobileShootButton()
     if not (shootButton and shootButton.Visible) then return false end
     local pos = input.Position
     local absPos = shootButton.AbsolutePosition
@@ -2479,7 +2480,7 @@ local function KYS_ToFIsTouchOnShootButton(input)
     return pos.X >= absPos.X and pos.X <= absPos.X + absSize.X
         and pos.Y >= absPos.Y and pos.Y <= absPos.Y + absSize.Y
 end
-local function KYS_ToFDoShoot()
+local function ToFDoShoot()
     if not VD.TOF_SilentAim then return end
     AimConfig.Pistol_BlockKnocked = VD.TOF_BlockKnocked ~= false
     local char = LocalPlayer.Character
@@ -2488,9 +2489,9 @@ local function KYS_ToFDoShoot()
             return
         end
     end
-    local targetDirection, gunObject, originPos, targetPos = KYS_ToFGetTargetPosition()
+    local targetDirection, gunObject, originPos, targetPos = ToFGetTargetPosition()
     if not (targetDirection and gunObject and targetPos and originPos) then return end
-    local tofEvent = KYS_ToFGetEvent()
+    local tofEvent = ToFGetEvent()
     if not tofEvent then return end
     local freshDirection = targetPos - originPos
     if freshDirection.Magnitude < 0.1 then return end
@@ -2498,14 +2499,14 @@ local function KYS_ToFDoShoot()
         tofEvent:FireServer(gunObject, freshDirection.Unit)
     end)
 end
-local KYS_ToFModeButtons = {}
-local function KYS_ToFRefreshTargetButtons()
+local ToFModeButtons = {}
+local function ToFRefreshTargetButtons()
     local modes = {
         Killer = { Color3.fromRGB(180, 45, 45), Color3.fromRGB(255, 180, 180) },
         Survivors = { Color3.fromRGB(25, 80, 150), Color3.fromRGB(160, 210, 255) },
         Zombie = { Color3.fromRGB(120, 80, 10), Color3.fromRGB(255, 210, 100) },
     }
-    for modeName, btn in pairs(KYS_ToFModeButtons) do
+    for modeName, btn in pairs(ToFModeButtons) do
         if btn and btn.Parent then
             local active = modeName == (VD.TOF_TargetMode or "Killer")
             local colors = modes[modeName]
@@ -2514,16 +2515,16 @@ local function KYS_ToFRefreshTargetButtons()
         end
     end
 end
-local function KYS_ToFSetTargetMode(modeName, notify)
+local function ToFSetTargetMode(modeName, notify)
     if modeName ~= "Killer" and modeName ~= "Survivors" and modeName ~= "Zombie" then return end
     VD.TOF_TargetMode = modeName
-    KYS_ToFRefreshTargetButtons()
+    ToFRefreshTargetButtons()
     if notify then VD_Notify("Target Mode", modeName, 1) end
 end
-local function KYS_ToFCreateTargetSelectorUI()
+local function ToFCreateTargetSelectorUI()
     local parent = GetSafeGuiParent()
     if not parent then return end
-    if KYS_ToFState.TargetGui and KYS_ToFState.TargetGui.Parent then return end
+    if ToFState.TargetGui and ToFState.TargetGui.Parent then return end
     local old = parent:FindFirstChild("ToFTargetSelector")
     if old then pcall(function() old:Destroy() end) end
     local gui = Instance.new("ScreenGui")
@@ -2534,7 +2535,7 @@ local function KYS_ToFCreateTargetSelectorUI()
     local frame = Instance.new("Frame")
     frame.Name = "Main"
     frame.Size = UDim2.new(0, 180, 0, 126)
-    frame.Position = KYS_ToFState.SavedUIPos
+    frame.Position = ToFState.SavedUIPos
     frame.BackgroundColor3 = Color3.fromRGB(16, 18, 24)
     frame.BorderSizePixel = 0
     frame.Active = true
@@ -2605,7 +2606,7 @@ local function KYS_ToFCreateTargetSelectorUI()
         { Internal = "Survivors", Display = "SURVIVOR      J" },
         { Internal = "Zombie", Display = "ZOMBIE        L" },
     }
-    KYS_ToFModeButtons = {}
+    ToFModeButtons = {}
     for i, mode in ipairs(modes) do
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(1, 0, 0, 25)
@@ -2621,16 +2622,16 @@ local function KYS_ToFCreateTargetSelectorUI()
         btnStroke.Color = Color3.fromRGB(58, 62, 78)
         btnStroke.Thickness = 1
         btn.MouseButton1Click:Connect(function()
-            KYS_ToFSetTargetMode(mode.Internal, false)
+            ToFSetTargetMode(mode.Internal, false)
         end)
         btn.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.Touch then
-                KYS_ToFSetTargetMode(mode.Internal, false)
+                ToFSetTargetMode(mode.Internal, false)
             end
         end)
-        KYS_ToFModeButtons[mode.Internal] = btn
+        ToFModeButtons[mode.Internal] = btn
     end
-    KYS_ToFRefreshTargetButtons()
+    ToFRefreshTargetButtons()
     local dragging = false
     local dragStart, startPos
     dragArea.InputBegan:Connect(function(input)
@@ -2656,26 +2657,26 @@ local function KYS_ToFCreateTargetSelectorUI()
                 startPos.Y.Offset + delta.Y
             )
             frame.Position = newPos
-            KYS_ToFState.SavedUIPos = newPos
+            ToFState.SavedUIPos = newPos
         end
     end)
-    KYS_ToFState.TargetGui = gui
+    ToFState.TargetGui = gui
 end
-local function KYS_ToFDestroyTargetSelectorUI()
-    if KYS_ToFState.TargetGui then
-        pcall(function() KYS_ToFState.TargetGui:Destroy() end)
-        KYS_ToFState.TargetGui = nil
+local function ToFDestroyTargetSelectorUI()
+    if ToFState.TargetGui then
+        pcall(function() ToFState.TargetGui:Destroy() end)
+        ToFState.TargetGui = nil
     end
-    KYS_ToFModeButtons = {}
+    ToFModeButtons = {}
 end
-local function KYS_ToFStartConnection()
-    if KYS_ToFState.Connection then return end
-    KYS_ToFState.Connection = RunService.Heartbeat:Connect(function()
-        if not VD.TOF_SilentAim or not KYS_ToFState.IsAiming then
-            if KYS_ToFState.LaserBeam then KYS_ToFState.LaserBeam.Transparency = 1 end
+local function ToFStartConnection()
+    if ToFState.Connection then return end
+    ToFState.Connection = RunService.Heartbeat:Connect(function()
+        if not VD.TOF_SilentAim or not ToFState.IsAiming then
+            if ToFState.LaserBeam then ToFState.LaserBeam.Transparency = 1 end
             return
         end
-        local _, _, originPos, targetPos = KYS_ToFGetTargetPosition()
+        local _, _, originPos, targetPos = ToFGetTargetPosition()
         if originPos and targetPos then
             pcall(function()
                 local char = LocalPlayer.Character
@@ -2685,95 +2686,102 @@ local function KYS_ToFStartConnection()
                 end
             end)
             if VD.TOF_Laser then
-                KYS_ToFUpdateLaser(originPos, targetPos)
-            elseif KYS_ToFState.LaserBeam then
-                KYS_ToFState.LaserBeam.Transparency = 1
+                ToFUpdateLaser(originPos, targetPos)
+            elseif ToFState.LaserBeam then
+                ToFState.LaserBeam.Transparency = 1
             end
-        elseif KYS_ToFState.LaserBeam then
-            KYS_ToFState.LaserBeam.Transparency = 1
+        elseif ToFState.LaserBeam then
+            ToFState.LaserBeam.Transparency = 1
         end
     end)
 end
-local function KYS_ToFStopConnection()
-    if KYS_ToFState.Connection then
-        pcall(function() KYS_ToFState.Connection:Disconnect() end)
-        KYS_ToFState.Connection = nil
+local function ToFStopConnection()
+    if ToFState.Connection then
+        pcall(function() ToFState.Connection:Disconnect() end)
+        ToFState.Connection = nil
     end
-    KYS_ToFState.IsAiming = false
-    KYS_ToFClearLaser()
+    ToFState.IsAiming = false
+    ToFClearLaser()
 end
-local function KYS_ToFDisconnectInputs()
-    if KYS_ToFState.InputBegan then pcall(function() KYS_ToFState.InputBegan:Disconnect() end) end
-    if KYS_ToFState.InputEnded then pcall(function() KYS_ToFState.InputEnded:Disconnect() end) end
-    KYS_ToFState.InputBegan = nil
-    KYS_ToFState.InputEnded = nil
+local function ToFDisconnectInputs()
+    if ToFState.InputBegan then pcall(function() ToFState.InputBegan:Disconnect() end) end
+    if ToFState.InputEnded then pcall(function() ToFState.InputEnded:Disconnect() end) end
+    ToFState.InputBegan = nil
+    ToFState.InputEnded = nil
 end
-local KYS_SetToFSilentAim
-local function KYS_ToFEnsureInputs()
-    if not KYS_ToFState.InputBegan then
-        KYS_ToFState.InputBegan = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+local SetToFSilentAim
+local function ToFEnsureInputs()
+    if not ToFState.InputBegan then
+        ToFState.InputBegan = UserInputService.InputBegan:Connect(function(input, gameProcessed)
             if gameProcessed then return end
-            local keyCode = KYS_ToFKeyCodes[VD.TOF_Key or "None"]
+            local keyCode = ToFKeyCodes[VD.TOF_Key or "None"]
             if keyCode and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == keyCode then
-                KYS_SetToFSilentAim(not VD.TOF_SilentAim)
+                SetToFSilentAim(not VD.TOF_SilentAim)
                 return
             end
             if not VD.TOF_SilentAim then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1
-            or (input.UserInputType == Enum.UserInputType.Touch and KYS_ToFIsTouchOnShootButton(input)) then
-                KYS_ToFState.IsAiming = true
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    KYS_ToFState.TouchInput = input
-                end
-                KYS_ToFDoShoot()
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                ToFState.IsAiming = true
+                ToFDoShoot()
+                return
+            end
+            if input.UserInputType == Enum.UserInputType.MouseButton2 then
+                ToFState.IsAiming = true
+                return
+            end
+            if input.UserInputType == Enum.UserInputType.Touch and ToFIsTouchOnShootButton(input) then
+                ToFState.IsAiming = true
+                ToFState.TouchInput = input
+                ToFDoShoot()
                 return
             end
             if input.UserInputType == Enum.UserInputType.Keyboard then
                 if input.KeyCode == Enum.KeyCode.K then
-                    KYS_ToFSetTargetMode("Killer", true)
+                    ToFSetTargetMode("Killer", true)
                 elseif input.KeyCode == Enum.KeyCode.J then
-                    KYS_ToFSetTargetMode("Survivors", true)
+                    ToFSetTargetMode("Survivors", true)
                 elseif input.KeyCode == Enum.KeyCode.L then
-                    KYS_ToFSetTargetMode("Zombie", true)
+                    ToFSetTargetMode("Zombie", true)
                 end
             end
         end)
     end
-    if not KYS_ToFState.InputEnded then
-        KYS_ToFState.InputEnded = UserInputService.InputEnded:Connect(function(input)
+    if not ToFState.InputEnded then
+        ToFState.InputEnded = UserInputService.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1
-            or (input.UserInputType == Enum.UserInputType.Touch and input == KYS_ToFState.TouchInput) then
-                KYS_ToFState.IsAiming = false
-                if input == KYS_ToFState.TouchInput then KYS_ToFState.TouchInput = nil end
-                if KYS_ToFState.LaserBeam then KYS_ToFState.LaserBeam.Transparency = 1 end
+            or input.UserInputType == Enum.UserInputType.MouseButton2
+            or (input.UserInputType == Enum.UserInputType.Touch and input == ToFState.TouchInput) then
+                ToFState.IsAiming = false
+                if input == ToFState.TouchInput then ToFState.TouchInput = nil end
+                if ToFState.LaserBeam then ToFState.LaserBeam.Transparency = 1 end
             end
         end)
     end
 end
-KYS_SetToFSilentAim = function(enabled)
+SetToFSilentAim = function(enabled)
     VD.TOF_SilentAim = enabled and true or false
-    KYS_ToFEnsureInputs()
+    ToFEnsureInputs()
     if VD.TOF_SilentAim then
-        KYS_ToFCreateTargetSelectorUI()
-        KYS_ToFStartConnection()
+        ToFCreateTargetSelectorUI()
+        ToFStartConnection()
     else
-        KYS_ToFDestroyTargetSelectorUI()
-        KYS_ToFStopConnection()
+        ToFDestroyTargetSelectorUI()
+        ToFStopConnection()
     end
 end
-KYS_ToFEnsureInputs()
-getgenv().KYS_SetToFSilentAim = KYS_SetToFSilentAim
-getgenv().KYS_ToFClearLaser = KYS_ToFClearLaser
-getgenv().KYS_ToFSetTargetMode = KYS_ToFSetTargetMode
+ToFEnsureInputs()
+getgenv().SetToFSilentAim = SetToFSilentAim
+getgenv().ToFClearLaser = ToFClearLaser
+getgenv().ToFSetTargetMode = ToFSetTargetMode
 end)();
 (function()
-local KYS_HideSurvivorIconState = {
+local HideSurvivorIconState = {
     Connection = nil,
     Originals = {},
 }
-local KYS_HideSurvivorIconImage = "rbxassetid://104442518163067"
-local KYS_HideSurvivorIconText = "NxH"
-local function KYS_GetSurvivorSlots()
+local HideSurvivorIconImage = "rbxassetid://104442518163067"
+local HideSurvivorIconText = "NxH"
+local function GetSurvivorSlots()
     local slots = {}
     local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
     if not playerGui then return slots end
@@ -2798,12 +2806,12 @@ local function KYS_GetSurvivorSlots()
     end
     return slots
 end
-local function KYS_ApplyHideSurvivorIcon()
-    for _, slot in ipairs(KYS_GetSurvivorSlots()) do
+local function ApplyHideSurvivorIcon()
+    for _, slot in ipairs(GetSurvivorSlots()) do
         local imageLabel = slot.ImageLabel
         if imageLabel and imageLabel:IsA("ImageLabel") then
-            if not KYS_HideSurvivorIconState.Originals[imageLabel] then
-                KYS_HideSurvivorIconState.Originals[imageLabel] = {
+            if not HideSurvivorIconState.Originals[imageLabel] then
+                HideSurvivorIconState.Originals[imageLabel] = {
                     Image = imageLabel.Image,
                     ImageColor3 = imageLabel.ImageColor3,
                     ImageTransparency = imageLabel.ImageTransparency,
@@ -2812,7 +2820,7 @@ local function KYS_ApplyHideSurvivorIcon()
                     ScaleType = imageLabel.ScaleType,
                 }
             end
-            imageLabel.Image = KYS_HideSurvivorIconImage
+            imageLabel.Image = HideSurvivorIconImage
             imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
             imageLabel.ImageTransparency = 0
             imageLabel.ImageRectOffset = Vector2.new(0, 0)
@@ -2821,21 +2829,21 @@ local function KYS_ApplyHideSurvivorIcon()
         end
         local textLabel = slot.TextLabel
         if textLabel and textLabel:IsA("TextLabel") then
-            if not KYS_HideSurvivorIconState.Originals[textLabel] then
-                KYS_HideSurvivorIconState.Originals[textLabel] = {
+            if not HideSurvivorIconState.Originals[textLabel] then
+                HideSurvivorIconState.Originals[textLabel] = {
                     Text = textLabel.Text,
                     TextColor3 = textLabel.TextColor3,
                     TextTransparency = textLabel.TextTransparency,
                 }
             end
-            textLabel.Text = KYS_HideSurvivorIconText
+            textLabel.Text = HideSurvivorIconText
             textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
             textLabel.TextTransparency = 0
         end
     end
 end
-local function KYS_RestoreSurvivorIcons()
-    for object, original in pairs(KYS_HideSurvivorIconState.Originals) do
+local function RestoreSurvivorIcons()
+    for object, original in pairs(HideSurvivorIconState.Originals) do
         if object and object.Parent and original then
             pcall(function()
                 if original.Image ~= nil and object:IsA("ImageLabel") then
@@ -2854,34 +2862,34 @@ local function KYS_RestoreSurvivorIcons()
             end)
         end
     end
-    KYS_HideSurvivorIconState.Originals = {}
+    HideSurvivorIconState.Originals = {}
 end
-local function KYS_SetHideSurvivorIcon(enabled)
+local function SetHideSurvivorIcon(enabled)
     VD.VIS_HideSurvivorIcon = enabled and true or false
     if VD.VIS_HideSurvivorIcon then
-        KYS_ApplyHideSurvivorIcon()
-        if not KYS_HideSurvivorIconState.Connection then
-            KYS_HideSurvivorIconState.Connection = RunService.Heartbeat:Connect(function()
+        ApplyHideSurvivorIcon()
+        if not HideSurvivorIconState.Connection then
+            HideSurvivorIconState.Connection = RunService.Heartbeat:Connect(function()
                 if VD.VIS_HideSurvivorIcon then
-                    KYS_ApplyHideSurvivorIcon()
+                    ApplyHideSurvivorIcon()
                 end
             end)
         end
     else
-        if KYS_HideSurvivorIconState.Connection then
-            pcall(function() KYS_HideSurvivorIconState.Connection:Disconnect() end)
-            KYS_HideSurvivorIconState.Connection = nil
+        if HideSurvivorIconState.Connection then
+            pcall(function() HideSurvivorIconState.Connection:Disconnect() end)
+            HideSurvivorIconState.Connection = nil
         end
-        KYS_RestoreSurvivorIcons()
+        RestoreSurvivorIcons()
     end
 end
-getgenv().KYS_SetHideSurvivorIcon = KYS_SetHideSurvivorIcon
+getgenv().SetHideSurvivorIcon = SetHideSurvivorIcon
 end)();
 (function()
-local KYS_HookCounterState = {
+local HookCounterState = {
     Connection = nil,
 }
-local function KYS_UpdateHookCounter(enabled)
+local function UpdateHookCounter(enabled)
     local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
     if not playerGui then return end
     for _, gui in ipairs(playerGui:GetChildren()) do
@@ -2901,7 +2909,7 @@ local function KYS_UpdateHookCounter(enabled)
                                 end
                             end)
                         end
-                        local labelName = "KYS_CustomHookCounter"
+                        local labelName = "CustomHookCounter"
                         local customLabel = imageLabel:FindFirstChild(labelName)
                         if enabled then
                             local playerName = textLabel.Text
@@ -2955,23 +2963,23 @@ local function KYS_UpdateHookCounter(enabled)
         end
     end
 end
-local function KYS_SetShowHookCounter(enabled)
+local function SetShowHookCounter(enabled)
     VD.VIS_ShowHookCounter = enabled and true or false
     if VD.VIS_ShowHookCounter then
-        KYS_UpdateHookCounter(true)
-        if not KYS_HookCounterState.Connection then
-            KYS_HookCounterState.Connection = RunService.Heartbeat:Connect(function()
+        UpdateHookCounter(true)
+        if not HookCounterState.Connection then
+            HookCounterState.Connection = RunService.Heartbeat:Connect(function()
                 if VD.VIS_ShowHookCounter then
-                    KYS_UpdateHookCounter(true)
+                    UpdateHookCounter(true)
                 end
             end)
         end
     else
-        if KYS_HookCounterState.Connection then
-            pcall(function() KYS_HookCounterState.Connection:Disconnect() end)
-            KYS_HookCounterState.Connection = nil
+        if HookCounterState.Connection then
+            pcall(function() HookCounterState.Connection:Disconnect() end)
+            HookCounterState.Connection = nil
         end
-        KYS_UpdateHookCounter(false)
+        UpdateHookCounter(false)
         local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
         if playerGui then
             for _, gui in ipairs(playerGui:GetChildren()) do
@@ -2981,7 +2989,7 @@ local function KYS_SetShowHookCounter(enabled)
                         for i = 1, 5 do
                             local survivorFrame = frame:FindFirstChild("Survivor" .. i)
                             local imageLabel = survivorFrame and survivorFrame:FindFirstChild("ImageLabel")
-                            customLabel = imageLabel and imageLabel:FindFirstChild("KYS_CustomHookCounter")
+                            customLabel = imageLabel and imageLabel:FindFirstChild("CustomHookCounter")
                             if customLabel then
                                 pcall(function() customLabel:Destroy() end)
                             end
@@ -2992,16 +3000,16 @@ local function KYS_SetShowHookCounter(enabled)
         end
     end
 end
-getgenv().KYS_SetShowHookCounter = KYS_SetShowHookCounter
+getgenv().SetShowHookCounter = SetShowHookCounter
 end)();
 (function()
-local KYS_PingFPSState = {
+local PingFPSState = {
     Gui = nil,
     Connection = nil,
     Frames = 0,
     LastUpdate = 0,
 }
-local function KYS_GetPingValue()
+local function GetPingValue()
     local ok, value = pcall(function()
         local stats = game:GetService("Stats")
         local network = stats and stats:FindFirstChild("Network")
@@ -3018,13 +3026,13 @@ local function KYS_GetPingValue()
     if ok and value then return value end
     return nil
 end
-local function KYS_CreatePingFPSGui()
+local function CreatePingFPSGui()
     local parent = GetSafeGuiParent()
     if not parent then return nil end
-    local old = parent:FindFirstChild("KYS_PingFPSGui")
+    local old = parent:FindFirstChild("PingFPSGui")
     if old then pcall(function() old:Destroy() end) end
     local sg = Instance.new("ScreenGui")
-    sg.Name = "KYS_PingFPSGui"
+    sg.Name = "PingFPSGui"
     sg.ResetOnSpawn = false
     sg.IgnoreGuiInset = true
     sg.Parent = parent
@@ -3036,7 +3044,7 @@ local function KYS_CreatePingFPSGui()
     frame.BackgroundTransparency = 0.1
     frame.BorderSizePixel = 0
     frame.Parent = sg
-    KYS_MakeDraggable(frame)
+    MakeDraggable(frame)
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
     local stroke = Instance.new("UIStroke", frame)
     stroke.Color = Color3.fromRGB(96, 72, 160)
@@ -3055,52 +3063,52 @@ local function KYS_CreatePingFPSGui()
     label.Parent = frame
     return sg
 end
-local function KYS_SetShowPingFPS(enabled)
+local function SetShowPingFPS(enabled)
     VD.VIS_ShowPingFPS = enabled and true or false
     if VD.VIS_ShowPingFPS then
-        KYS_PingFPSState.Gui = KYS_PingFPSState.Gui or KYS_CreatePingFPSGui()
-        KYS_PingFPSState.Frames = 0
-        KYS_PingFPSState.LastUpdate = tick()
-        if not KYS_PingFPSState.Connection then
-            KYS_PingFPSState.Connection = RunService.RenderStepped:Connect(function()
+        PingFPSState.Gui = PingFPSState.Gui or CreatePingFPSGui()
+        PingFPSState.Frames = 0
+        PingFPSState.LastUpdate = tick()
+        if not PingFPSState.Connection then
+            PingFPSState.Connection = RunService.RenderStepped:Connect(function()
                 if not VD.VIS_ShowPingFPS then return end
-                KYS_PingFPSState.Frames = KYS_PingFPSState.Frames + 1
+                PingFPSState.Frames = PingFPSState.Frames + 1
                 local now = tick()
-                if now - KYS_PingFPSState.LastUpdate < 0.5 then return end
-                local fps = math.floor(KYS_PingFPSState.Frames / (now - KYS_PingFPSState.LastUpdate) + 0.5)
-                local ping = KYS_GetPingValue()
-                KYS_PingFPSState.Frames = 0
-                KYS_PingFPSState.LastUpdate = now
-                if not (KYS_PingFPSState.Gui and KYS_PingFPSState.Gui.Parent) then
-                    KYS_PingFPSState.Gui = KYS_CreatePingFPSGui()
+                if now - PingFPSState.LastUpdate < 0.5 then return end
+                local fps = math.floor(PingFPSState.Frames / (now - PingFPSState.LastUpdate) + 0.5)
+                local ping = GetPingValue()
+                PingFPSState.Frames = 0
+                PingFPSState.LastUpdate = now
+                if not (PingFPSState.Gui and PingFPSState.Gui.Parent) then
+                    PingFPSState.Gui = CreatePingFPSGui()
                 end
-                local label = KYS_PingFPSState.Gui and KYS_PingFPSState.Gui:FindFirstChild("PingFPSLabel", true)
+                local label = PingFPSState.Gui and PingFPSState.Gui:FindFirstChild("PingFPSLabel", true)
                 if label then
                     label.Text = ("PING: %sms\nFPS: %d"):format(ping and tostring(ping) or "--", fps)
                 end
             end)
         end
     else
-        if KYS_PingFPSState.Connection then
-            pcall(function() KYS_PingFPSState.Connection:Disconnect() end)
-            KYS_PingFPSState.Connection = nil
+        if PingFPSState.Connection then
+            pcall(function() PingFPSState.Connection:Disconnect() end)
+            PingFPSState.Connection = nil
         end
-        if KYS_PingFPSState.Gui then
-            pcall(function() KYS_PingFPSState.Gui:Destroy() end)
-            KYS_PingFPSState.Gui = nil
+        if PingFPSState.Gui then
+            pcall(function() PingFPSState.Gui:Destroy() end)
+            PingFPSState.Gui = nil
         end
     end
 end
-getgenv().KYS_SetShowPingFPS = KYS_SetShowPingFPS
+getgenv().SetShowPingFPS = SetShowPingFPS
 end)();
 (function()
-local KYS_FlashlightAimState = {
+local FlashlightAimState = {
     Connection = nil,
     LaserBeam = nil,
     FlashlightPart = nil,
     Active = false,
 }
-local function KYS_GetFlashlightActivateRemote()
+local function GetFlashlightActivateRemote()
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
     local items = remotes and remotes:FindFirstChild("Items")
     local flashlight = items and items:FindFirstChild("Flashlight")
@@ -3110,7 +3118,7 @@ local function KYS_GetFlashlightActivateRemote()
     end
     return nil
 end
-local function KYS_GetFlashlightTargetPart(char)
+local function GetFlashlightTargetPart(char)
     if not char then return nil end
     local preferred = VD.FLASH_TargetPart or "Head"
     local part = char:FindFirstChild(preferred)
@@ -3120,23 +3128,23 @@ local function KYS_GetFlashlightTargetPart(char)
         or char:FindFirstChild("Torso")
         or char:FindFirstChild("HumanoidRootPart")
 end
-local function KYS_IsAliveCharacter(char)
+local function IsAliveCharacter(char)
     local hum = char and char:FindFirstChildOfClass("Humanoid")
     if not hum or hum.Health <= 0 then return false end
     local state = char:GetAttribute("State")
     return state ~= "Dead"
 end
-local function KYS_GetFlashlightTarget()
+local function GetFlashlightTarget()
     local localChar = LocalPlayer.Character
     local localRoot = localChar and localChar:FindFirstChild("HumanoidRootPart")
     if not localRoot then return nil end
     local maxRange = tonumber(VD.FLASH_Range) or 120
     local bestPart, bestScore = nil, math.huge
     for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and KYS_IsAliveCharacter(player.Character) then
+        if player ~= LocalPlayer and player.Character and IsAliveCharacter(player.Character) then
             local isKiller = player.Team and player.Team.Name == "Killer"
             if isKiller then
-                local part = KYS_GetFlashlightTargetPart(player.Character)
+                local part = GetFlashlightTargetPart(player.Character)
                 if part then
                     local dist = (localRoot.Position - part.Position).Magnitude
                     if dist <= maxRange and dist < bestScore then
@@ -3149,14 +3157,14 @@ local function KYS_GetFlashlightTarget()
     end
     return bestPart
 end
-local function KYS_ClearFlashlightLaser()
-    if KYS_FlashlightAimState.LaserBeam then
-        pcall(function() KYS_FlashlightAimState.LaserBeam:Destroy() end)
-        KYS_FlashlightAimState.LaserBeam = nil
+local function ClearFlashlightLaser()
+    if FlashlightAimState.LaserBeam then
+        pcall(function() FlashlightAimState.LaserBeam:Destroy() end)
+        FlashlightAimState.LaserBeam = nil
     end
 end
-local function KYS_GetFlashlightOrigin(cam)
-    local source = KYS_FlashlightAimState.FlashlightPart
+local function GetFlashlightOrigin(cam)
+    local source = FlashlightAimState.FlashlightPart
     if typeof and typeof(source) == "Instance" then
         if source:IsA("BasePart") then
             return source.Position
@@ -3177,8 +3185,8 @@ local function KYS_GetFlashlightOrigin(cam)
     end
     return cam and cam.CFrame.Position or nil
 end
-local function KYS_UpdateFlashlightLaser(originPos, targetPos)
-    if not KYS_FlashlightAimState.LaserBeam then
+local function UpdateFlashlightLaser(originPos, targetPos)
+    if not FlashlightAimState.LaserBeam then
         local laser = Instance.new("Part")
         laser.Name = "FlashlightSilentAimLaser"
         laser.Anchored = true
@@ -3189,43 +3197,37 @@ local function KYS_UpdateFlashlightLaser(originPos, targetPos)
         laser.Color = Color3.fromRGB(80, 220, 255)
         laser.Transparency = 0
         laser.Parent = workspace
-        KYS_FlashlightAimState.LaserBeam = laser
+        FlashlightAimState.LaserBeam = laser
     end
     local dist = (targetPos - originPos).Magnitude
     if dist < 0.1 then return end
-    local laser = KYS_FlashlightAimState.LaserBeam
+    local laser = FlashlightAimState.LaserBeam
     laser.Size = Vector3.new(0.16, 0.16, dist)
     laser.CFrame = CFrame.new((originPos + targetPos) / 2, targetPos)
     laser.Transparency = 0
 end
-local function KYS_FlashlightAimStep()
-    if false then
-        if KYS_FlashlightAimState.LaserBeam then
-            KYS_FlashlightAimState.LaserBeam.Transparency = 1
-        end
-        return
-    end
-    if not (VD.FLASH_SilentAim and KYS_FlashlightAimState.Active) then
-        if KYS_FlashlightAimState.LaserBeam then
-            KYS_FlashlightAimState.LaserBeam.Transparency = 1
+local function FlashlightAimStep()
+    if not (VD.FLASH_SilentAim and FlashlightAimState.Active) then
+        if FlashlightAimState.LaserBeam then
+            FlashlightAimState.LaserBeam.Transparency = 1
         end
         return
     end
     local cam = workspace.CurrentCamera
-    local targetPart = KYS_GetFlashlightTarget()
+    local targetPart = GetFlashlightTarget()
     if not (cam and targetPart) then
-        if KYS_FlashlightAimState.LaserBeam then
-            KYS_FlashlightAimState.LaserBeam.Transparency = 1
+        if FlashlightAimState.LaserBeam then
+            FlashlightAimState.LaserBeam.Transparency = 1
         end
         return
     end
     local targetPos = targetPart.Position
     local smooth = math.clamp(tonumber(VD.FLASH_Smooth) or 0.35, 0.05, 1)
-    local originPos = KYS_GetFlashlightOrigin(cam)
+    local originPos = GetFlashlightOrigin(cam)
     if VD.FLASH_Laser and originPos then
-        KYS_UpdateFlashlightLaser(originPos, targetPos)
-    elseif KYS_FlashlightAimState.LaserBeam then
-        KYS_FlashlightAimState.LaserBeam.Transparency = 1
+        UpdateFlashlightLaser(originPos, targetPos)
+    elseif FlashlightAimState.LaserBeam then
+        FlashlightAimState.LaserBeam.Transparency = 1
     end
     pcall(function()
         cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, targetPos), smooth)
@@ -3238,49 +3240,44 @@ local function KYS_FlashlightAimStep()
         end
     end)
 end
-local function KYS_StartFlashlightSilentAim()
-    getgenv().KYS_FlashlightActivateRemote = KYS_GetFlashlightActivateRemote()
-    if KYS_FlashlightAimState.Connection then return end
-    KYS_FlashlightAimState.Connection = RunService.RenderStepped:Connect(KYS_FlashlightAimStep)
+local function StartFlashlightSilentAim()
+    getgenv().FlashlightActivateRemote = GetFlashlightActivateRemote()
+    if FlashlightAimState.Connection then return end
+    FlashlightAimState.Connection = RunService.RenderStepped:Connect(FlashlightAimStep)
 end
-local function KYS_StopFlashlightSilentAim()
-    KYS_FlashlightAimState.Active = false
-    KYS_FlashlightAimState.FlashlightPart = nil
-    KYS_ClearFlashlightLaser()
-    if KYS_FlashlightAimState.Connection then
-        pcall(function() KYS_FlashlightAimState.Connection:Disconnect() end)
-        KYS_FlashlightAimState.Connection = nil
+local function StopFlashlightSilentAim()
+    FlashlightAimState.Active = false
+    FlashlightAimState.FlashlightPart = nil
+    ClearFlashlightLaser()
+    if FlashlightAimState.Connection then
+        pcall(function() FlashlightAimState.Connection:Disconnect() end)
+        FlashlightAimState.Connection = nil
     end
 end
-local function KYS_SetFlashlightSilentAim(enabled)
-    if enabled and false then
-        VD.FLASH_SilentAim = false
-        KYS_StopFlashlightSilentAim()
-        return
-    end
+local function SetFlashlightSilentAim(enabled)
     VD.FLASH_SilentAim = enabled and true or false
     if VD.FLASH_SilentAim then
-        KYS_StartFlashlightSilentAim()
+        StartFlashlightSilentAim()
     else
-        KYS_StopFlashlightSilentAim()
+        StopFlashlightSilentAim()
     end
 end
-getgenv().KYS_SetFlashlightSilentAim = KYS_SetFlashlightSilentAim
-getgenv().KYS_ClearFlashlightLaser = KYS_ClearFlashlightLaser
-getgenv().KYS_SetFlashlightAimActive = function(active, flashlightPart)
-    KYS_FlashlightAimState.Active = active and true or false
-    if KYS_FlashlightAimState.Active and flashlightPart then
-        KYS_FlashlightAimState.FlashlightPart = flashlightPart
-    elseif not KYS_FlashlightAimState.Active then
-        KYS_FlashlightAimState.FlashlightPart = nil
+getgenv().SetFlashlightSilentAim = SetFlashlightSilentAim
+getgenv().ClearFlashlightLaser = ClearFlashlightLaser
+getgenv().SetFlashlightAimActive = function(active, flashlightPart)
+    FlashlightAimState.Active = active and true or false
+    if FlashlightAimState.Active and flashlightPart then
+        FlashlightAimState.FlashlightPart = flashlightPart
+    elseif not FlashlightAimState.Active then
+        FlashlightAimState.FlashlightPart = nil
     end
-    if not KYS_FlashlightAimState.Active and KYS_FlashlightAimState.LaserBeam then
-        KYS_FlashlightAimState.LaserBeam.Transparency = 1
+    if not FlashlightAimState.Active and FlashlightAimState.LaserBeam then
+        FlashlightAimState.LaserBeam.Transparency = 1
     end
 end
-getgenv().KYS_FlashlightActivateRemote = KYS_GetFlashlightActivateRemote()
+getgenv().FlashlightActivateRemote = GetFlashlightActivateRemote()
 end)();
-local VD_Parry = {
+local ParryState = {
     PreciseDistanceEnabled = true,
     MaxDistance = 14,
     CanParry = true,
@@ -3294,19 +3291,19 @@ local VD_Parry = {
     RenderConnection = nil,
     LastStatus = "Off",
 }
-local VD_ParryAnimation = Instance.new("Animation")
-VD_ParryAnimation.AnimationId = "rbxassetid://109133187196613"
-local VD_ParryRange = Instance.new("CylinderHandleAdornment")
-VD_ParryRange.Name = "KYS_ParryRange"
-VD_ParryRange.Radius = VD.SURV_ParryDistance or 8
-VD_ParryRange.InnerRadius = math.max(0.1, (VD.SURV_ParryDistance or 8) - 0.15)
-VD_ParryRange.Height = 0.01
-VD_ParryRange.Color3 = Color3.fromRGB(128, 128, 128)
-VD_ParryRange.AlwaysOnTop = false
-VD_ParryRange.Adornee = Workspace:FindFirstChildOfClass("Terrain")
-VD_ParryRange.Transparency = 1
-VD_ParryRange.Parent = GetSafeGuiParent()
-local VD_ATTACK_ANIMS = {
+local ParryAnimation = Instance.new("Animation")
+ParryAnimation.AnimationId = "rbxassetid://109133187196613"
+local ParryRange = Instance.new("CylinderHandleAdornment")
+ParryRange.Name = "ParryRange"
+ParryRange.Radius = VD.SURV_ParryDistance or 8
+ParryRange.InnerRadius = math.max(0.1, (VD.SURV_ParryDistance or 8) - 0.15)
+ParryRange.Height = 0.01
+ParryRange.Color3 = Color3.fromRGB(128, 128, 128)
+ParryRange.AlwaysOnTop = false
+ParryRange.Adornee = Workspace:FindFirstChildOfClass("Terrain")
+ParryRange.Transparency = 1
+ParryRange.Parent = GetSafeGuiParent()
+local ATTACK_ANIMS = {
     ["rbxassetid://113255068724446"] = true,
     ["rbxassetid://74968262036854"] = true,
     ["rbxassetid://110355011987939"] = true,
@@ -3329,25 +3326,25 @@ local VD_ATTACK_ANIMS = {
 }
 function VD_UpdateParryRange()
     if not VD.SURV_ShowParryCircle or not VD.SURV_AutoParry then
-        VD_ParryRange.Transparency = 1
+        ParryRange.Transparency = 1
         return
     end
     local char = LocalPlayer.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     if not root then
-        VD_ParryRange.Transparency = 1
+        ParryRange.Transparency = 1
         return
     end
-    local currentMaxDist = VD_Parry.PreciseDistanceEnabled and (VD.SURV_ParryDistance or 8) or VD_Parry.MaxDistance
-    VD_ParryRange.Transparency = 0.4
-    VD_ParryRange.Radius = currentMaxDist
-    VD_ParryRange.InnerRadius = math.max(0.1, currentMaxDist - 0.15)
+    local currentMaxDist = ParryState.PreciseDistanceEnabled and (VD.SURV_ParryDistance or 8) or ParryState.MaxDistance
+    ParryRange.Transparency = 0.4
+    ParryRange.Radius = currentMaxDist
+    ParryRange.InnerRadius = math.max(0.1, currentMaxDist - 0.15)
     local params = RaycastParams.new()
     params.FilterDescendantsInstances = { char }
     params.FilterType = Enum.RaycastFilterType.Exclude
     local ray = Workspace:Raycast(root.Position, Vector3.new(0, -15, 0), params)
     local groundPos = ray and ray.Position or (root.Position - Vector3.new(0, 3, 0))
-    VD_ParryRange.CFrame = CFrame.new(groundPos + Vector3.new(0, 0.05, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
+    ParryRange.CFrame = CFrame.new(groundPos + Vector3.new(0, 0.05, 0)) * CFrame.Angles(math.pi / 2, 0, 0)
 end
 function VD_GetParryRemote()
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
@@ -3514,7 +3511,7 @@ function AttachParrySensor(kChar)
             end
             return 
         end
-        local attackName = VD_ATTACK_ANIMS[animId]
+        local attackName = ATTACK_ANIMS[animId]
         if not attackName then return end
         if not VD.SURV_AutoParry then return end
         if State.ParryCooldown then return end 
@@ -3594,7 +3591,7 @@ function VD_SetAutoParry(state)
             end)
         end
     else
-        if typeof(VD_ParryRange) == 'Instance' then VD_ParryRange.Transparency = 1 end
+        if typeof(ParryRange) == 'Instance' then ParryRange.Transparency = 1 end
         if _G.VD_ParryRenderConnection then
             _G.VD_ParryRenderConnection:Disconnect()
             _G.VD_ParryRenderConnection = nil
@@ -3777,6 +3774,17 @@ function VD_PerfectSkillcheckUpdate()
     AutoSkill.PerfectLastLineRotation = lr
     AutoSkill.PerfectLastTick = now
 end
+-- Improved Instant Skillcheck for King Scourge's with random timing
+local InstantSkillRNG = {
+    CurrentID = 0,
+    Active = false,
+    WaitTime = 0,
+    TimingOffset = 0,
+    LastClickTime = 0,
+    MinDelay = 0.02,
+    MaxDelay = 0.15,
+    RandomOffset = 0,
+}
 function VD_InstantSkillcheckUpdate()
     if AutoSkill.InstantHasClicked then return end
     local prompt = PlayerGui:FindFirstChild("SkillCheckPromptGui")
@@ -3789,11 +3797,32 @@ function VD_InstantSkillcheckUpdate()
     local line = check:FindFirstChild("Line")
     local goal = check:FindFirstChild("Goal")
     if not line or not goal then return end
-    line.Rotation = goal.Rotation + 109
+    
+    -- Randomize timing for King Scourge's instant skillcheck
+    local now = tick()
+    if now - InstantSkillRNG.LastClickTime < 0.5 then
+        -- Wait a bit before allowing another click
+        return
+    end
+    
+    -- Generate random offset for skillcheck timing
+    local randomOffset = math.random() * 0.08 + 0.02
+    InstantSkillRNG.RandomOffset = randomOffset
+    
+    -- Set goal rotation with random offset
+    local goalRot = goal.Rotation + 109 + math.random(-5, 5)
+    line.Rotation = goalRot
+    
     AutoSkill.InstantHasClicked = true
+    InstantSkillRNG.LastClickTime = now
+    InstantSkillRNG.CurrentID = InstantSkillRNG.CurrentID + 1
+    
     task.spawn(function()
+        -- Random wait before pressing skill
+        local waitTime = 0.02 + math.random() * 0.13
+        task.wait(waitTime)
         VD_PressSkill()
-        task.wait(0.2)
+        task.wait(0.15)
         AutoSkill.InstantHasClicked = false
     end)
 end
@@ -3829,45 +3858,45 @@ AutoHealAllConnection = nil
 InstantHealConnection = nil
 AutoSelfUnhookConnection = nil
 function doSelfHeal()
-	local char = LocalPlayer.Character
-	if not char then return end
-	local skillCheckRemote = ReplicatedStorage.Remotes.Healing.SkillCheckResultEvent
-	pcall(function() skillCheckRemote:FireServer("success", 100, char) end)
+    local char = LocalPlayer.Character
+    if not char then return end
+    local skillCheckRemote = ReplicatedStorage.Remotes.Healing.SkillCheckResultEvent
+    pcall(function() skillCheckRemote:FireServer("success", 100, char) end)
 end
 function doSelfHealTrue()
-	local char = LocalPlayer.Character
-	if not char then return end
-	local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	if not hrp then return end
-	pcall(function() healRemote:FireServer(hrp, true) end)
+    local char = LocalPlayer.Character
+    if not char then return end
+    local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    pcall(function() healRemote:FireServer(hrp, true) end)
 end
 function doSelfHealFalse()
-	local char = LocalPlayer.Character
-	if not char then return end
-	local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	if not hrp then return end
-	pcall(function() healRemote:FireServer(hrp, false) end)
+    local char = LocalPlayer.Character
+    if not char then return end
+    local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    pcall(function() healRemote:FireServer(hrp, false) end)
 end
 function doOthersHealSkillCheck(targetPlayer)
-	if not targetPlayer or not targetPlayer.Character then return end
-	local skillCheckRemote = ReplicatedStorage.Remotes.Healing.SkillCheckResultEvent
-	pcall(function() skillCheckRemote:FireServer("success", 100, targetPlayer.Character) end)
+    if not targetPlayer or not targetPlayer.Character then return end
+    local skillCheckRemote = ReplicatedStorage.Remotes.Healing.SkillCheckResultEvent
+    pcall(function() skillCheckRemote:FireServer("success", 100, targetPlayer.Character) end)
 end
 function doOthersHealTrue(targetPlayer)
-	if not targetPlayer or not targetPlayer.Character then return end
-	local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-	if not targetHRP then return end
-	local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
-	pcall(function() healRemote:FireServer(targetHRP, true) end)
+    if not targetPlayer or not targetPlayer.Character then return end
+    local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHRP then return end
+    local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
+    pcall(function() healRemote:FireServer(targetHRP, true) end)
 end
 function doOthersHealFalse(targetPlayer)
-	if not targetPlayer or not targetPlayer.Character then return end
-	local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-	if not targetHRP then return end
-	local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
-	pcall(function() healRemote:FireServer(targetHRP, false) end)
+    if not targetPlayer or not targetPlayer.Character then return end
+    local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHRP then return end
+    local healRemote = ReplicatedStorage.Remotes.Healing.HealEvent
+    pcall(function() healRemote:FireServer(targetHRP, false) end)
 end
 function setInstantHealSelf(v)
     InstantHealSelf = v
@@ -3910,34 +3939,34 @@ function setAutoHealAll(v)
         AutoHealAllConnection = RunService.Heartbeat:Connect(function(dt)
             if not AutoHealAll then return end
             for _, player in ipairs(Players:GetPlayers()) do
-				if player ~= LocalPlayer and player.Character then
-					local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-					local hum = player.Character:FindFirstChildOfClass("Humanoid")
-					if hum and hum.Health > 0 and hum.Health < hum.MaxHealth * 0.9 and hrp then
-						if activeHeals[player] then
-							local myChar = LocalPlayer.Character
-							local checkScript = myChar and myChar:FindFirstChild("CheckInterractable")
-							if checkScript and not checkScript:GetAttribute("isHealing") then
-								activeHeals[player] = nil
-							end
-						end
-						if not activeHeals[player] then
-							activeHeals[player] = true
-							doOthersHealTrue(player)
-						end
-					else
-						if activeHeals[player] then
-							activeHeals[player] = nil
-							doOthersHealFalse(player)
-						end
-					end
-				else
-					if activeHeals[player] then
-						activeHeals[player] = nil
-						pcall(function() doOthersHealFalse(player) end)
-					end
-				end
-			end
+                if player ~= LocalPlayer and player.Character then
+                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+                    if hum and hum.Health > 0 and hum.Health < hum.MaxHealth * 0.9 and hrp then
+                        if activeHeals[player] then
+                            local myChar = LocalPlayer.Character
+                            local checkScript = myChar and myChar:FindFirstChild("CheckInterractable")
+                            if checkScript and not checkScript:GetAttribute("isHealing") then
+                                activeHeals[player] = nil
+                            end
+                        end
+                        if not activeHeals[player] then
+                            activeHeals[player] = true
+                            doOthersHealTrue(player)
+                        end
+                    else
+                        if activeHeals[player] then
+                            activeHeals[player] = nil
+                            doOthersHealFalse(player)
+                        end
+                    end
+                else
+                    if activeHeals[player] then
+                        activeHeals[player] = nil
+                        pcall(function() doOthersHealFalse(player) end)
+                    end
+                end
+            end
         end)
     else
         if AutoHealAllConnection then AutoHealAllConnection:Disconnect(); AutoHealAllConnection = nil end
@@ -4604,7 +4633,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
         if target and target.Part and target.Part.Parent then
             VeilDraw.Highlight.Parent = target.Part.Parent
             if VeilConfig.ShowTargetLaser then
-                if not getgenv().KYS_SpearLaserPart then
+                if not getgenv().SpearLaserPart then
                     local laser = Instance.new("Part")
                     laser.Name = "SpearSilentAimLaser"
                     laser.Anchored = true
@@ -4615,7 +4644,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
                     laser.Color = Color3.fromRGB(255, 50, 50)
                     laser.Transparency = 0
                     laser.Parent = workspace
-                    getgenv().KYS_SpearLaserPart = laser
+                    getgenv().SpearLaserPart = laser
                 end
                 local originPart = myChar and (myChar:FindFirstChild("Head") or myChar:FindFirstChild("HumanoidRootPart"))
                 if originPart then
@@ -4623,22 +4652,22 @@ game:GetService("RunService").RenderStepped:Connect(function()
                     local targetPos = target.Part.Position
                     local dist = (targetPos - originPos).Magnitude
                     if dist > 0.1 then
-                        local laser = getgenv().KYS_SpearLaserPart
+                        local laser = getgenv().SpearLaserPart
                         laser.Size = Vector3.new(0.16, 0.16, dist)
                         laser.CFrame = CFrame.new((originPos + targetPos) / 2, targetPos)
                         laser.Transparency = 0.5
                     end
                 end
             else
-                if getgenv().KYS_SpearLaserPart then getgenv().KYS_SpearLaserPart.Transparency = 1 end
+                if getgenv().SpearLaserPart then getgenv().SpearLaserPart.Transparency = 1 end
             end
         else
             VeilDraw.Highlight.Parent = nil
-            if getgenv().KYS_SpearLaserPart then getgenv().KYS_SpearLaserPart.Transparency = 1 end
+            if getgenv().SpearLaserPart then getgenv().SpearLaserPart.Transparency = 1 end
         end
     else
         VeilDraw.Highlight.Parent = nil
-        if getgenv().KYS_SpearLaserPart then getgenv().KYS_SpearLaserPart.Transparency = 1 end
+        if getgenv().SpearLaserPart then getgenv().SpearLaserPart.Transparency = 1 end
     end
     if VeilConfig.Enabled and isSpearMode and VeilState.lastPredictedPos then
         local screenPos, onScreen = cam:WorldToViewportPoint(VeilState.lastPredictedPos)
@@ -4673,19 +4702,19 @@ end)
 local Main, ESPTab, MapTab, FOVTab
 local SurvivorTab, KillerTab, GeneratorTab, FlingTab, SettingsTab, ResetTab
 local VisualTab, MainTab, AimTab, MappingTab, PlayerTab
-local VisualFeatureTabs, MainFeatureTabs, MainKillerFeatureTabs, AimFeatureTabs, MappingFeatureTabs, PlayerFeatureTabs, PlayerMiscFeatureTabs
-local KYS_MainInfoPanel = {
+local VisualFeatureTabs, MainFeatureTabs, MainKillerFeatureTabs, AimFeatureTabs, MappingFeatureTabs, PlayerFeatureTabs
+local MainInfoPanel = {
     Widgets = {},
     Texts = {},
 }
-function KYS_InfoPlainText(text)
+function InfoPlainText(text)
     text = tostring(text or "")
     text = text:gsub("<br%s*/?>", "\n")
     text = text:gsub("<[^>]->", "")
     text = text:gsub("&lt;", "<"):gsub("&gt;", ">"):gsub("&amp;", "&")
     return text
 end
-function KYS_UpdateInfoWidget(widget, text)
+function UpdateInfoWidget(widget, text)
     if not widget then return end
     local title, content = tostring(text or ""):match("^(.-)\n(.*)$")
     title = title or tostring(text or "")
@@ -4717,23 +4746,23 @@ function KYS_UpdateInfoWidget(widget, text)
         if widget.Description then widget.Description.Text = content end
     end)
 end
-function KYS_SetMainInfoPanelText(key, title, text)
-    local value = tostring(title or key) .. "\n" .. KYS_InfoPlainText(text)
-    KYS_MainInfoPanel.Texts[key] = value
-    KYS_UpdateInfoWidget(KYS_MainInfoPanel.Widgets[key], value)
+function SetMainInfoPanelText(key, title, text)
+    local value = tostring(title or key) .. "\n" .. InfoPlainText(text)
+    MainInfoPanel.Texts[key] = value
+    UpdateInfoWidget(MainInfoPanel.Widgets[key], value)
 end
-function KYS_RegisterMainInfoWidget(key, widget)
-    KYS_MainInfoPanel.Widgets[key] = widget
+function RegisterMainInfoWidget(key, widget)
+    MainInfoPanel.Widgets[key] = widget
     if widget and widget.Frame then
-        KYS_MakeDraggable(widget.Frame)
+        MakeDraggable(widget.Frame)
     end
-    if KYS_MainInfoPanel.Texts[key] then
-        KYS_UpdateInfoWidget(widget, KYS_MainInfoPanel.Texts[key])
+    if MainInfoPanel.Texts[key] then
+        UpdateInfoWidget(widget, MainInfoPanel.Texts[key])
     end
 end
-function KYS_AddMainInfoLine(section, key, title, defaultText)
+function AddMainInfoLine(section, key, title, defaultText)
     local defaultValue = tostring(title) .. "\n" .. tostring(defaultText or "Off")
-    KYS_MainInfoPanel.Texts[key] = KYS_MainInfoPanel.Texts[key] or defaultValue
+    MainInfoPanel.Texts[key] = MainInfoPanel.Texts[key] or defaultValue
     local ok, widget = pcall(function()
         if section.AddParagraph then
             return section:AddParagraph({
@@ -4745,7 +4774,7 @@ function KYS_AddMainInfoLine(section, key, title, defaultText)
             })
         end
     end)
-    if ok and widget then return KYS_RegisterMainInfoWidget(key, widget) end
+    if ok and widget then return RegisterMainInfoWidget(key, widget) end
     ok, widget = pcall(function()
         if section.AddLabel then
             return section:AddLabel({
@@ -4754,7 +4783,7 @@ function KYS_AddMainInfoLine(section, key, title, defaultText)
             })
         end
     end)
-    if ok and widget then return KYS_RegisterMainInfoWidget(key, widget) end
+    if ok and widget then return RegisterMainInfoWidget(key, widget) end
     ok, widget = pcall(function()
         if section.AddButton then
             return section:AddButton({
@@ -4763,7 +4792,7 @@ function KYS_AddMainInfoLine(section, key, title, defaultText)
             })
         end
     end)
-    if ok and widget then return KYS_RegisterMainInfoWidget(key, widget) end
+    if ok and widget then return RegisterMainInfoWidget(key, widget) end
 end
 if Window then
     local function normalizeControlConfig(config)
@@ -4816,7 +4845,7 @@ if Window then
     local Tabs = {
         Survivor = Window:AddTab({ Title = "Survivor", Icon = "shield", Desc = "Survivor features" }),
         Killer = Window:AddTab({ Title = "Killer", Icon = "skull", Desc = "Killer features" }),
-        Automation = Window:AddTab({ Title = "Automation", Icon = "zap", Desc = "Automation features" }),
+        Automation = Window:AddTab({ Title = "Automation", Icon = "lucide:zap", Desc = "Automation features" }),
         Aim = Window:AddTab({ Title = "Aim", Icon = "crosshair", Desc = "Aim assistance controls" }),
         Visual = Window:AddTab({ Title = "Visual", Icon = "eye", Desc = "Visual and ESP controls" }),
         Mapping = Window:AddTab({ Title = "Mapping", Icon = "map", Desc = "Teleport and radar controls" }),
@@ -4897,26 +4926,25 @@ if Window then
     settingsSection:AddButton({
         Title = "Save Profile",
         Callback = function()
-            KYS_SaveConfig(selectedProfile)
+            SaveConfig(selectedProfile)
             pcall(function() profileDropdown:SetValues(GetConfigList()) end)
         end,
     })
     settingsSection:AddButton({
         Title = "Load Profile",
         Callback = function()
-            KYS_LoadConfig(selectedProfile)
+            LoadConfig(selectedProfile)
         end,
     })
     settingsSection:AddButton({
         Title = "Delete Profile",
         Callback = function()
-            KYS_DeleteConfig(selectedProfile)
+            DeleteConfig(selectedProfile)
             pcall(function() profileDropdown:SetValues(GetConfigList()) end)
         end,
     })
-end
-if Window then
-do 
+
+    -- Movement Section
     local movSection = PlayerFeatureTabs.Movement:AddSection({
         Position = "Center",
         Name = "Movement",
@@ -4932,10 +4960,6 @@ do
         TextLocked = "",
         Flag = "Auto Crouch BETA",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur Auto Crouch BETA hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             setAutoCrouch(v)
         end
     })
@@ -4954,8 +4978,7 @@ do
         Name = "Speed Value", Flag = "Speed Value",
         Min = 16, Max = 200, Default = 16,
         Callback = function(v)
-            VD.SpeedValue =
-                v
+            VD.SpeedValue = v
         end
     })
     movSection:AddToggle({
@@ -4973,8 +4996,7 @@ do
         Name = "Jump Power", Flag = "Jump Power",
         Min = 50, Max = 300, Default = 50,
         Callback = function(v)
-            VD.JumpValue =
-                v
+            VD.JumpValue = v
         end
     })
     movSection:AddToggle({ Default = false, Name = "Infinite Jump", Flag = "Infinite Jump", Callback = function(v) VD.InfiniteJump = v end })
@@ -5008,12 +5030,28 @@ do
         end
     })
     movSection:AddToggle({ Default = false, Name = "Invisible Not Visual", Locked = false, TextLocked = "", Flag = "Invisible Not Visual", Callback = function(v) 
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Invisible Not Visual hanya untuk pengguna Key Premium!", 5)
-            return
-        end
-        VD.InvisibleNotVisual = v; if not v and VD_InvisibleNV.Active then pcall(VD_SetInvisibleNotVisual, false) end 
+        VD.InvisibleNotVisual = v; if not v and InvisibleNV.Active then pcall(VD_SetInvisibleNotVisual, false) end 
     end })
+    -- Color picker for Invisibility
+    movSection:AddColorPicker({
+        Name = "Invisibility Color",
+        Flag = "Invisibility Color",
+        Default = VD.InvisibilityColor or Color3.fromRGB(255, 255, 255),
+        Callback = function(color)
+            VD.InvisibilityColor = color
+            -- Apply color to character if invisible
+            if VD.InvisibleNotVisual then
+                local char = LocalPlayer.Character
+                if char then
+                    for _, descendant in ipairs(char:GetDescendants()) do
+                        if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" then
+                            pcall(function() descendant.Color = color end)
+                        end
+                    end
+                end
+            end
+        end
+    })
     movSection:AddSlider({
         Name = "Invisible Speed", Flag = "Invisible Speed",
         Min = 1, Max = 999, Default = 5,
@@ -5022,15 +5060,15 @@ do
         end
     })
     movSection:AddToggle({ Default = false, Name = "Anti AFK", Flag = "Anti AFK", Callback = function(v) VD.AntiAFK = v end })
-end
-do 
+
+    -- Visual ESP Section
     pcall(function()
-        if getgenv().KYS_AddVisualESPControls then
-            getgenv().KYS_AddVisualESPControls(VisualTab)
+        if getgenv().AddVisualESPControls then
+            getgenv().AddVisualESPControls(VisualTab)
         end
     end)
-end
-do 
+
+    -- Aimbot Section
     local aimbotSection = AimFeatureTabs.Aimbot:AddSection({
         Position = "Center",
         Name = "Aimbot",
@@ -5045,20 +5083,17 @@ do
     aimbotSection:AddSlider({
         Name = "FOV Size (aim radius on screen)", Flag = "FOV Size (aim radius on screen)",
         Min = 20, Max = 400, Default = 120,
-        Callback = function(
-            v)
-            VD.AIM_FOV = v
-        end
+        Callback = function(v) VD.AIM_FOV = v end
     })
     aimbotSection:AddSlider({
         Name = "Smoothness (Speed Aim)", Flag = "Smoothness",
         Min = 0.1, Max = 10, Default = 0.3, Increment = 0.05,
-        Callback = function(v)
-            VD.AIM_Smooth = v
-        end
+        Callback = function(v) VD.AIM_Smooth = v end
     })
     aimbotSection:AddToggle({ Default = false, Name = "Visibility Check", Flag = "Visibility Check", Callback = function(v) VD.AIM_VisCheck = v end })
     aimbotSection:AddToggle({ Default = false, Name = "Prediction", Flag = "Prediction", Callback = function(v) VD.AIM_Predict = v end })
+
+    -- Crosshair Section
     local crosshairSection = AimFeatureTabs.Aimbot:AddSection({
         Position = "Center",
         Name = "Advanced Crosshair",
@@ -5068,13 +5103,23 @@ do
         Opened    = false,
     })
     crosshairSection:AddToggle({ Default = false, Name = "Enable Crosshair", Flag = "CROSS_Enabled", Callback = function(v) VD.CROSS_Enabled = v pcall(VD_UpdateCrosshair) end })
-    crosshairSection:AddColorPicker({ Name = "Crosshair Color", Flag = "CROSS_Color", Default = VD.CROSS_Color or Color3.fromRGB(255, 255, 255), Callback = function(v) VD.CROSS_Color = v pcall(VD_UpdateCrosshair) end })
+    crosshairSection:AddColorPicker({ 
+        Name = "Crosshair Color", 
+        Flag = "CROSS_Color", 
+        Default = VD.CROSS_Color or Color3.fromRGB(255, 255, 255), 
+        Callback = function(v) 
+            VD.CROSS_Color = v 
+            pcall(VD_UpdateCrosshair) 
+        end 
+    })
     crosshairSection:AddDropdown({ Name = "Crosshair Style", Flag = "CROSS_Style", Default = "Dot", Values = { "Dot", "Plus", "X", "Box" }, Multi = false, Callback = function(v) VD.CROSS_Style = type(v) == "table" and v[1] or v pcall(VD_UpdateCrosshair) end })
     crosshairSection:AddSlider({ Name = "Crosshair Size", Flag = "CROSS_Size", Min = 1, Max = 100, Default = 3, Increment = 1, Callback = function(v) VD.CROSS_Size = v pcall(VD_UpdateCrosshair) end })
     crosshairSection:AddSlider({ Name = "Crosshair Thickness", Flag = "CROSS_Thickness", Min = 1, Max = 20, Default = 4, Increment = 1, Callback = function(v) VD.CROSS_Thickness = v pcall(VD_UpdateCrosshair) end })
     crosshairSection:AddSlider({ Name = "Crosshair Gap", Flag = "CROSS_Gap", Min = 0, Max = 50, Default = 6, Increment = 1, Callback = function(v) VD.CROSS_Gap = v pcall(VD_UpdateCrosshair) end })
     crosshairSection:AddSlider({ Name = "Position X Offset", Flag = "CROSS_PosX", Min = -500, Max = 500, Default = 0, Increment = 1, Callback = function(v) VD.CROSS_PosX = v pcall(VD_UpdateCrosshair) end })
     crosshairSection:AddSlider({ Name = "Position Y Offset", Flag = "CROSS_PosY", Min = -500, Max = 500, Default = 0, Increment = 1, Callback = function(v) VD.CROSS_PosY = v pcall(VD_UpdateCrosshair) end })
+
+    -- Spear Section
     local spearSection = AimFeatureTabs.Spear:AddSection({
         Position = "Center",
         Name = "Aimbot Spear (Veil)",
@@ -5087,18 +5132,12 @@ do
     spearSection:AddSlider({
         Name = "Spear Gravity", Flag = "Spear Gravity",
         Min = 10, Max = 200, Default = 50,
-        Callback = function(v)
-            VD.SPEAR_Gravity =
-                v
-        end
+        Callback = function(v) VD.SPEAR_Gravity = v end
     })
     spearSection:AddSlider({
         Name = "Spear Speed", Flag = "Spear Speed",
         Min = 50, Max = 300, Default = 100,
-        Callback = function(v)
-            VD.SPEAR_Speed =
-                v
-        end
+        Callback = function(v) VD.SPEAR_Speed = v end
     })
     spearSection:AddKeybind({
         Name = "Toggle Keybind (PC)", Flag = "Spear Keybind", Default = "None",
@@ -5114,10 +5153,6 @@ do
     })
     spearSection:AddDivider({ Text = "Silent Aim (Veil)" })
     spearSection:AddToggle({ Default = false, Name = "Silent Aim Spear (Veil)", Locked = false, TextLocked = "", Flag = "Silent Aim Spear (Veil)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Silent Aim Spear hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VeilConfig.Enabled = v
     end })
     spearSection:AddToggle({ Default = true, Name = "Show FOV Circle", Flag = "Show FOV Circle", Callback = function(v) VeilConfig.ShowFOV = v end })
@@ -5131,6 +5166,8 @@ do
         if type(v) == "table" then v = v[1] end
         VeilConfig.TargetPart = v
     end })
+
+    -- Silent Aim Flask Section
     local flaskSection = AimFeatureTabs.Spear:AddSection({
         Position = "Center",
         Name = "Silent Aim Flask (Cure)",
@@ -5140,31 +5177,25 @@ do
         Opened    = false,
     })
     flaskSection:AddToggle({ Default = false, Name = "Silent Aim Flask (Cure)", Locked = false, TextLocked = "", Flag = "Silent Aim Flask (Cure)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Silent Aim Flask (Cure) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_SilentAimFlask = v
     end })
     flaskSection:AddToggle({ Default = false, Name = "Flask Laser (Cure)", Locked = false, TextLocked = "", Flag = "Flask Laser (Cure)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Flask Laser (Cure) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_FlaskLaser = v
         if v then
-            pcall(KYS_StartCureFlaskLaser)
+            pcall(StartCureFlaskLaser)
         else
-            if getgenv().KYS_CureFlaskLaserThread then
-                getgenv().KYS_CureFlaskLaserThread:Disconnect()
-                getgenv().KYS_CureFlaskLaserThread = nil
+            if getgenv().CureFlaskLaserThread then
+                getgenv().CureFlaskLaserThread:Disconnect()
+                getgenv().CureFlaskLaserThread = nil
             end
-            if getgenv().KYS_CureFlaskLaserPart then
-                pcall(function() getgenv().KYS_CureFlaskLaserPart:Destroy() end)
-                getgenv().KYS_CureFlaskLaserPart = nil
+            if getgenv().CureFlaskLaserPart then
+                pcall(function() getgenv().CureFlaskLaserPart:Destroy() end)
+                getgenv().CureFlaskLaserPart = nil
             end
         end
     end })
+
+    -- Twist Of Fate Section
     local tofSection = AimFeatureTabs.AutoAim:AddSection({
         Position = "Center",
         Name = "Silent Aim Twist Of Fate",
@@ -5180,12 +5211,8 @@ do
         TextLocked = "",
         Flag = "Silent Aim Twist Of Fate",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur Silent Aim Twist Of Fate hanya untuk pengguna Key Premium!", 5)
-                return
-            end
-            if getgenv().KYS_SetToFSilentAim then
-                getgenv().KYS_SetToFSilentAim(v)
+            if getgenv().SetToFSilentAim then
+                getgenv().SetToFSilentAim(v)
             end
         end
     })
@@ -5196,13 +5223,9 @@ do
         TextLocked = "",
         Flag = "ToF Laser",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur ToF Laser hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             VD.TOF_Laser = v
-            if not v and getgenv().KYS_ToFClearLaser then
-                getgenv().KYS_ToFClearLaser()
+            if not v and getgenv().ToFClearLaser then
+                getgenv().ToFClearLaser()
             end
         end
     })
@@ -5213,10 +5236,6 @@ do
         TextLocked = "",
         Flag = "ToF Wall Check",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur ToF Wall Check hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             VD.TOF_WallCheck = v
         end
     })
@@ -5227,10 +5246,6 @@ do
         TextLocked = "",
         Flag = "ToF Block When Knocked",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur ToF Block When Knocked hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             VD.TOF_BlockKnocked = v
         end
     })
@@ -5242,8 +5257,8 @@ do
         Multi = false,
         Callback = function(v)
             if type(v) == "table" then v = v[1] end
-            if getgenv().KYS_ToFSetTargetMode then
-                getgenv().KYS_ToFSetTargetMode(v or "Killer", false)
+            if getgenv().ToFSetTargetMode then
+                getgenv().ToFSetTargetMode(v or "Killer", false)
             else
                 VD.TOF_TargetMode = v or "Killer"
             end
@@ -5260,6 +5275,8 @@ do
             VD.TOF_Key = v or "None"
         end
     })
+
+    -- Flashlight Section
     local flashlightSection = AimFeatureTabs.AutoAim:AddSection({
         Position = "Center",
         Name = "Silent Aim Flashlight",
@@ -5275,12 +5292,8 @@ do
         TextLocked = "",
         Flag = "Silent Aim Flashlight",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur Silent Aim Flashlight hanya untuk pengguna Key Premium!", 5)
-                return
-            end
-            if getgenv().KYS_SetFlashlightSilentAim then
-                getgenv().KYS_SetFlashlightSilentAim(v)
+            if getgenv().SetFlashlightSilentAim then
+                getgenv().SetFlashlightSilentAim(v)
             else
                 VD.FLASH_SilentAim = v
             end
@@ -5293,13 +5306,9 @@ do
         TextLocked = "",
         Flag = "Flashlight Laser",
         Callback = function(v)
-            if v and false then
-                pcall(VD_Notify, "Premium Required ✨", "Fitur Flashlight Laser hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             VD.FLASH_Laser = v
-            if not v and getgenv().KYS_ClearFlashlightLaser then
-                getgenv().KYS_ClearFlashlightLaser()
+            if not v and getgenv().ClearFlashlightLaser then
+                getgenv().ClearFlashlightLaser()
             end
         end
     })
@@ -5335,8 +5344,8 @@ do
             VD.FLASH_Smooth = tonumber(v) or 0.35
         end
     })
-end
-do 
+
+    -- Camera Section
     local camSection = VisualFeatureTabs.Camera:AddSection({
         Position = "Center",
         Name = "Camera",
@@ -5369,6 +5378,8 @@ do
         LocalPlayer.CameraMinZoomDistance = v and 0 or 0.5 
     end })
     camSection:AddToggle({ Default = false, Name = "No Cutscene", Flag = "No Cutscene", Callback = function(v) VD.NoCutscene = v end })
+
+    -- Visual/Lighting Section
     local visualSection = VisualFeatureTabs.Lighting:AddSection({
         Position = "Center",
         Name = "Visual",
@@ -5394,6 +5405,8 @@ do
             pcall(VD_ApplyWeather, v)
         end
     })
+
+    -- Info Panel Section
     local infoPanelSection = VisualFeatureTabs.Lighting:AddSection({
         Position = "Center",
         Name = "Game Info Panel",
@@ -5402,9 +5415,9 @@ do
         BoxBorder = true,
         Opened    = true,
     })
-    KYS_AddMainInfoLine(infoPanelSection, "PinatHubKiller", "Killer Display", "Off")
-    KYS_AddMainInfoLine(infoPanelSection, "KillerPerks", "Spectate Killer Perks", "Off")
-    KYS_AddMainInfoLine(infoPanelSection, "PredictMap", "Predict Map", "Off")
+    AddMainInfoLine(infoPanelSection, "PinatHubKiller", "Killer Display", "Off")
+    AddMainInfoLine(infoPanelSection, "KillerPerks", "Spectate Killer Perks", "Off")
+    AddMainInfoLine(infoPanelSection, "PredictMap", "Predict Map", "Off")
     visualSection:AddToggle({ Default = false, Name = "Killer Display", Flag = "Killer Display", Callback = function(v) 
         VD.VIS_PinatHubKiller = v 
         if v then
@@ -5438,28 +5451,28 @@ do
         end
     end })
     visualSection:AddToggle({ Default = false, Name = "Hide Survivor Icon", Flag = "Hide Survivor Icon", Callback = function(v)
-        if getgenv().KYS_SetHideSurvivorIcon then
-            getgenv().KYS_SetHideSurvivorIcon(v)
+        if getgenv().SetHideSurvivorIcon then
+            getgenv().SetHideSurvivorIcon(v)
         else
             VD.VIS_HideSurvivorIcon = v
         end
     end })
     visualSection:AddToggle({ Default = false, Name = "Show Ping & FPS", Flag = "Show Ping & FPS", Callback = function(v)
-        if getgenv().KYS_SetShowPingFPS then
-            getgenv().KYS_SetShowPingFPS(v)
+        if getgenv().SetShowPingFPS then
+            getgenv().SetShowPingFPS(v)
         else
             VD.VIS_ShowPingFPS = v
         end
     end })
     visualSection:AddToggle({ Default = false, Name = "Show Hook Counter", Flag = "Show Hook Counter", Callback = function(v)
-        if getgenv().KYS_SetShowHookCounter then
-            getgenv().KYS_SetShowHookCounter(v)
+        if getgenv().SetShowHookCounter then
+            getgenv().SetShowHookCounter(v)
         else
             VD.VIS_ShowHookCounter = v
         end
     end })
-end
-do 
+
+    -- Survivor Combat Section
     local combatSurv = MainFeatureTabs.Survivor:AddSection({
         Position = "Center",
         Name = "Survivor",
@@ -5470,10 +5483,6 @@ do
     })
     combatSurv:AddToggle({ Default = false, Name = "Swift Vault", Flag = "SwiftVault", Callback = function(v) VD.SURV_AutoVault = v end })
     combatSurv:AddToggle({ Default = false, Name = "Swift Vault V2", Locked = false, TextLocked = "", Flag = "SURV_SwiftVaultV2", Callback = function(v) 
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Swift Vault V2 hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.SURV_FastVault = v 
         if not v then
             local char = LocalPlayer.Character
@@ -5492,25 +5501,13 @@ do
         Callback = function(v) VD.SURV_AutoPalletDist = v end
     })
     combatSurv:AddToggle({ Default = false, Name = "Anti Knock", Locked = false, TextLocked = "", Flag = "Anti Knock", Callback = function(v) 
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Anti Knock hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.SURV_AntiKnock = v 
     end })
     combatSurv:AddToggle({ Default = false, Name = "Aura Heal (Self)", Flag = "Instant Heal (Self)", Callback = function(v) setInstantHealSelf(v) end })
     combatSurv:AddToggle({ Default = false, Name = "Auto Dodge Spear (Veil)", Locked = false, TextLocked = "", Flag = "Auto Dodge Spear", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Auto Dodge Spear hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.SURV_AutoDodgeSpear = v
     end })
     combatSurv:AddToggle({ Default = false, Name = "Aura Heal All", Locked = false, TextLocked = "", Flag = "Auto Heal All", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Aura Heal All hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         setAutoHealAll(v)
     end })
     combatSurv:AddToggle({
@@ -5521,24 +5518,18 @@ do
         end
     end })
     combatSurv:AddToggle({ Default = false, Name = "Auto Parry", Locked = false, TextLocked = "", Flag = "Auto Parry", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Auto Parry hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD_SetAutoParry(v)
     end })
     combatSurv:AddToggle({ Default = false, Name = "Auto Parry Agresif", Flag = "Auto Parry Agresif", Callback = function(v) VD.SURV_ParryAggressive = v end })
     combatSurv:AddSlider({
         Name = "Parry Distance Trigger", Flag = "Parry Distance Trigger",
         Min = 2, Max = 25, Default = 8, Increment = 0.1,
-        Callback = function(v)
-            VD.SURV_ParryDistance = v
-        end
+        Callback = function(v) VD.SURV_ParryDistance = v end
     })
     combatSurv:AddToggle({
         Default = false, Name = "Show Parry Range Circle", Flag = "Show Parry Range Circle", Callback = function(v)
         VD.SURV_ShowParryCircle = v
-        if VD_ParryRange then VD_ParryRange.Transparency = 1 end
+        if ParryRange then ParryRange.Transparency = 1 end
     end })
     combatSurv:AddToggle({ Default = false, Name = "Fake Parry (Press V)", Flag = "Fake Parry (Press V)", Callback = function(v) 
         VD.SURV_FakeParry = v
@@ -5555,166 +5546,90 @@ do
         end
     })
     combatSurv:AddToggle({ Default = false, Name = "Undraggable Button (Fake Parry)", Locked = false, TextLocked = "", Flag = "Undraggable Button (Fake Parry)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Undraggable Button hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         FakeParryData.DragLocked = v
     end })
-    combatSurv:AddToggle({ Default = false, Name = "Fake Generator (Press B)", Flag = "Fake Generator (Press B)", Callback = function(v) 
+    combatSurv:AddToggle({ Default = false, Name = "Fake Generator", Flag = "Fake Generator", Callback = function(v) 
         VD.SURV_FakeGen = v
         if FakeGenData and FakeGenData.Button then FakeGenData.Button.Visible = v end
     end })
     combatSurv:AddToggle({ Default = false, Name = "Undraggable Button (Fake Gen)", Locked = false, TextLocked = "", Flag = "Undraggable Button (Fake Gen)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Undraggable Button hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         if FakeGenData then FakeGenData.DragLocked = v end
     end })
-end
-local FakeParryAnimations = {
-    ["Enten"]       = "rbxassetid://127096285501517",
-    ["Stopwatch"]   = "rbxassetid://81793464499285",
-    ["Fih"]         = "rbxassetid://123307242865945",
-    ["BloodShield"] = "rbxassetid://75939529748815",
-}
-getgenv().KYS_FakeParryTrack = nil
-FakeParryData = {
-    UI = nil,
-    Button = nil,
-    DragLocked = false,
-    Dragging = false,
-    DragStart = nil,
-    DragStartPos = nil
-}
-function setupFakeParryBtn()
-    local player = game:GetService("Players").LocalPlayer
-    local oldUI = player.PlayerGui:FindFirstChild("FakeParryUI")
-    if oldUI then oldUI:Destroy() end
-    FakeParryData.UI = Instance.new("ScreenGui")
-    FakeParryData.UI.Name = "FakeParryUI"
-    FakeParryData.UI.ResetOnSpawn = false
-    FakeParryData.UI.IgnoreGuiInset = true
-    FakeParryData.UI.Parent = player:WaitForChild("PlayerGui")
-    FakeParryData.Button = Instance.new("ImageButton")
-    FakeParryData.Button.Name = "FakeParryButton"
-    FakeParryData.Button.Size = UDim2.new(0, 60, 0, 60)
-    FakeParryData.Button.Position = UDim2.new(0.3, 0, 0.75, 0)
-    FakeParryData.Button.AnchorPoint = Vector2.new(0.5, 0.5)
-    FakeParryData.Button.BackgroundColor3 = Color3.fromRGB(20, 0, 30)
-    FakeParryData.Button.BackgroundTransparency = 0.15
-    FakeParryData.Button.AutoButtonColor = true
-    if type(VD) == "table" then FakeParryData.Button.Visible = VD.SURV_FakeParry else FakeParryData.Button.Visible = false end
-    FakeParryData.Button.ZIndex = 10
-    FakeParryData.Button.Parent = FakeParryData.UI
-    Instance.new("UICorner", FakeParryData.Button).CornerRadius = UDim.new(1, 0)
-    local s = Instance.new("UIStroke", FakeParryData.Button)
-    s.Color = Color3.fromRGB(150, 70, 255)
-    s.Thickness = 2; s.Transparency = 0.2
-    local lbl = Instance.new("TextLabel", FakeParryData.Button)
-    lbl.Size = UDim2.new(1, 0, 1, 0)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = "FAKE\nPARRY"
-    lbl.TextColor3 = Color3.fromRGB(200, 150, 255)
-    lbl.TextScaled = true
-    lbl.Font = Enum.Font.GothamBlack
-    lbl.ZIndex = 11
-    FakeParryData.Button.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            if FakeParryData.DragLocked then return end
-            FakeParryData.Dragging = true
-            FakeParryData.DragStart = input.Position
-            FakeParryData.DragStartPos = FakeParryData.Button.Position
-        end
-    end)
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if FakeParryData.Dragging and not FakeParryData.DragLocked and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - FakeParryData.DragStart
-            FakeParryData.Button.Position = UDim2.new(
-                FakeParryData.DragStartPos.X.Scale, FakeParryData.DragStartPos.X.Offset + delta.X, 
-                FakeParryData.DragStartPos.Y.Scale, FakeParryData.DragStartPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    FakeParryData.Button.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            FakeParryData.Dragging = false
-        end
-    end)
-    FakeParryData.Button.MouseButton1Click:Connect(VD_PlayFakeParry)
-end
-function VD_PlayFakeParry()
-    if not VD.SURV_FakeParry then return end
-    pcall(function()
+
+    -- Fake Parry Animations
+    local FakeParryAnimations = {
+        ["Enten"]       = "rbxassetid://127096285501517",
+        ["Stopwatch"]   = "rbxassetid://81793464499285",
+        ["Fih"]         = "rbxassetid://123307242865945",
+        ["BloodShield"] = "rbxassetid://75939529748815",
+    }
+    getgenv().FakeParryTrack = nil
+    FakeParryData = {
+        UI = nil,
+        Button = nil,
+        DragLocked = false,
+        Dragging = false,
+        DragStart = nil,
+        DragStartPos = nil
+    }
+    function setupFakeParryBtn()
         local player = game:GetService("Players").LocalPlayer
-        local character = player.Character
-        if not character then return end
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if not humanoid then return end
-        local animator = humanoid:FindFirstChildOfClass("Animator")
-        if not animator then
-            animator = Instance.new("Animator")
-            animator.Parent = humanoid
-        end
-        if getgenv().KYS_FakeParryTrack then
-            pcall(function() getgenv().KYS_FakeParryTrack:Stop() end)
-            getgenv().KYS_FakeParryTrack = nil
-        end
-        local animation = Instance.new("Animation")
-        animation.AnimationId = FakeParryAnimations[VD.SURV_FakeParryAnim] or FakeParryAnimations["Enten"]
-        local track = animator:LoadAnimation(animation)
-        track.Priority = Enum.AnimationPriority.Action
-        track:Play()
-        getgenv().KYS_FakeParryTrack = track
-    end)
-end
-if not getgenv().KYS_FakeParryInputConn then
-    getgenv().KYS_FakeParryInputConn = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
-        if gp then return end
-        if input.KeyCode == Enum.KeyCode.V then
-            VD_PlayFakeParry()
-        end
-        if input.KeyCode == Enum.KeyCode.B then
-            if type(VD_ToggleFakeGen) == "function" then VD_ToggleFakeGen() end
-        end
-    end)
-end
-setupFakeParryBtn()
-game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    setupFakeParryBtn()
-    if FakeParryData.Button and type(VD) == "table" then
-        FakeParryData.Button.Visible = VD.SURV_FakeParry
+        local oldUI = player.PlayerGui:FindFirstChild("FakeParryUI")
+        if oldUI then oldUI:Destroy() end
+        FakeParryData.UI = Instance.new("ScreenGui")
+        FakeParryData.UI.Name = "FakeParryUI"
+        FakeParryData.UI.ResetOnSpawn = false
+        FakeParryData.UI.IgnoreGuiInset = true
+        FakeParryData.UI.Parent = player:WaitForChild("PlayerGui")
+        FakeParryData.Button = Instance.new("ImageButton")
+        FakeParryData.Button.Name = "FakeParryButton"
+        FakeParryData.Button.Size = UDim2.new(0, 60, 0, 60)
+        FakeParryData.Button.Position = UDim2.new(0.3, 0, 0.75, 0)
+        FakeParryData.Button.AnchorPoint = Vector2.new(0.5, 0.5)
+        FakeParryData.Button.BackgroundColor3 = Color3.fromRGB(20, 0, 30)
+        FakeParryData.Button.BackgroundTransparency = 0.15
+        FakeParryData.Button.AutoButtonColor = true
+        if type(VD) == "table" then FakeParryData.Button.Visible = VD.SURV_FakeParry else FakeParryData.Button.Visible = false end
+        FakeParryData.Button.ZIndex = 10
+        FakeParryData.Button.Parent = FakeParryData.UI
+        Instance.new("UICorner", FakeParryData.Button).CornerRadius = UDim.new(1, 0)
+        local s = Instance.new("UIStroke", FakeParryData.Button)
+        s.Color = Color3.fromRGB(150, 70, 255)
+        s.Thickness = 2; s.Transparency = 0.2
+        local lbl = Instance.new("TextLabel", FakeParryData.Button)
+        lbl.Size = UDim2.new(1, 0, 1, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = "FAKE\nPARRY"
+        lbl.TextColor3 = Color3.fromRGB(200, 150, 255)
+        lbl.TextScaled = true
+        lbl.Font = Enum.Font.GothamBlack
+        lbl.ZIndex = 11
+        FakeParryData.Button.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                if FakeParryData.DragLocked then return end
+                FakeParryData.Dragging = true
+                FakeParryData.DragStart = input.Position
+                FakeParryData.DragStartPos = FakeParryData.Button.Position
+            end
+        end)
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if FakeParryData.Dragging and not FakeParryData.DragLocked and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                local delta = input.Position - FakeParryData.DragStart
+                FakeParryData.Button.Position = UDim2.new(
+                    FakeParryData.DragStartPos.X.Scale, FakeParryData.DragStartPos.X.Offset + delta.X, 
+                    FakeParryData.DragStartPos.Y.Scale, FakeParryData.DragStartPos.Y.Offset + delta.Y
+                )
+            end
+        end)
+        FakeParryData.Button.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                FakeParryData.Dragging = false
+            end
+        end)
+        FakeParryData.Button.MouseButton1Click:Connect(VD_PlayFakeParry)
     end
-end)
-getgenv().KYS_FakeGenTrack = nil
-FakeGenData = {
-    UI = nil,
-    Button = nil,
-    DragLocked = false,
-    Dragging = false,
-    DragStart = nil,
-    DragStartPos = nil
-}
-function VD_ToggleFakeGen()
-    if not VD.SURV_FakeGen then
-        if getgenv().KYS_FakeGenTrack then
-            pcall(function() getgenv().KYS_FakeGenTrack:Stop() end)
-            getgenv().KYS_FakeGenTrack = nil
-        end
-        if FakeGenData.Button then
-            FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(20, 30, 0)
-        end
-        return
-    end
-    if getgenv().KYS_FakeGenTrack then
-        pcall(function() getgenv().KYS_FakeGenTrack:Stop() end)
-        getgenv().KYS_FakeGenTrack = nil
-        if FakeGenData.Button then
-            FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(20, 30, 0)
-        end
-    else
+    function VD_PlayFakeParry()
+        if not VD.SURV_FakeParry then return end
         pcall(function()
             local player = game:GetService("Players").LocalPlayer
             local character = player.Character
@@ -5726,87 +5641,160 @@ function VD_ToggleFakeGen()
                 animator = Instance.new("Animator")
                 animator.Parent = humanoid
             end
+            if getgenv().FakeParryTrack then
+                pcall(function() getgenv().FakeParryTrack:Stop() end)
+                getgenv().FakeParryTrack = nil
+            end
             local animation = Instance.new("Animation")
-            animation.AnimationId = "rbxassetid://83160743983246"
+            animation.AnimationId = FakeParryAnimations[VD.SURV_FakeParryAnim] or FakeParryAnimations["Enten"]
             local track = animator:LoadAnimation(animation)
-            track.Looped = true
             track.Priority = Enum.AnimationPriority.Action
             track:Play()
-            getgenv().KYS_FakeGenTrack = track
-            if FakeGenData.Button then
-                FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(80, 180, 100)
+            getgenv().FakeParryTrack = track
+        end)
+    end
+    if not getgenv().FakeParryInputConn then
+        getgenv().FakeParryInputConn = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+            if gp then return end
+            if input.KeyCode == Enum.KeyCode.V then
+                VD_PlayFakeParry()
+            end
+            if input.KeyCode == Enum.KeyCode.B then
+                if type(VD_ToggleFakeGen) == "function" then VD_ToggleFakeGen() end
             end
         end)
     end
-end
-function setupFakeGenBtn()
-    local player = game:GetService("Players").LocalPlayer
-    local oldUI = player.PlayerGui:FindFirstChild("FakeGenUI")
-    if oldUI then oldUI:Destroy() end
-    FakeGenData.UI = Instance.new("ScreenGui")
-    FakeGenData.UI.Name = "FakeGenUI"
-    FakeGenData.UI.ResetOnSpawn = false
-    FakeGenData.UI.IgnoreGuiInset = true
-    FakeGenData.UI.Parent = player:WaitForChild("PlayerGui")
-    FakeGenData.Button = Instance.new("ImageButton")
-    FakeGenData.Button.Name = "FakeGenButton"
-    FakeGenData.Button.Size = UDim2.new(0, 60, 0, 60)
-    FakeGenData.Button.Position = UDim2.new(0.4, 0, 0.75, 0)
-    FakeGenData.Button.AnchorPoint = Vector2.new(0.5, 0.5)
-    FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(20, 30, 0)
-    FakeGenData.Button.BackgroundTransparency = 0.15
-    FakeGenData.Button.AutoButtonColor = true
-    if type(VD) == "table" then FakeGenData.Button.Visible = VD.SURV_FakeGen else FakeGenData.Button.Visible = false end
-    FakeGenData.Button.ZIndex = 10
-    FakeGenData.Button.Parent = FakeGenData.UI
-    Instance.new("UICorner", FakeGenData.Button).CornerRadius = UDim.new(1, 0)
-    local s = Instance.new("UIStroke", FakeGenData.Button)
-    s.Color = Color3.fromRGB(150, 255, 70)
-    s.Thickness = 2; s.Transparency = 0.2
-    local lbl = Instance.new("TextLabel", FakeGenData.Button)
-    lbl.Size = UDim2.new(1, 0, 1, 0)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = "FAKE\nGEN"
-    lbl.TextColor3 = Color3.fromRGB(200, 255, 150)
-    lbl.TextScaled = true
-    lbl.Font = Enum.Font.GothamBlack
-    lbl.ZIndex = 11
-    FakeGenData.Button.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            if FakeGenData.DragLocked then return end
-            FakeGenData.Dragging = true
-            FakeGenData.DragStart = input.Position
-            FakeGenData.DragStartPos = FakeGenData.Button.Position
+    setupFakeParryBtn()
+    game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        setupFakeParryBtn()
+        if FakeParryData.Button and type(VD) == "table" then
+            FakeParryData.Button.Visible = VD.SURV_FakeParry
         end
     end)
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if FakeGenData.Dragging and not FakeGenData.DragLocked and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - FakeGenData.DragStart
-            FakeGenData.Button.Position = UDim2.new(
-                FakeGenData.DragStartPos.X.Scale, FakeGenData.DragStartPos.X.Offset + delta.X, 
-                FakeGenData.DragStartPos.Y.Scale, FakeGenData.DragStartPos.Y.Offset + delta.Y
-            )
+
+    -- Fake Gen
+    getgenv().FakeGenTrack = nil
+    FakeGenData = {
+        UI = nil,
+        Button = nil,
+        DragLocked = false,
+        Dragging = false,
+        DragStart = nil,
+        DragStartPos = nil
+    }
+    function VD_ToggleFakeGen()
+        if not VD.SURV_FakeGen then
+            if getgenv().FakeGenTrack then
+                pcall(function() getgenv().FakeGenTrack:Stop() end)
+                getgenv().FakeGenTrack = nil
+            end
+            if FakeGenData.Button then
+                FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(20, 30, 0)
+            end
+            return
         end
-    end)
-    FakeGenData.Button.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            FakeGenData.Dragging = false
+        if getgenv().FakeGenTrack then
+            pcall(function() getgenv().FakeGenTrack:Stop() end)
+            getgenv().FakeGenTrack = nil
+            if FakeGenData.Button then
+                FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(20, 30, 0)
+            end
+        else
+            pcall(function()
+                local player = game:GetService("Players").LocalPlayer
+                local character = player.Character
+                if not character then return end
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if not humanoid then return end
+                local animator = humanoid:FindFirstChildOfClass("Animator")
+                if not animator then
+                    animator = Instance.new("Animator")
+                    animator.Parent = humanoid
+                end
+                local animation = Instance.new("Animation")
+                animation.AnimationId = "rbxassetid://83160743983246"
+                local track = animator:LoadAnimation(animation)
+                track.Looped = true
+                track.Priority = Enum.AnimationPriority.Action
+                track:Play()
+                getgenv().FakeGenTrack = track
+                if FakeGenData.Button then
+                    FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(80, 180, 100)
+                end
+            end)
         end
-    end)
-    FakeGenData.Button.MouseButton1Click:Connect(VD_ToggleFakeGen)
-end
-setupFakeGenBtn()
-game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
-    if getgenv().KYS_FakeGenTrack then
-        pcall(function() getgenv().KYS_FakeGenTrack:Stop() end)
-        getgenv().KYS_FakeGenTrack = nil
     end
-    task.wait(0.5)
+    function setupFakeGenBtn()
+        local player = game:GetService("Players").LocalPlayer
+        local oldUI = player.PlayerGui:FindFirstChild("FakeGenUI")
+        if oldUI then oldUI:Destroy() end
+        FakeGenData.UI = Instance.new("ScreenGui")
+        FakeGenData.UI.Name = "FakeGenUI"
+        FakeGenData.UI.ResetOnSpawn = false
+        FakeGenData.UI.IgnoreGuiInset = true
+        FakeGenData.UI.Parent = player:WaitForChild("PlayerGui")
+        FakeGenData.Button = Instance.new("ImageButton")
+        FakeGenData.Button.Name = "FakeGenButton"
+        FakeGenData.Button.Size = UDim2.new(0, 60, 0, 60)
+        FakeGenData.Button.Position = UDim2.new(0.4, 0, 0.75, 0)
+        FakeGenData.Button.AnchorPoint = Vector2.new(0.5, 0.5)
+        FakeGenData.Button.BackgroundColor3 = Color3.fromRGB(20, 30, 0)
+        FakeGenData.Button.BackgroundTransparency = 0.15
+        FakeGenData.Button.AutoButtonColor = true
+        if type(VD) == "table" then FakeGenData.Button.Visible = VD.SURV_FakeGen else FakeGenData.Button.Visible = false end
+        FakeGenData.Button.ZIndex = 10
+        FakeGenData.Button.Parent = FakeGenData.UI
+        Instance.new("UICorner", FakeGenData.Button).CornerRadius = UDim.new(1, 0)
+        local s = Instance.new("UIStroke", FakeGenData.Button)
+        s.Color = Color3.fromRGB(150, 255, 70)
+        s.Thickness = 2; s.Transparency = 0.2
+        local lbl = Instance.new("TextLabel", FakeGenData.Button)
+        lbl.Size = UDim2.new(1, 0, 1, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = "FAKE\nGEN"
+        lbl.TextColor3 = Color3.fromRGB(200, 255, 150)
+        lbl.TextScaled = true
+        lbl.Font = Enum.Font.GothamBlack
+        lbl.ZIndex = 11
+        FakeGenData.Button.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                if FakeGenData.DragLocked then return end
+                FakeGenData.Dragging = true
+                FakeGenData.DragStart = input.Position
+                FakeGenData.DragStartPos = FakeGenData.Button.Position
+            end
+        end)
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if FakeGenData.Dragging and not FakeGenData.DragLocked and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                local delta = input.Position - FakeGenData.DragStart
+                FakeGenData.Button.Position = UDim2.new(
+                    FakeGenData.DragStartPos.X.Scale, FakeGenData.DragStartPos.X.Offset + delta.X, 
+                    FakeGenData.DragStartPos.Y.Scale, FakeGenData.DragStartPos.Y.Offset + delta.Y
+                )
+            end
+        end)
+        FakeGenData.Button.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                FakeGenData.Dragging = false
+            end
+        end)
+        FakeGenData.Button.MouseButton1Click:Connect(VD_ToggleFakeGen)
+    end
     setupFakeGenBtn()
-    if FakeGenData.Button and type(VD) == "table" then
-        FakeGenData.Button.Visible = VD.SURV_FakeGen
-    end
-end)
+    game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
+        if getgenv().FakeGenTrack then
+            pcall(function() getgenv().FakeGenTrack:Stop() end)
+            getgenv().FakeGenTrack = nil
+        end
+        task.wait(0.5)
+        setupFakeGenBtn()
+        if FakeGenData.Button and type(VD) == "table" then
+            FakeGenData.Button.Visible = VD.SURV_FakeGen
+        end
+    end)
+
+    -- Fake Perks Section
     local fakePerkSection = MainFeatureTabs.Survivor:AddSection({
         Position = "Center",
         Name = "Fake Perks",
@@ -5924,10 +5912,6 @@ end)
         Flag = "FP_Flowstate",
         Default = false,
         Callback = function(val)
-            if val and false then
-                pcall(VD_Notify, "Premium Required ??", "Fitur Fake Perks hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             flowstateOn = val
             local char = FP_Char()
             if char then
@@ -5989,10 +5973,6 @@ end)
         Flag = "FP_QuickRecovery",
         Default = false,
         Callback = function(val)
-            if val and false then
-                pcall(VD_Notify, "Premium Required ??", "Fitur Fake Perks hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             quickRecOn = val
             if val then
                 local function onHealed()
@@ -6051,10 +6031,6 @@ end)
         Flag = "FP_PerfectLanding",
         Default = false,
         Callback = function(val)
-            if val and false then
-                pcall(VD_Notify, "Premium Required ??", "Fitur Fake Perks hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             perfLandOn = val
             if val then
                 local function hookFall(c)
@@ -6097,10 +6073,6 @@ end)
         Flag = "FP_AdrenalineRush",
         Default = false,
         Callback = function(val)
-            if val and false then
-                pcall(VD_Notify, "Premium Required ??", "Fitur Fake Perks hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             adrenalineOn = val
             if val then
                 local function hookDamage(c)
@@ -6127,7 +6099,8 @@ end)
             end
         end
     })
-do 
+
+    -- Killer Combat Section
     local combatKiller = MainKillerFeatureTabs.Killer:AddSection({
         Position = "Center",
         Name = "Killer",
@@ -6140,23 +6113,19 @@ do
     combatKiller:AddSlider({
         Name = "Attack Range", Flag = "Attack Range",
         Min = 5, Max = 20, Default = 12,
-        Callback = function(v)
-            VD.AUTO_AttackRange =
-                v
-        end
+        Callback = function(v) VD.AUTO_AttackRange = v end
     })
     combatKiller:AddToggle({ Default = false, Name = "Hitbox Expand", Flag = "Hitbox Expand", Callback = function(v) VD.HITBOX_Enabled = v end })
     combatKiller:AddSlider({
         Name = "Hitbox Size", Flag = "Hitbox Size",
         Min = 5, Max = 40, Default = 15,
-        Callback = function(v)
-            VD.HITBOX_Size =
-                v
-        end
+        Callback = function(v) VD.HITBOX_Size = v end
     })
     combatKiller:AddToggle({ Default = false, Name = "Infinite Lunge (Basic Attack)", Flag = "Infinite Lunge (Basic Attack)", Callback = function(v)
         VD.KILLER_InfLunge = v
     end })
+
+    -- Killer Ability Section
     local abilityKiller = MainKillerFeatureTabs.Ability:AddSection({
         Position = "Center",
         Name = "Killer Ability",
@@ -6166,85 +6135,53 @@ do
         Opened    = false,
     })
     abilityKiller:AddToggle({ Default = false, Name = "Infinite Abyssal Burst (Abyss)", Locked = false, TextLocked = "", Flag = "Infinite Abyssal Burst (Abyss)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Infinite Abyssal Burst (Abyss) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_BypassCooldown = v
         if v then
-            KYS_StartAbyssCooldownBypass()
+            StartAbyssCooldownBypass()
         else
-            KYS_StopAbyssCooldownBypass()
+            StopAbyssCooldownBypass()
         end
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Infinite Skill (Hidden)", Locked = false, TextLocked = "", Flag = "Infinite Skill (Hidden)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Infinite Skill (Hidden) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_BypassLeap = v
         if v then
-            pcall(KYS_StartHiddenCooldownBypass)
+            pcall(StartHiddenCooldownBypass)
         else
-            pcall(KYS_StopHiddenCooldownBypass)
+            pcall(StopHiddenCooldownBypass)
         end
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Infinite Frenzy (Jeff)", Locked = false, TextLocked = "", Flag = "Infinite Frenzy (Jeff)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Infinite Frenzy (Jeff) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_InfFrenzy = v
         if v then
-            pcall(KYS_StartJeffCooldownBypass)
+            pcall(StartJeffCooldownBypass)
         else
-            pcall(KYS_StopJeffCooldownBypass)
+            pcall(StopJeffCooldownBypass)
         end
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Infinite Lake Mist (Jason)", Locked = false, TextLocked = "", Flag = "Infinite Lake Mist (Jason)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Infinite Lake Mist (Jason) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_InfLakeMist = v
         if v then
-            pcall(KYS_StartSlasherCooldownBypass)
+            pcall(StartSlasherCooldownBypass)
         else
-            pcall(KYS_StopSlasherCooldownBypass)
+            pcall(StopSlasherCooldownBypass)
         end
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Infinite Pursuit (Jason)", Locked = false, TextLocked = "", Flag = "Infinite Pursuit (Jason)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Infinite Pursuit (Jason) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_InfPursuit = v
         if v then
-            pcall(KYS_StartSlasherCooldownBypass)
+            pcall(StartSlasherCooldownBypass)
         else
-            pcall(KYS_StopSlasherCooldownBypass)
+            pcall(StopSlasherCooldownBypass)
         end
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Infinite Grab (Myers)", Locked = false, TextLocked = "", Flag = "Infinite Grab (Myers)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Infinite Grab (Myers) hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         setMyersGrab(v)
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Fake Attack (Counter Parry)", Locked = false, TextLocked = "", Flag = "Fake Attack (Counter Parry)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Fake Attack hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_FakeAttack = v
-        pcall(KYS_ToggleFakeAttack, v)
+        pcall(ToggleFakeAttack, v)
     end })
     abilityKiller:AddToggle({ Default = false, Name = "Undraggable Button (Inf Grab)", Locked = false, TextLocked = "", Flag = "Undraggable Button (Inf Grab)", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Undraggable Button hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         setMyersDragLocked(v)
     end })
     pcall(function()
@@ -6258,9 +6195,6 @@ do
             Multi = false,
             Default = VD.KILLER_CustomMasked or "Richard",
             Callback = function(v)
-                if v and false then
-                    return
-                end
                 if type(v) == "table" then
                     v = v[1]
                 end
@@ -6272,11 +6206,7 @@ do
             Locked = false,
             TextLocked = "",
             Callback = function()
-                if false then
-                    pcall(VD_Notify, "Premium Required ✨", "Fitur Custom Masked hanya untuk pengguna Key Premium!", 5)
-                    return
-                end
-                pcall(KYS_ApplyCustomMasked, VD.KILLER_CustomMasked)
+                pcall(ApplyCustomMasked, VD.KILLER_CustomMasked)
             end
         })
         abilityKiller:AddButton({
@@ -6284,16 +6214,14 @@ do
             Locked = false,
             TextLocked = "",
             Callback = function()
-                if false then
-                    pcall(VD_Notify, "Premium Required ✨", "Fitur Custom Masked hanya untuk pengguna Key Premium!", 5)
-                    return
-                end
                 local mask = customMaskedMasks[math.random(1, #customMaskedMasks)]
                 VD.KILLER_CustomMasked = mask
-                pcall(KYS_ApplyCustomMasked, mask)
+                pcall(ApplyCustomMasked, mask)
             end
         })
     end)
+
+    -- Killer Utilities Section
     local utilKiller = MainKillerFeatureTabs.Utilities:AddSection({
         Position = "Center",
         Name = "Utilities",
@@ -6306,24 +6234,12 @@ do
     utilKiller:AddToggle({ Default = false, Name = "Destroy Pallets", Flag = "Destroy Pallets", Callback = function(v) VD.KILLER_DestroyPallets = v end })
     utilKiller:AddToggle({ Default = false, Name = "Auto Kick Generator", Flag = "Auto Kick Generator", Callback = function(v) VD.KILLER_AutoBreakGene = v end })
     utilKiller:AddToggle({ Default = false, Name = "Block All Vaults", Locked = false, TextLocked = "", Flag = "Block All Vaults", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Block All Vaults hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_BlockVaults = v
     end })
     utilKiller:AddToggle({ Default = false, Name = "Auto Drop All Pallets", Locked = false, TextLocked = "", Flag = "Auto Drop All Pallets", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Auto Drop All Pallets hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_BlockPallets = v
     end })
     utilKiller:AddToggle({ Default = false, Name = "Break All Pallet", Locked = false, TextLocked = "", Flag = "Break All Pallet", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Break All Pallet hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.KILLER_BlockPalletDrop = v
     end })
     utilKiller:AddToggle({
@@ -6356,12 +6272,10 @@ do
     utilKiller:AddSlider({
         Name = "Target Lock Max Distance", Flag = "Target Lock Max Distance",
         Min = 10, Max = 200, Default = 50,
-        Callback = function(v)
-            VD.AimLockMaxDistance = v
-        end
+        Callback = function(v) VD.AimLockMaxDistance = v end
     })
-end
-do 
+
+    -- Escape Section
     local escapeSurv = MainFeatureTabs.Escape:AddSection({
         Position = "Center",
         Name = "Escape",
@@ -6372,10 +6286,6 @@ do
     })
     escapeSurv:AddToggle({ Default = false, Name = "Bypass Gate", Flag = "Bypass Gate", Callback = function(v) VD.BypassGate = v; if not v then pcall(VD_RestoreGateParts) end end })
     escapeSurv:AddToggle({ Default = false, Name = "Beat Survivor (auto exit)", Locked = false, TextLocked = "", Flag = "Beat Survivor (auto exit)", Callback = function(v) 
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Beat Survivor hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.BEAT_Survivor = v 
     end })
     escapeSurv:AddToggle({ Default = false, Name = "Flee Killer", Flag = "Flee Killer", Callback = function(v) VD.SURV_FleeKiller = v end })
@@ -6384,8 +6294,8 @@ do
         Min = 15, Max = 80, Default = 40,
         Callback = function(v) VD.SURV_FleeDistance = v end
     })
-end
-do 
+
+    -- Automation Section
     local genAuto = MainFeatureTabs.Automation:AddSection({
         Position = "Center",
         Name = "Automation",
@@ -6397,10 +6307,6 @@ do
     genAuto:AddToggle({ Default = false, Name = "Auto Skillcheck", Flag = "Auto Skillcheck", Callback = function(v) VD_SetAutoSkillcheck(v) end })
     genAuto:AddToggle({ Default = false, Name = "Hide Skillcheck UI", Flag = "Hide Skillcheck UI", Callback = function(v) VD.HideSkillUI = v end })
     genAuto:AddToggle({ Default = false, Name = "Boost Gen Bypass", Locked = false, TextLocked = "", Flag = "Boost Gen Bypass", Callback = function(v)
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Boost Gen Bypass hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         setGenBypass(v)
     end })
     genAuto:AddDropdown({
@@ -6408,14 +6314,10 @@ do
         Flag = "Skillcheck Mode",
         Values = { "Normal", "Perfect", "Instant" },
         Default = "Normal",
-        DisabledOptions = false and { "Instant" } or {},
+        DisabledOptions = {},
         Multi = false,
         Callback = function(option)
             if type(option) == "table" then option = option[1] end
-            if option == "Instant" and false then
-                pcall(VD_Notify, "Premium Required ✨", "Opsi Instant hanya untuk pengguna Key Premium!", 5)
-                return
-            end
             VD.AutoSkillcheckMode = option or "Normal"
             if VD.AutoSkillcheckMode ~= "Instant" and AutoSkill.InstantRotationConnection then
                 AutoSkill.InstantRotationConnection:Disconnect()
@@ -6425,8 +6327,8 @@ do
             VD_Notify("Skillcheck Mode", tostring(VD.AutoSkillcheckMode) .. " selected", 2)
         end
     })
-end
-do 
+
+    -- Fling Section
     local flingSection = PlayerFeatureTabs.Fling:AddSection({
         Position = "Center",
         Name = "Fling",
@@ -6436,141 +6338,126 @@ do
         Opened    = false,
     })
     flingSection:AddToggle({ Default = false, Name = "Enable Fling", Locked = false, TextLocked = "", Flag = "Enable Fling", Callback = function(v) 
-        if v and false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Fling hanya untuk pengguna Key Premium!", 5)
-            return
-        end
         VD.FLING_Enabled = v 
     end })
     flingSection:AddSlider({
         Name = "Fling Strength", Flag = "Fling Strength",
         Min = 1000, Max = 50000, Default = 10000,
-        Callback = function(
-            v)
-            VD.FLING_Strength = v
-        end
+        Callback = function(v) VD.FLING_Strength = v end
     })
     flingSection:AddButton({ Name = "Fling Nearest", Locked = false, TextLocked = "", Callback = function() 
-        if false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Fling hanya untuk pengguna Key Premium!", 5)
-            return
-        end
-        pcall(function() KYS_FlingNearest() end) 
+        pcall(function() FlingNearest() end) 
     end })
     flingSection:AddButton({ Name = "Fling All", Locked = false, TextLocked = "", Callback = function() 
-        if false then
-            pcall(VD_Notify, "Premium Required ✨", "Fitur Fling hanya untuk pengguna Key Premium!", 5)
-            return
-        end
-        pcall(KYS_FlingAll) 
+        pcall(FlingAll) 
     end })
-end
-local SelectedAnim = "rbxassetid://83229063951016"
-local SelectedSound = "rbxassetid://85355610204255"
-local currentTrack = nil
-local currentSound = nil
-local EmoteOptions = {
-    "Friday Night",
-    "WarCry",
-    "24 Hour Cinderella",
-    "Applause",
-    "Arm Swing",
-    "Backflip",
-    "California Girls",
-    "Christmas Spirit",
-    "Floating Rest",
-    "Ghoul",
-    "Griddy",
-    "Kyoufuu",
-    "OnePlays",
-    "Vulnerable",
-}
-local function SelectEmoteData(value)
-    if value == "Friday Night" then
-        SelectedAnim = "rbxassetid://83229063951016"
-        SelectedSound = "rbxassetid://85355610204255"
-    elseif value == "WarCry" then
-        SelectedAnim = "rbxassetid://82600868380136"
-        SelectedSound = "rbxassetid://120101930689931"
-    elseif value == "24 Hour Cinderella" then
-        SelectedAnim = "rbxassetid://137195203725366"
-        SelectedSound = "rbxassetid://121099446613414"
-    elseif value == "Applause" then
-        SelectedAnim = "rbxassetid://96328361165090"
-        SelectedSound = "rbxassetid://115490787020749"
-    elseif value == "Arm Swing" then
-        SelectedAnim = "rbxassetid://80552139463944"
-        SelectedSound = "rbxassetid://74216458932348"
-    elseif value == "Backflip" then
-        SelectedAnim = "rbxassetid://74705617908505"
-        SelectedSound = nil
-    elseif value == "California Girls" then
-        SelectedAnim = "rbxassetid://123552803041504"
-        SelectedSound = "rbxassetid://87899327891544"
-    elseif value == "Christmas Spirit" then
-        SelectedAnim = "rbxassetid://137859761110514"
-        SelectedSound = nil
-    elseif value == "Floating Rest" then
-        SelectedAnim = "rbxassetid://114593021219597"
-        SelectedSound = nil
-    elseif value == "Ghoul" then
-        SelectedAnim = "rbxassetid://130415594909401"
-        SelectedSound = "rbxassetid://123004139176580"
-    elseif value == "Griddy" then
-        SelectedAnim = "rbxassetid://75586690784894"
-        SelectedSound = nil
-    elseif value == "Kyoufuu" then
-        SelectedAnim = "rbxassetid://137322894494527"
-        SelectedSound = "rbxassetid://129064643026442"
-    elseif value == "OnePlays" then
-        SelectedAnim = "rbxassetid://140625405103474"
-        SelectedSound = "rbxassetid://94749073728335"
-    elseif value == "Vulnerable" then
-        SelectedAnim = "rbxassetid://121773684313913"
-        SelectedSound = "rbxassetid://135265751184744"
+
+    -- Emote Section
+    local SelectedAnim = "rbxassetid://83229063951016"
+    local SelectedSound = "rbxassetid://85355610204255"
+    local currentTrack = nil
+    local currentSound = nil
+    local EmoteOptions = {
+        "Friday Night",
+        "WarCry",
+        "24 Hour Cinderella",
+        "Applause",
+        "Arm Swing",
+        "Backflip",
+        "California Girls",
+        "Christmas Spirit",
+        "Floating Rest",
+        "Ghoul",
+        "Griddy",
+        "Kyoufuu",
+        "OnePlays",
+        "Vulnerable",
+    }
+    local function SelectEmoteData(value)
+        if value == "Friday Night" then
+            SelectedAnim = "rbxassetid://83229063951016"
+            SelectedSound = "rbxassetid://85355610204255"
+        elseif value == "WarCry" then
+            SelectedAnim = "rbxassetid://82600868380136"
+            SelectedSound = "rbxassetid://120101930689931"
+        elseif value == "24 Hour Cinderella" then
+            SelectedAnim = "rbxassetid://137195203725366"
+            SelectedSound = "rbxassetid://121099446613414"
+        elseif value == "Applause" then
+            SelectedAnim = "rbxassetid://96328361165090"
+            SelectedSound = "rbxassetid://115490787020749"
+        elseif value == "Arm Swing" then
+            SelectedAnim = "rbxassetid://80552139463944"
+            SelectedSound = "rbxassetid://74216458932348"
+        elseif value == "Backflip" then
+            SelectedAnim = "rbxassetid://74705617908505"
+            SelectedSound = nil
+        elseif value == "California Girls" then
+            SelectedAnim = "rbxassetid://123552803041504"
+            SelectedSound = "rbxassetid://87899327891544"
+        elseif value == "Christmas Spirit" then
+            SelectedAnim = "rbxassetid://137859761110514"
+            SelectedSound = nil
+        elseif value == "Floating Rest" then
+            SelectedAnim = "rbxassetid://114593021219597"
+            SelectedSound = nil
+        elseif value == "Ghoul" then
+            SelectedAnim = "rbxassetid://130415594909401"
+            SelectedSound = "rbxassetid://123004139176580"
+        elseif value == "Griddy" then
+            SelectedAnim = "rbxassetid://75586690784894"
+            SelectedSound = nil
+        elseif value == "Kyoufuu" then
+            SelectedAnim = "rbxassetid://137322894494527"
+            SelectedSound = "rbxassetid://129064643026442"
+        elseif value == "OnePlays" then
+            SelectedAnim = "rbxassetid://140625405103474"
+            SelectedSound = "rbxassetid://94749073728335"
+        elseif value == "Vulnerable" then
+            SelectedAnim = "rbxassetid://121773684313913"
+            SelectedSound = "rbxassetid://135265751184744"
+        end
     end
-end
-local function PlayEmote()
-    local char = LocalPlayer.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not hrp then return end
-    if currentTrack then
-        currentTrack:Stop()
-        currentTrack = nil
+    local function PlayEmote()
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hum or not hrp then return end
+        if currentTrack then
+            currentTrack:Stop()
+            currentTrack = nil
+        end
+        if currentSound then
+            currentSound:Destroy()
+            currentSound = nil
+        end
+        if SelectedAnim then
+            local anim = Instance.new("Animation")
+            anim.AnimationId = SelectedAnim
+            currentTrack = hum:LoadAnimation(anim)
+            currentTrack.Looped = true
+            currentTrack:Play()
+        end
+        if SelectedSound then
+            currentSound = Instance.new("Sound")
+            currentSound.SoundId = SelectedSound
+            currentSound.Looped = true
+            currentSound.Volume = 2
+            currentSound.Parent = hrp
+            currentSound:Play()
+        end
     end
-    if currentSound then
-        currentSound:Destroy()
-        currentSound = nil
+    local function StopEmote()
+        if currentTrack then
+            currentTrack:Stop()
+            currentTrack = nil
+        end
+        if currentSound then
+            currentSound:Destroy()
+            currentSound = nil
+        end
     end
-    if SelectedAnim then
-        local anim = Instance.new("Animation")
-        anim.AnimationId = SelectedAnim
-        currentTrack = hum:LoadAnimation(anim)
-        currentTrack.Looped = true
-        currentTrack:Play()
-    end
-    if SelectedSound then
-        currentSound = Instance.new("Sound")
-        currentSound.SoundId = SelectedSound
-        currentSound.Looped = true
-        currentSound.Volume = 2
-        currentSound.Parent = hrp
-        currentSound:Play()
-    end
-end
-local function StopEmote()
-    if currentTrack then
-        currentTrack:Stop()
-        currentTrack = nil
-    end
-    if currentSound then
-        currentSound:Destroy()
-        currentSound = nil
-    end
-end
-do 
     local emoteSection = PlayerFeatureTabs.Emote:AddSection({
         Position = "Center",
         Name = "Player Emote [BETA]",
@@ -6609,8 +6496,8 @@ do
             end
         end
     })
-end
-do 
+
+    -- Fun Section
     local funSection = PlayerMiscFeatureTabs.Fun:AddSection({
         Position = "Center",
         Name = "Spoof Stats [Visual Only]",
@@ -6655,8 +6542,8 @@ do
             end
         end
     })
-end
-do 
+
+    -- Streamer Mode Section
     local streamerSection = PlayerMiscFeatureTabs.Streamer:AddSection({
         Position = "Center",
         Name = "Streamer Mode",
@@ -6708,49 +6595,49 @@ do
             pcall(enableFakeName, v)
         end
     })
-end
-local KorlessMorph = {
-    Connection = nil
-}
-local function ApplyKorless()
-    local function Morph()
-        repeat task.wait()
-        until LocalPlayer.Character
-            and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            and LocalPlayer.Character:FindFirstChild("Right Leg")
-        task.wait(0.1)
-        local char = LocalPlayer.Character
-        pcall(function()
-            char.Head.Transparency = 1
-            local face = char.Head:FindFirstChild("face")
-            if face then
-                face:Destroy()
-            end
-            char["Right Leg"].Transparency = 1
-            local mesh = Instance.new("MeshPart")
-            mesh.Name = "KorlessHead"
-            mesh.Size = Vector3.new(1.5, 1.5, 1.5)
-            mesh.CanCollide = false
-            mesh.MeshId = "rbxassetid://902942096"
-            mesh.TextureID = "rbxassetid://902843398"
-            mesh.CFrame = char["Right Leg"].CFrame * CFrame.new(0, 0.5, 0)
-            mesh.Parent = char
-            local weld = Instance.new("WeldConstraint")
-            weld.Part0 = char["Right Leg"]
-            weld.Part1 = mesh
-            weld.Parent = mesh
+
+    -- Korless Morph Section
+    local KorlessMorph = {
+        Connection = nil
+    }
+    local function ApplyKorless()
+        local function Morph()
+            repeat task.wait()
+            until LocalPlayer.Character
+                and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                and LocalPlayer.Character:FindFirstChild("Right Leg")
+            task.wait(0.1)
+            local char = LocalPlayer.Character
+            pcall(function()
+                char.Head.Transparency = 1
+                local face = char.Head:FindFirstChild("face")
+                if face then
+                    face:Destroy()
+                end
+                char["Right Leg"].Transparency = 1
+                local mesh = Instance.new("MeshPart")
+                mesh.Name = "KorlessHead"
+                mesh.Size = Vector3.new(1.5, 1.5, 1.5)
+                mesh.CanCollide = false
+                mesh.MeshId = "rbxassetid://902942096"
+                mesh.TextureID = "rbxassetid://902843398"
+                mesh.CFrame = char["Right Leg"].CFrame * CFrame.new(0, 0.5, 0)
+                mesh.Parent = char
+                local weld = Instance.new("WeldConstraint")
+                weld.Part0 = char["Right Leg"]
+                weld.Part1 = mesh
+                weld.Parent = mesh
+            end)
+        end
+        Morph()
+        if KorlessMorph.Connection then
+            KorlessMorph.Connection:Disconnect()
+        end
+        KorlessMorph.Connection = LocalPlayer.CharacterAdded:Connect(function()
+            task.wait(1)
+            Morph()
         end)
     end
-    Morph()
-    if KorlessMorph.Connection then
-        KorlessMorph.Connection:Disconnect()
-    end
-    KorlessMorph.Connection = LocalPlayer.CharacterAdded:Connect(function()
-        task.wait(1)
-        Morph()
-    end)
-end
-do 
     local avatarSection = PlayerMiscFeatureTabs.Avatar:AddSection({
         Position = "Center",
         Name = "Korless Morph",
@@ -6780,6 +6667,8 @@ do
             VD_Notify("Korless Morph", "Korless Morph berhasil direset!", 3)
         end
     })
+
+    -- Copy Avatar Section
     local copyAvatarSection = PlayerMiscFeatureTabs.Avatar:AddSection({
         Position = "Center",
         Name = "Copy Avatar",
@@ -7029,8 +6918,8 @@ do
             VD_Notify("Copy Avatar", "Avatar dikembalikan ke semula!", 3)
         end
     })
-end
-end 
+end -- End of if Window then
+
 print("PinatHubHUB loaded")
 pcall(function()
     VD_Notify("PinatHubHUB loaded", "PinatHub Feature Suite v1.5.7 Loaded Successfully!", 5)
@@ -7048,7 +6937,7 @@ end
 function IsSurvivor(player)
     return player and player.Team and player.Team.Name == "Survivors"
 end
-function KYS_ApplyCustomMasked(maskName)
+function ApplyCustomMasked(maskName)
     local selectedMask = maskName or VD.KILLER_CustomMasked or "Richard"
     if type(selectedMask) == "table" then
         selectedMask = selectedMask[1]
@@ -7127,20 +7016,20 @@ function VD_ClearSurvivorWarnings()
     for _, player in ipairs(Players:GetPlayers()) do
         local char = player.Character
         local root = char and char:FindFirstChild("HumanoidRootPart")
-        local warn = root and root:FindFirstChild("KYS_SurvivorKillerWarn")
+        local warn = root and root:FindFirstChild("SurvivorKillerWarn")
         if warn then warn:Destroy() end
     end
 end
-local VD_WarnIconPaths = {
+local WarnIconPaths = {
     Yellow = "/tmp/codex-web-uploads/f-LtzTRl/file_000000004f9871fa9d73773e3af21740.png",
     red = "/tmp/codex-web-uploads/f-Yo5gYu/file_00000000fb90720782fb54bce5fe8099.png",
 }
-local VD_WarnIconAssetIds = {
+local WarnIconAssetIds = {
     Yellow = "113063284092207",
     red = "87337602602637",
 }
-local VD_WarnIconCache = {}
-function VD_FormatAssetId(assetId)
+local WarnIconCache = {}
+function FormatAssetId(assetId)
     assetId = tostring(assetId or "")
     if assetId == "" then return nil end
     if assetId:find("rbxassetid://", 1, true) then return assetId end
@@ -7150,19 +7039,19 @@ function VD_FormatAssetId(assetId)
     end
     return "rbxassetid://" .. assetId
 end
-function VD_GetWarnIcon(colorName, path)
-    local asset = VD_FormatAssetId(VD_WarnIconAssetIds[colorName])
+function GetWarnIcon(colorName, path)
+    local asset = FormatAssetId(WarnIconAssetIds[colorName])
     if asset then return asset end
-    if VD_WarnIconCache[path] ~= nil then return VD_WarnIconCache[path] or nil end
+    if WarnIconCache[path] ~= nil then return WarnIconCache[path] or nil end
     if not getcustomasset then
-        VD_WarnIconCache[path] = false
+        WarnIconCache[path] = false
         return nil
     end
     local ok, asset = pcall(getcustomasset, path)
-    VD_WarnIconCache[path] = ok and asset or false
-    return VD_WarnIconCache[path] or nil
+    WarnIconCache[path] = ok and asset or false
+    return WarnIconCache[path] or nil
 end
-function VD_EnsureWarnImage(parent, name, image, position)
+function EnsureWarnImage(parent, name, image, position)
     local img = parent:FindFirstChild(name)
     if not img then
         img = Instance.new("ImageLabel")
@@ -7209,12 +7098,12 @@ function VD_UpdateSurvivorWarnings()
                 for _, killerRoot in ipairs(killers) do
                     nearest = math.min(nearest, (root.Position - killerRoot.Position).Magnitude)
                 end
-                local warn = root:FindFirstChild("KYS_SurvivorKillerWarn")
+                local warn = root:FindFirstChild("SurvivorKillerWarn")
                 if nearest <= 60 then
                     local danger = nearest <= 40
                     if not warn then
                         warn = Instance.new("BillboardGui")
-                        warn.Name = "KYS_SurvivorKillerWarn"
+                        warn.Name = "SurvivorKillerWarn"
                         warn.Adornee = root
                         warn.AlwaysOnTop = true
                         warn.Size = UDim2.new(0, 76, 0, 44)
@@ -7234,12 +7123,12 @@ function VD_UpdateSurvivorWarnings()
                         stroke.Color = Color3.new(0, 0, 0)
                         stroke.Parent = label
                     end
-                    local yellowIcon = VD_GetWarnIcon("Yellow", VD_WarnIconPaths.Yellow)
-                    local purpleIcon = VD_GetWarnIcon("Red", VD_WarnIconPaths.red)
+                    local yellowIcon = GetWarnIcon("Yellow", WarnIconPaths.Yellow)
+                    local purpleIcon = GetWarnIcon("Red", WarnIconPaths.red)
                     local canUseImages = yellowIcon ~= nil and (not danger or purpleIcon ~= nil)
                     warn.Size = danger and UDim2.new(0, 76, 0, 56) or UDim2.new(0, 56, 0, 56)
-                    local yellow = VD_EnsureWarnImage(warn, "YellowIcon", yellowIcon, UDim2.fromScale(0, 0))
-                    local purple = VD_EnsureWarnImage(warn, "redIcon", purpleIcon, UDim2.fromScale(0.38, 0))
+                    local yellow = EnsureWarnImage(warn, "YellowIcon", yellowIcon, UDim2.fromScale(0, 0))
+                    local purple = EnsureWarnImage(warn, "redIcon", purpleIcon, UDim2.fromScale(0.38, 0))
                     yellow.Size = danger and UDim2.fromScale(0.62, 1) or UDim2.fromScale(1, 1)
                     purple.Size = UDim2.fromScale(0.62, 1)
                     yellow.Visible = canUseImages
@@ -7257,11 +7146,11 @@ function VD_UpdateSurvivorWarnings()
         end
     end
 end
-local VD_GateOriginal = setmetatable({}, { __mode = "k" })
+local GateOriginal = setmetatable({}, { __mode = "k" })
 function VD_SetPartState(part, props)
     if not part or not part:IsA("BasePart") then return end
-    if not VD_GateOriginal[part] then
-        VD_GateOriginal[part] = {
+    if not GateOriginal[part] then
+        GateOriginal[part] = {
             Transparency = part.Transparency,
             CanCollide = part.CanCollide,
         }
@@ -7272,7 +7161,7 @@ function VD_SetPartState(part, props)
     end)
 end
 function VD_RestoreGateParts()
-    for part, props in pairs(VD_GateOriginal) do
+    for part, props in pairs(GateOriginal) do
         if part and part.Parent then
             pcall(function()
                 part.Transparency = props.Transparency
@@ -7280,11 +7169,11 @@ function VD_RestoreGateParts()
             end)
         end
     end
-    VD_GateOriginal = setmetatable({}, { __mode = "k" })
+    GateOriginal = setmetatable({}, { __mode = "k" })
 end
 function VD_UpdateBypassGate()
     if not VD.BypassGate then
-        if next(VD_GateOriginal) then VD_RestoreGateParts() end
+        if next(GateOriginal) then VD_RestoreGateParts() end
         return
     end
     if VD._PinatHubBypassGate and tick() < VD._PinatHubBypassGate then return end
@@ -7299,11 +7188,15 @@ function VD_UpdateBypassGate()
         end
     end
 end
-local VD_InvisibleNV = {
+local InvisibleNV = {
     Active = false,
+    Originals = {},
     Seat = nil,
     Weld = nil,
     OriginalSpeed = nil,
+    OriginalAutoRotate = nil,
+    OriginalPlatformStand = nil,
+    OriginalSit = nil,
     Position = Vector3.new(-25.95, 84, 3537.55),
 }
 function VD_SetCharacterTransparency(character, transparency)
@@ -7321,71 +7214,116 @@ function VD_SetInvisibleNotVisual(state)
     local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
     if not hum or not root or not torso then return end
     if state then
-        if VD_InvisibleNV.Active then
-            hum.WalkSpeed = VD.InvisibleSpeed or 16
+        if InvisibleNV.Active then
+            if InvisibleNV.Seat and InvisibleNV.Seat.Parent then
+                InvisibleNV.Seat.Transparency = 1
+                InvisibleNV.Seat.LocalTransparencyModifier = 1
+                InvisibleNV.Seat.CastShadow = false
+                InvisibleNV.Seat.CanTouch = false
+                InvisibleNV.Seat.CanQuery = false
+            end
+            hum.Sit = false
+            hum.PlatformStand = false
             return
         end
-        VD_InvisibleNV.Active = true
-        VD_InvisibleNV.OriginalSpeed = hum.WalkSpeed
+        InvisibleNV.Active = true
+        InvisibleNV.OriginalSpeed = hum.WalkSpeed
+        InvisibleNV.OriginalAutoRotate = hum.AutoRotate
+        InvisibleNV.OriginalPlatformStand = hum.PlatformStand
+        InvisibleNV.OriginalSit = hum.Sit
         local savedCFrame = root.CFrame
-        char:MoveTo(VD_InvisibleNV.Position)
+        char:MoveTo(InvisibleNV.Position)
         task.wait(0.15)
         local seat = Instance.new("Seat")
-        seat.Name = "KYS_InvisibleSeat"
+        seat.Name = "InvisibleSeat"
         seat.Anchored = false
         seat.CanCollide = false
+        seat.CanTouch = false
+        seat.CanQuery = false
         seat.Transparency = 1
-        seat.CFrame = CFrame.new(VD_InvisibleNV.Position)
+        seat.LocalTransparencyModifier = 1
+        seat.CastShadow = false
+        seat.CFrame = CFrame.new(InvisibleNV.Position)
         seat.Parent = Workspace
         local weld = Instance.new("Weld")
         weld.Part0 = seat
         weld.Part1 = torso
         weld.Parent = seat
-        VD_InvisibleNV.Seat = seat
-        VD_InvisibleNV.Weld = weld
+        InvisibleNV.Seat = seat
+        InvisibleNV.Weld = weld
         task.wait()
         seat.CFrame = savedCFrame
-        VD_SetCharacterTransparency(char, 0.5)
-        hum.WalkSpeed = VD.InvisibleSpeed or 16
+        hum.Sit = false
+        hum.PlatformStand = false
+        hum.AutoRotate = InvisibleNV.OriginalAutoRotate
+        local invisColor = VD.InvisibilityColor or Color3.fromRGB(255, 255, 255)
+        for _, descendant in ipairs(char:GetDescendants()) do
+            if descendant:IsA("BasePart") or descendant:IsA("Decal") then
+                pcall(function()
+                    InvisibleNV.Originals[descendant] = {
+                        Transparency = descendant.Transparency,
+                        Color = descendant:IsA("BasePart") and descendant.Color or nil,
+                    }
+                    descendant.Transparency = descendant.Name == "HumanoidRootPart" and 1 or 0.5
+                    if descendant:IsA("BasePart") and descendant.Name ~= "HumanoidRootPart" then
+                        descendant.Color = invisColor
+                    end
+                end)
+            end
+        end
     else
         VD.InvisibleNotVisual = false
-        VD_InvisibleNV.Active = false
-        if VD_InvisibleNV.Seat and VD_InvisibleNV.Seat.Parent then
-            pcall(function() VD_InvisibleNV.Seat:Destroy() end)
+        InvisibleNV.Active = false
+        if InvisibleNV.Seat and InvisibleNV.Seat.Parent then
+            pcall(function() InvisibleNV.Seat:Destroy() end)
         end
-        VD_InvisibleNV.Seat = nil
-        VD_InvisibleNV.Weld = nil
-        VD_SetCharacterTransparency(char, 0)
-        if VD_InvisibleNV.OriginalSpeed then
-            hum.WalkSpeed = VD_InvisibleNV.OriginalSpeed
+        InvisibleNV.Seat = nil
+        InvisibleNV.Weld = nil
+        for descendant, original in pairs(InvisibleNV.Originals) do
+            if descendant and descendant.Parent then
+                pcall(function()
+                    descendant.Transparency = original.Transparency
+                    if descendant:IsA("BasePart") and original.Color then
+                        descendant.Color = original.Color
+                    end
+                end)
+            end
         end
-        VD_InvisibleNV.OriginalSpeed = nil
+        InvisibleNV.Originals = {}
+        if InvisibleNV.OriginalSpeed then hum.WalkSpeed = InvisibleNV.OriginalSpeed end
+        if InvisibleNV.OriginalAutoRotate ~= nil then hum.AutoRotate = InvisibleNV.OriginalAutoRotate end
+        if InvisibleNV.OriginalPlatformStand ~= nil then hum.PlatformStand = InvisibleNV.OriginalPlatformStand end
+        if InvisibleNV.OriginalSit ~= nil then hum.Sit = InvisibleNV.OriginalSit end
+        InvisibleNV.OriginalSpeed = nil
+        InvisibleNV.OriginalAutoRotate = nil
+        InvisibleNV.OriginalPlatformStand = nil
+        InvisibleNV.OriginalSit = nil
     end
 end
-local VD_OriginalLungeBoost = nil
+local OriginalLungeBoost = nil
 function VD_UpdateInfiniteLunge()
     local char = LocalPlayer.Character
     if not char then return end
     if VD.KILLER_InfLunge then
         if char:GetAttribute("lungeboost") ~= 999999 then
-            VD_OriginalLungeBoost = char:GetAttribute("lungeboost") or 1
+            OriginalLungeBoost = char:GetAttribute("lungeboost") or 1
             char:SetAttribute("lungeboost", 999999)
         end
     else
-        if VD_OriginalLungeBoost then
-            char:SetAttribute("lungeboost", VD_OriginalLungeBoost)
-            VD_OriginalLungeBoost = nil
+        if OriginalLungeBoost then
+            char:SetAttribute("lungeboost", OriginalLungeBoost)
+            OriginalLungeBoost = nil
         end
     end
 end
 function VD_UpdateInvisibleNotVisual()
     if not VD.InvisibleNotVisual then
-        if VD_InvisibleNV.Active then VD_SetInvisibleNotVisual(false) end
+        if InvisibleNV.Active then VD_SetInvisibleNotVisual(false) end
         return
     end
     VD_SetInvisibleNotVisual(true)
 end
-local VD_MoonwalkState = {
+local MoonwalkState = {
     LastEnabled = false,
     Yaw = nil,
     Sway = 0,
@@ -7395,10 +7333,10 @@ local VD_MoonwalkState = {
     SyncingUI = false,
 }
 function VD_RefreshMoonwalkButton()
-    local btn = VD_MoonwalkState.Button
+    local btn = MoonwalkState.Button
     if not (btn and btn.Parent) then return end
     btn.BackgroundColor3 = VD.Moonwalk and Color3.fromRGB(35, 185, 95) or Color3.fromRGB(20, 0, 30)
-    local label = VD_MoonwalkState.ButtonLabel
+    local label = MoonwalkState.ButtonLabel
     if label and label.Parent then
         label.Text = VD.Moonwalk and "ON" or "OFF"
         label.TextColor3 = VD.Moonwalk and Color3.fromRGB(190, 255, 210) or Color3.fromRGB(255, 255, 255)
@@ -7410,12 +7348,12 @@ function VD_SetMoonwalk(state)
 end
 getgenv().VD_SetMoonwalk = VD_SetMoonwalk
 function VD_DestroyMoonwalkButton()
-    if VD_MoonwalkState.ButtonGui then
-        pcall(function() VD_MoonwalkState.ButtonGui:Destroy() end)
+    if MoonwalkState.ButtonGui then
+        pcall(function() MoonwalkState.ButtonGui:Destroy() end)
     end
-    VD_MoonwalkState.ButtonGui = nil
-    VD_MoonwalkState.Button = nil
-    VD_MoonwalkState.ButtonLabel = nil
+    MoonwalkState.ButtonGui = nil
+    MoonwalkState.Button = nil
+    MoonwalkState.ButtonLabel = nil
 end
 function VD_CreateMoonwalkButton()
     local parent = LocalPlayer:FindFirstChild("PlayerGui") or LocalPlayer:WaitForChild("PlayerGui", 10)
@@ -7423,14 +7361,14 @@ function VD_CreateMoonwalkButton()
         task.delay(1, VD_CreateMoonwalkButton)
         return
     end
-    if VD_MoonwalkState.ButtonGui and VD_MoonwalkState.ButtonGui.Parent then
+    if MoonwalkState.ButtonGui and MoonwalkState.ButtonGui.Parent then
         VD_RefreshMoonwalkButton()
         return
     end
-    local old = parent:FindFirstChild("KYS_MoonwalkButton")
+    local old = parent:FindFirstChild("MoonwalkButton")
     if old then pcall(function() old:Destroy() end) end
     local sg = Instance.new("ScreenGui")
-    sg.Name = "KYS_MoonwalkButton"
+    sg.Name = "MoonwalkButton"
     sg.ResetOnSpawn = false
     sg.IgnoreGuiInset = true
     sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -7513,19 +7451,19 @@ function VD_CreateMoonwalkButton()
         moved = false
         VD_SetMoonwalk(not VD.Moonwalk)
     end)
-    VD_MoonwalkState.ButtonGui = sg
-    VD_MoonwalkState.Button = btn
-    VD_MoonwalkState.ButtonLabel = lbl
+    MoonwalkState.ButtonGui = sg
+    MoonwalkState.Button = btn
+    MoonwalkState.ButtonLabel = lbl
     VD_RefreshMoonwalkButton()
 end
 function VD_SetMoonwalkButtonVisible(state)
     VD.MoonwalkButton = state and true or false
     local flagName = VD_To_Flag and VD_To_Flag.MoonwalkButton
     local elem = flagName and Window and Window.ConfigElements and Window.ConfigElements[flagName]
-    if elem and elem.Set and not VD_MoonwalkState.SyncingUI then
-        VD_MoonwalkState.SyncingUI = true
+    if elem and elem.Set and not MoonwalkState.SyncingUI then
+        MoonwalkState.SyncingUI = true
         pcall(function() elem:Set(VD.MoonwalkButton) end)
-        VD_MoonwalkState.SyncingUI = false
+        MoonwalkState.SyncingUI = false
     end
     if VD.MoonwalkButton then
         VD_CreateMoonwalkButton()
@@ -7537,18 +7475,18 @@ end
 getgenv().VD_SetMoonwalkButtonVisible = VD_SetMoonwalkButtonVisible
 task.spawn(function()
     while getgenv().VD and not getgenv().VD.Destroyed do
-        if VD.MoonwalkButton and not (VD_MoonwalkState.ButtonGui and VD_MoonwalkState.ButtonGui.Parent) then
+        if VD.MoonwalkButton and not (MoonwalkState.ButtonGui and MoonwalkState.ButtonGui.Parent) then
             pcall(VD_CreateMoonwalkButton)
         elseif VD.MoonwalkButton then
             VD_RefreshMoonwalkButton()
-        elseif VD_MoonwalkState.ButtonGui then
+        elseif MoonwalkState.ButtonGui then
             VD_DestroyMoonwalkButton()
         end
         task.wait(3)
     end
 end)
 do
-local VD_AimLockState = {
+local AimLockState = {
     Active = false,
     CurrentTarget = nil,
     ButtonGui = nil,
@@ -7556,10 +7494,10 @@ local VD_AimLockState = {
     ButtonLabel = nil,
     SyncingUI = false,
 }
-local function VD_AimLock_IsSurvivor(p)
+local function AimLock_IsSurvivor(p)
     return p.Team and p.Team.Name == "Survivors"
 end
-local function VD_AimLock_IsDowned(character)
+local function AimLock_IsDowned(character)
     if not character then return true end
     if character:GetAttribute("Knocked") == true then return true end
     if character:GetAttribute("IsHooked") == true then return true end
@@ -7567,7 +7505,7 @@ local function VD_AimLock_IsDowned(character)
     if hum and hum.Health <= 0 then return true end
     return false
 end
-local function VD_AimLock_GetClosest()
+local function AimLock_GetClosest()
     local char = LocalPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
     if not hrp then return nil end
@@ -7575,10 +7513,10 @@ local function VD_AimLock_GetClosest()
     local bestTarget = nil
     local bestDistance = maxDist + 1
     for _, otherPlayer in ipairs(Players:GetPlayers()) do
-        if otherPlayer ~= LocalPlayer and otherPlayer.Character and VD_AimLock_IsSurvivor(otherPlayer) then
-            if not VD_AimLock_IsDowned(otherPlayer.Character) then
+        if otherPlayer ~= LocalPlayer and otherPlayer.Character and AimLock_IsSurvivor(otherPlayer) then
+            if not AimLock_IsDowned(otherPlayer.Character) then
                 local otherHrp = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
-                local otherHum = otherPlayer.Character:FindFirstChild("Humanoid")
+                local otherHum = otherPlayer.Character:FindFirstChildOfClass("Humanoid")
                 if otherHrp and otherHum and otherHum.Health > 0 then
                     local distance = (otherHrp.Position - hrp.Position).Magnitude
                     if distance <= maxDist and distance < bestDistance then
@@ -7591,46 +7529,46 @@ local function VD_AimLock_GetClosest()
     end
     return bestTarget
 end
-local function VD_RefreshAimLockButton()
-    local btn = VD_AimLockState.Button
+local function RefreshAimLockButton()
+    local btn = AimLockState.Button
     if not (btn and btn.Parent) then return end
-    btn.BackgroundColor3 = VD_AimLockState.Active and Color3.fromRGB(185, 50, 50) or Color3.fromRGB(20, 0, 30)
-    local label = VD_AimLockState.ButtonLabel
+    btn.BackgroundColor3 = AimLockState.Active and Color3.fromRGB(185, 50, 50) or Color3.fromRGB(20, 0, 30)
+    local label = AimLockState.ButtonLabel
     if label and label.Parent then
-        label.Text = VD_AimLockState.Active and "ON" or "OFF"
-        label.TextColor3 = VD_AimLockState.Active and Color3.fromRGB(255, 200, 200) or Color3.fromRGB(255, 255, 255)
+        label.Text = AimLockState.Active and "ON" or "OFF"
+        label.TextColor3 = AimLockState.Active and Color3.fromRGB(255, 200, 200) or Color3.fromRGB(255, 255, 255)
     end
 end
-local function VD_SetAimLockActive(state)
-    VD_AimLockState.Active = state and true or false
-    if not VD_AimLockState.Active then
-        VD_AimLockState.CurrentTarget = nil
+local function SetAimLockActive(state)
+    AimLockState.Active = state and true or false
+    if not AimLockState.Active then
+        AimLockState.CurrentTarget = nil
     end
-    VD_RefreshAimLockButton()
+    RefreshAimLockButton()
 end
-getgenv().VD_SetAimLockActive = VD_SetAimLockActive
-local function VD_DestroyAimLockButton()
-    if VD_AimLockState.ButtonGui then
-        pcall(function() VD_AimLockState.ButtonGui:Destroy() end)
+getgenv().VD_SetAimLockActive = SetAimLockActive
+local function DestroyAimLockButton()
+    if AimLockState.ButtonGui then
+        pcall(function() AimLockState.ButtonGui:Destroy() end)
     end
-    VD_AimLockState.ButtonGui = nil
-    VD_AimLockState.Button = nil
-    VD_AimLockState.ButtonLabel = nil
+    AimLockState.ButtonGui = nil
+    AimLockState.Button = nil
+    AimLockState.ButtonLabel = nil
 end
-local function VD_CreateAimLockButton()
+local function CreateAimLockButton()
     local parent = LocalPlayer:FindFirstChild("PlayerGui") or LocalPlayer:WaitForChild("PlayerGui", 10)
     if not parent then
-        task.delay(1, VD_CreateAimLockButton)
+        task.delay(1, CreateAimLockButton)
         return
     end
-    if VD_AimLockState.ButtonGui and VD_AimLockState.ButtonGui.Parent then
-        VD_RefreshAimLockButton()
+    if AimLockState.ButtonGui and AimLockState.ButtonGui.Parent then
+        RefreshAimLockButton()
         return
     end
-    local old = parent:FindFirstChild("KYS_AimLockButton")
+    local old = parent:FindFirstChild("AimLockButton")
     if old then pcall(function() old:Destroy() end) end
     local sg = Instance.new("ScreenGui")
-    sg.Name = "KYS_AimLockButton"
+    sg.Name = "AimLockButton"
     sg.ResetOnSpawn = false
     sg.IgnoreGuiInset = true
     sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -7711,65 +7649,65 @@ local function VD_CreateAimLockButton()
     btn.MouseButton1Click:Connect(function()
         if moved and not VD.AimLockButtonLocked then return end
         moved = false
-        VD_SetAimLockActive(not VD_AimLockState.Active)
+        SetAimLockActive(not AimLockState.Active)
     end)
-    VD_AimLockState.ButtonGui = sg
-    VD_AimLockState.Button = btn
-    VD_AimLockState.ButtonLabel = lbl
-    VD_RefreshAimLockButton()
+    AimLockState.ButtonGui = sg
+    AimLockState.Button = btn
+    AimLockState.ButtonLabel = lbl
+    RefreshAimLockButton()
 end
-local function VD_SetAimLockButtonVisible(state)
+local function SetAimLockButtonVisible(state)
     VD.AimLockButton = state and true or false
     local flagName = VD_To_Flag and VD_To_Flag.AimLockButton
     local elem = flagName and Window and Window.ConfigElements and Window.ConfigElements[flagName]
-    if elem and elem.Set and not VD_AimLockState.SyncingUI then
-        VD_AimLockState.SyncingUI = true
+    if elem and elem.Set and not AimLockState.SyncingUI then
+        AimLockState.SyncingUI = true
         pcall(function() elem:Set(VD.AimLockButton) end)
-        VD_AimLockState.SyncingUI = false
+        AimLockState.SyncingUI = false
     end
     if VD.AimLockButton then
-        VD_CreateAimLockButton()
+        CreateAimLockButton()
     else
-        VD_SetAimLockActive(false)
-        VD_DestroyAimLockButton()
+        SetAimLockActive(false)
+        DestroyAimLockButton()
     end
 end
-getgenv().VD_SetAimLockButtonVisible = VD_SetAimLockButtonVisible
+getgenv().VD_SetAimLockButtonVisible = SetAimLockButtonVisible
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.B and VD.AimLockButton then
-        VD_SetAimLockActive(not VD_AimLockState.Active)
+        SetAimLockActive(not AimLockState.Active)
     end
 end)
 LocalPlayer.CharacterAdded:Connect(function()
-    if VD_AimLockState.Active then
-        VD_SetAimLockActive(false)
+    if AimLockState.Active then
+        SetAimLockActive(false)
     end
-    VD_AimLockState.CurrentTarget = nil
+    AimLockState.CurrentTarget = nil
 end)
 task.spawn(function()
     while getgenv().VD and not getgenv().VD.Destroyed do
-        if VD.AimLockButton and not (VD_AimLockState.ButtonGui and VD_AimLockState.ButtonGui.Parent) then
-            pcall(VD_CreateAimLockButton)
+        if VD.AimLockButton and not (AimLockState.ButtonGui and AimLockState.ButtonGui.Parent) then
+            pcall(CreateAimLockButton)
         elseif VD.AimLockButton then
-            VD_RefreshAimLockButton()
-        elseif VD_AimLockState.ButtonGui then
-            VD_DestroyAimLockButton()
+            RefreshAimLockButton()
+        elseif AimLockState.ButtonGui then
+            DestroyAimLockButton()
         end
         task.wait(3)
     end
 end)
 RunService.RenderStepped:Connect(function()
-    if not VD_AimLockState.Active or not VD.AimLockButton then
-        VD_AimLockState.CurrentTarget = nil
+    if not AimLockState.Active or not VD.AimLockButton then
+        AimLockState.CurrentTarget = nil
         return
     end
-    local targetPart = VD_AimLock_GetClosest()
+    local targetPart = AimLock_GetClosest()
     if not targetPart then
-        VD_AimLockState.CurrentTarget = nil
+        AimLockState.CurrentTarget = nil
         return
     end
-    VD_AimLockState.CurrentTarget = targetPart
+    AimLockState.CurrentTarget = targetPart
     pcall(function()
         local cam = Workspace.CurrentCamera
         cam.CFrame = CFrame.new(cam.CFrame.Position, targetPart.Position)
@@ -7781,12 +7719,12 @@ function VD_UpdateMoonwalk(deltaTime)
     local hum = char and char:FindFirstChildOfClass("Humanoid")
     local root = char and char:FindFirstChild("HumanoidRootPart")
     local cam = Workspace.CurrentCamera
-    if VD.Moonwalk ~= VD_MoonwalkState.LastEnabled then
+    if VD.Moonwalk ~= MoonwalkState.LastEnabled then
         if hum then hum.AutoRotate = not VD.Moonwalk end
-        VD_MoonwalkState.LastEnabled = VD.Moonwalk
+        MoonwalkState.LastEnabled = VD.Moonwalk
         if VD.Moonwalk and root then
             local _, y = root.CFrame:ToEulerAnglesYXZ()
-            VD_MoonwalkState.Yaw = math.deg(y)
+            MoonwalkState.Yaw = math.deg(y)
         end
     end
     if not VD.Moonwalk then
@@ -7796,53 +7734,58 @@ function VD_UpdateMoonwalk(deltaTime)
     hum.AutoRotate = false
     local look = cam.CFrame.LookVector
     local targetYaw = math.deg(math.atan2(look.X, look.Z)) + 180
-    local currentYaw = VD_MoonwalkState.Yaw or targetYaw
+    local currentYaw = MoonwalkState.Yaw or targetYaw
     local diff = (targetYaw - currentYaw + 180) % 360 - 180
     local lerpSpeed = 0.22 * math.clamp((deltaTime or 1 / 60) * 60, 0, 3)
     currentYaw = currentYaw + diff * lerpSpeed
-    VD_MoonwalkState.Yaw = currentYaw
+    MoonwalkState.Yaw = currentYaw
     local moving = hum.MoveDirection.Magnitude > 0.01
     local targetSway = 0
     if moving then
         targetSway = math.sin(tick() * (VD.MoonwalkZigzagSpeed or 11)) * 48
     end
-    VD_MoonwalkState.Sway = (VD_MoonwalkState.Sway or 0) + (targetSway - (VD_MoonwalkState.Sway or 0)) * 0.38
-    root.CFrame = CFrame.new(root.Position) * CFrame.Angles(0, math.rad(currentYaw + VD_MoonwalkState.Sway), 0)
+    MoonwalkState.Sway = (MoonwalkState.Sway or 0) + (targetSway - (MoonwalkState.Sway or 0)) * 0.38
+    root.CFrame = CFrame.new(root.Position) * CFrame.Angles(0, math.rad(currentYaw + MoonwalkState.Sway), 0)
     if moving then
         hum:Move(hum.MoveDirection * (VD.MoonwalkBoostPower or 1.08), false)
     end
 end
 LocalPlayer.CharacterRemoving:Connect(function()
-    if VD_InvisibleNV.Seat and VD_InvisibleNV.Seat.Parent then
-        pcall(function() VD_InvisibleNV.Seat:Destroy() end)
+    if InvisibleNV.Seat and InvisibleNV.Seat.Parent then
+        pcall(function() InvisibleNV.Seat:Destroy() end)
     end
-    VD_InvisibleNV.Active = false
-    VD_InvisibleNV.Seat = nil
-    VD_InvisibleNV.Weld = nil
-    VD_MoonwalkState.LastEnabled = false
-    VD_MoonwalkState.Yaw = nil
-    VD_MoonwalkState.Sway = 0
+    InvisibleNV.Active = false
+    InvisibleNV.Originals = {}
+    InvisibleNV.Seat = nil
+    InvisibleNV.Weld = nil
+    InvisibleNV.OriginalSpeed = nil
+    InvisibleNV.OriginalAutoRotate = nil
+    InvisibleNV.OriginalPlatformStand = nil
+    InvisibleNV.OriginalSit = nil
+    MoonwalkState.LastEnabled = false
+    MoonwalkState.Yaw = nil
+    MoonwalkState.Sway = 0
 end)
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(1)
     if VD.InvisibleNotVisual then pcall(VD_SetInvisibleNotVisual, true) end
 end)
-local VD_PalletwrongConnection = nil
-local VD_PalletwrongScanning = false
+local PalletwrongConnection = nil
+local PalletwrongScanning = false
 function VD_DestroyPalletwrong(inst)
     if inst and inst:IsA("Model") and inst.Name == "Palletwrong" then
         pcall(function() inst:Destroy() end)
     end
 end
 function VD_StartRemovePalletwrong()
-    if VD_PalletwrongConnection then return end
-    VD_PalletwrongConnection = Workspace.DescendantAdded:Connect(function(inst)
+    if PalletwrongConnection then return end
+    PalletwrongConnection = Workspace.DescendantAdded:Connect(function(inst)
         if VD.KILLER_NoPalletStun then
             VD_DestroyPalletwrong(inst)
         end
     end)
-    if VD_PalletwrongScanning then return end
-    VD_PalletwrongScanning = true
+    if PalletwrongScanning then return end
+    PalletwrongScanning = true
     task.spawn(function()
         local descendants = Workspace:GetDescendants()
         for i, inst in ipairs(descendants) do
@@ -7850,15 +7793,15 @@ function VD_StartRemovePalletwrong()
             VD_DestroyPalletwrong(inst)
             if i % 250 == 0 then task.wait() end
         end
-        VD_PalletwrongScanning = false
+        PalletwrongScanning = false
     end)
 end
 function VD_StopRemovePalletwrong()
-    if VD_PalletwrongConnection then
-        pcall(function() VD_PalletwrongConnection:Disconnect() end)
-        VD_PalletwrongConnection = nil
+    if PalletwrongConnection then
+        pcall(function() PalletwrongConnection:Disconnect() end)
+        PalletwrongConnection = nil
     end
-    VD_PalletwrongScanning = false
+    PalletwrongScanning = false
 end
 function VD_UpdateRemovePalletwrong()
     if VD.KILLER_NoPalletStun then
@@ -7878,7 +7821,7 @@ do
         end)
     end)
 end
-local KYS_Cache = {
+local Cache = {
     Generators  = {},
     Gates       = {},
     Hooks       = {},
@@ -7887,10 +7830,10 @@ local KYS_Cache = {
     ClosestHook = nil,
     ExitPos     = nil
 }
-function KYS_ScanMap()
+function ScanMap()
     local map = Workspace:FindFirstChild("Map")
     if not map then
-        KYS_Cache = {
+        Cache = {
             Generators = {}, Zombies = {}, Gates = {}, Hooks = {}, Pallets = {}, Windows = {}, ClosestHook = nil, ExitPos = nil, ExitPart = nil
         }
         return
@@ -7950,18 +7893,18 @@ function KYS_ScanMap()
             end
         end
     end
-    KYS_Cache.Generators = newGens
-    KYS_Cache.Gates      = newGates
-    KYS_Cache.Hooks      = newHooks
-    KYS_Cache.Pallets    = newPallets
-    KYS_Cache.Windows    = newWindows
-    KYS_Cache.ExitPos    = exitPos
-    KYS_Cache.ExitPart   = exitPart
+    Cache.Generators = newGens
+    Cache.Gates      = newGates
+    Cache.Hooks      = newHooks
+    Cache.Pallets    = newPallets
+    Cache.Windows    = newWindows
+    Cache.ExitPos    = exitPos
+    Cache.ExitPart   = exitPart
     print("[PinatHub ScanMap] Generators:", #newGens, "Gates:", #newGates, "Hooks:", #newHooks, "Windows:", #newWindows)
     local root           = Root
-    if root and #KYS_Cache.Hooks > 0 then
+    if root and #Cache.Hooks > 0 then
         local closest, closestDist = nil, math.huge
-        for _, hook in ipairs(KYS_Cache.Hooks) do
+        for _, hook in ipairs(Cache.Hooks) do
             if hook.part then
                 local d = (hook.part.Position - root.Position).Magnitude
                 if d < closestDist then
@@ -7969,7 +7912,7 @@ function KYS_ScanMap()
                 end
             end
         end
-        KYS_Cache.ClosestHook = closest
+        Cache.ClosestHook = closest
     end
 end
 local radarGui = nil
@@ -8183,7 +8126,7 @@ function UpdateRadar()
         end
     end
     if VD.RADAR_ShowGenerator then
-        for _, gen in ipairs(KYS_Cache.Generators or {}) do
+        for _, gen in ipairs(Cache.Generators or {}) do
             if gen.model and gen.model.Parent and gen.part then
                 local pos = WorldToRadar(gen.part.Position)
                 if pos then AddObjectDot(pos, RADAR_COLORS.Generator, 5, "gen_" .. tostring(gen.model)) end
@@ -8191,7 +8134,7 @@ function UpdateRadar()
         end
     end
     if VD.RADAR_ShowPallet then
-        for _, pallet in ipairs(KYS_Cache.Pallets or {}) do
+        for _, pallet in ipairs(Cache.Pallets or {}) do
             if pallet.model and pallet.model.Parent and pallet.part then
                 local isBroken = false
                 local ok, db = pcall(function() return pallet.model:GetAttribute("Destroyed") or pallet.model:GetAttribute("Broken") or pallet.model:GetAttribute("IsBroken") end)
@@ -8207,7 +8150,7 @@ function UpdateRadar()
         end
     end
     if VD.RADAR_ShowHook then
-        for _, hook in ipairs(KYS_Cache.Hooks or {}) do
+        for _, hook in ipairs(Cache.Hooks or {}) do
             if hook.model and hook.model.Parent and hook.part then
                 local pos = WorldToRadar(hook.part.Position)
                 if pos then AddObjectDot(pos, RADAR_COLORS.Hook, 5, "hook_" .. tostring(hook.model)) end
@@ -8215,7 +8158,7 @@ function UpdateRadar()
         end
     end
     if VD.RADAR_ShowGate then
-        for _, gate in ipairs(KYS_Cache.Gates or {}) do
+        for _, gate in ipairs(Cache.Gates or {}) do
             if gate.model and gate.model.Parent and gate.part then
                 local pos = WorldToRadar(gate.part.Position)
                 if pos then AddObjectDot(pos, RADAR_COLORS.Gate, 5, "gate_" .. tostring(gate.model)) end
@@ -8223,7 +8166,7 @@ function UpdateRadar()
         end
     end
     if VD.RADAR_ShowWindow then
-        for _, window in ipairs(KYS_Cache.Windows or {}) do
+        for _, window in ipairs(Cache.Windows or {}) do
             if window.model and window.model.Parent and window.part then
                 local pos = WorldToRadar(window.part.Position)
                 if pos then AddObjectDot(pos, RADAR_COLORS.Window, 4, "window_" .. tostring(window.model)) end
@@ -8231,8 +8174,8 @@ function UpdateRadar()
         end
     end
     if VD.RADAR_ShowZombie then
-        if KYS_WorldReg and KYS_WorldReg.SCPZombie then
-            for model, entry in pairs(KYS_WorldReg.SCPZombie) do
+        if WorldReg and WorldReg.SCPZombie then
+            for model, entry in pairs(WorldReg.SCPZombie) do
                 if model and model.Parent then
                     local refPart = model:FindFirstChild("HumanoidRootPart") or (entry and entry.part) or model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
                     if refPart then
@@ -8245,7 +8188,7 @@ function UpdateRadar()
     end
 end
 local originalCanCollide = {}
-function KYS_TeleportToPosition(pos)
+function TeleportToPosition(pos)
     if not pos then return false end
     local root = Root
     if not root then return false end
@@ -8274,21 +8217,21 @@ function KYS_TeleportToPosition(pos)
     end)
     return true
 end
-function KYS_TeleportToGenerator(index)
-    if not KYS_Cache or not KYS_Cache.Generators or #KYS_Cache.Generators == 0 then print("[PinatHub HUB] Generator tidak ditemukan") return false end
+function TeleportToGenerator(index)
+    if not Cache or not Cache.Generators or #Cache.Generators == 0 then print("[PinatHub HUB] Generator tidak ditemukan") return false end
     local sorted = {}
-    for _, gen in ipairs(KYS_Cache.Generators) do
+    for _, gen in ipairs(Cache.Generators) do
         table.insert(sorted, {gen = gen, dist = (Root and (gen.part.Position - Root.Position).Magnitude) or math.huge})
     end
     table.sort(sorted, function(a, b) return a.dist < b.dist end)
     local target = sorted[index or 1]
     if not target then return false end
-    return KYS_TeleportToPosition(target.gen.part.Position)
+    return TeleportToPosition(target.gen.part.Position)
 end
-function KYS_TeleportToGate()
-    if not KYS_Cache or not KYS_Cache.Gates or #KYS_Cache.Gates == 0 then print("[PinatHub HUB] Gate tidak ditemukan") return false end
+function TeleportToGate()
+    if not Cache or not Cache.Gates or #Cache.Gates == 0 then print("[PinatHub HUB] Gate tidak ditemukan") return false end
     local closest, closestDist = nil, math.huge
-    for _, gate in ipairs(KYS_Cache.Gates) do
+    for _, gate in ipairs(Cache.Gates) do
         local dist = (Root and (gate.part.Position - Root.Position).Magnitude) or math.huge
         if dist < closestDist then
             closestDist = dist
@@ -8296,11 +8239,11 @@ function KYS_TeleportToGate()
         end
     end
     if not closest then return false end
-    return KYS_TeleportToPosition(closest.part.Position)
+    return TeleportToPosition(closest.part.Position)
 end
-function KYS_TeleportToHook()
-    if not KYS_Cache or not KYS_Cache.ClosestHook then print("[PinatHub HUB] Hook tidak ditemukan") return false end
-    return KYS_TeleportToPosition(KYS_Cache.ClosestHook.part.Position)
+function TeleportToHook()
+    if not Cache or not Cache.ClosestHook then print("[PinatHub HUB] Hook tidak ditemukan") return false end
+    return TeleportToPosition(Cache.ClosestHook.part.Position)
 end
 local CurrentMapName = nil
 local MapWatchConnections = {}
@@ -8321,7 +8264,7 @@ function CheckMapChange()
         VD._KillerTarget = nil
     end
     CurrentMapName = mapName
-    KYS_ScanMap()
+    ScanMap()
 end
 function QueueMapScan(delaySec)
     if MapScanQueued then return end
@@ -8343,11 +8286,11 @@ function WatchCurrentMap(map)
                     if not descendant.Parent then return end
                     local part = descendant:FindFirstChild("HitBox", true) or descendant:FindFirstChild("GeneratorPoint", true) or descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart", true)
                     if part then
-                        if n:find("generator") or n:find("mesin") then table.insert(KYS_Cache.Generators, {model=descendant, part=part})
-                        elseif n:find("pallet") then table.insert(KYS_Cache.Pallets, {model=descendant, part=part})
-                        elseif n:find("window") then table.insert(KYS_Cache.Windows, {model=descendant, part=part})
-                        elseif n:find("hook") then table.insert(KYS_Cache.Hooks, {model=descendant, part=part})
-                        elseif n:find("gate") then table.insert(KYS_Cache.Gates, {model=descendant, part=part})
+                        if n:find("generator") or n:find("mesin") then table.insert(Cache.Generators, {model=descendant, part=part})
+                        elseif n:find("pallet") then table.insert(Cache.Pallets, {model=descendant, part=part})
+                        elseif n:find("window") then table.insert(Cache.Windows, {model=descendant, part=part})
+                        elseif n:find("hook") then table.insert(Cache.Hooks, {model=descendant, part=part})
+                        elseif n:find("gate") then table.insert(Cache.Gates, {model=descendant, part=part})
                         end
                     end
                 end)
@@ -8366,7 +8309,7 @@ Workspace.ChildAdded:Connect(function(child)
     end
     if child and child.Name == "Spearprojectile" and VD.SURV_AutoDodgeSpear and GetRole() == "Survivor" then
         task.spawn(function()
-            if getgenv().KYS_IsDodging then return end
+            if getgenv().IsDodging then return end
             local root = Root
             if not root then return end
             task.wait(0.05)
@@ -8379,7 +8322,7 @@ Workspace.ChildAdded:Connect(function(child)
             local dot = spearDir:Dot(toPlayer)
             if dot > 0.85 then 
                 if dot > 0.85 then 
-                    getgenv().KYS_IsDodging = true
+                    getgenv().IsDodging = true
                     local originalCFrame = root.CFrame
                     local rightVector = root.CFrame.RightVector
                     root.CFrame = root.CFrame + (rightVector * 8)
@@ -8388,7 +8331,7 @@ Workspace.ChildAdded:Connect(function(child)
                     if Root then
                         Root.CFrame = originalCFrame
                     end
-                    getgenv().KYS_IsDodging = false
+                    getgenv().IsDodging = false
                 end
             end
         end)
@@ -8406,7 +8349,7 @@ do
     CheckMapChange()
 end
 do 
-local function KYS_AutoAttack()
+local function AutoAttack()
     if not VD.AUTO_Attack or GetRole() ~= "Killer" then return end
     local root = Root
     if not root then return end
@@ -8475,7 +8418,7 @@ RunService.Heartbeat:Connect(function()
         local vaultEv   = winFolder and winFolder:FindFirstChild("VaultCommit")
         if not vaultEv then return end
         local windowGroups = {}
-        for _, win in ipairs(KYS_Cache.Windows or {}) do
+        for _, win in ipairs(Cache.Windows or {}) do
             local part = win.part or win.model
             if part then
                 local rootWindow = part.Parent
@@ -8591,7 +8534,7 @@ RunService.Heartbeat:Connect(function()
             end
             return model:FindFirstChild("PalletPoint")
         end
-        for _, pal in ipairs(KYS_Cache.Pallets or {}) do
+        for _, pal in ipairs(Cache.Pallets or {}) do
             local palModel = pal.model  
             if not palModel then continue end
             if _usedPallets[palModel] then continue end
@@ -8617,7 +8560,7 @@ RunService.Heartbeat:Connect(function()
     end)
 end)
 local OriginalHitboxSizes = {}
-local function KYS_UpdateHitboxes()
+local function UpdateHitboxes()
     local function restoreAll()
         for player, originalSize in pairs(OriginalHitboxSizes) do
             if player and player.Character then
@@ -8658,7 +8601,7 @@ local function KYS_UpdateHitboxes()
     end
 end
 local IsBreakingPallet = false
-local function KYS_DestroyAllPallets()
+local function DestroyAllPallets()
     if not VD.KILLER_DestroyPallets or GetRole() ~= "Killer" then return end
     if IsBreakingPallet then return end
     local char = LocalPlayer.Character
@@ -8711,10 +8654,10 @@ local function KYS_DestroyAllPallets()
         end)
     end
 end
-getgenv().KYS_IsBreakingGenerator = false
-function KYS_AutoBreakGene()
+getgenv().IsBreakingGenerator = false
+function AutoBreakGene()
     if not VD.KILLER_AutoBreakGene or GetRole() ~= "Killer" then return end
-    if getgenv().KYS_IsBreakingGenerator then return end
+    if getgenv().IsBreakingGenerator then return end
     local char = LocalPlayer.Character
     local root = Root
     if not char or not root then return end
@@ -8745,7 +8688,7 @@ function KYS_AutoBreakGene()
         end
     end
     if nearest then
-        getgenv().KYS_IsBreakingGenerator = true
+        getgenv().IsBreakingGenerator = true
         task.spawn(function()
             pcall(function()
                 local r = ReplicatedStorage:FindFirstChild("Remotes")
@@ -8768,16 +8711,16 @@ function KYS_AutoBreakGene()
                 task.wait(0.1)
             end
             task.wait(0.3)
-            getgenv().KYS_IsBreakingGenerator = false
+            getgenv().IsBreakingGenerator = false
         end)
     end
 end
-getgenv().KYS_LastVaultBlockTime = 0
-function KYS_BlockAllVaults()
+getgenv().LastVaultBlockTime = 0
+function BlockAllVaults()
     if not VD.KILLER_BlockVaults or GetRole() ~= "Killer" then return end
     local now = tick()
-    if now - getgenv().KYS_LastVaultBlockTime < 1.5 then return end
-    getgenv().KYS_LastVaultBlockTime = now
+    if now - getgenv().LastVaultBlockTime < 1.5 then return end
+    getgenv().LastVaultBlockTime = now
     pcall(function()
         local remotes = ReplicatedStorage:FindFirstChild("Remotes")
         local vaultEvent = remotes and remotes:FindFirstChild("Window") and remotes.Window:FindFirstChild("VaultEvent")
@@ -8793,7 +8736,7 @@ function KYS_BlockAllVaults()
                 end
             end
         else
-            for _, win in ipairs(KYS_Cache.Windows or {}) do
+            for _, win in ipairs(Cache.Windows or {}) do
                 local window = win.model
                 if window and window.Parent then
                     for _, child in ipairs(window:GetDescendants()) do
@@ -8806,12 +8749,12 @@ function KYS_BlockAllVaults()
         end
     end)
 end
-getgenv().KYS_LastPalletBlockTime = 0
-function KYS_BlockAllPalletDrops()
+getgenv().LastPalletBlockTime = 0
+function BlockAllPalletDrops()
     if not VD.KILLER_BlockPallets or GetRole() ~= "Killer" then return end
     local now = tick()
-    if now - getgenv().KYS_LastPalletBlockTime < 2 then return end
-    getgenv().KYS_LastPalletBlockTime = now
+    if now - getgenv().LastPalletBlockTime < 2 then return end
+    getgenv().LastPalletBlockTime = now
     pcall(function()
         local remotes = ReplicatedStorage:FindFirstChild("Remotes")
         local palletFold = remotes and remotes:FindFirstChild("Pallet")
@@ -8827,7 +8770,7 @@ function KYS_BlockAllPalletDrops()
                 end
             end
         end
-        for _, pal in ipairs(KYS_Cache.Pallets or {}) do
+        for _, pal in ipairs(Cache.Pallets or {}) do
             local palModel = pal.model
             if palModel and palModel.Parent then
                 local target = palModel:FindFirstChild("PalletPointSlide") or palModel:FindFirstChild("PalletPoint") or pal.part
@@ -8838,9 +8781,9 @@ function KYS_BlockAllPalletDrops()
         end
     end)
 end
-getgenv().KYS_LastPalletBlockDropTime = 0
-getgenv().KYS_IsBlockingPallets = false
-local function KYS_ForceUnstuck(char)
+getgenv().LastPalletBlockDropTime = 0
+getgenv().IsBlockingPallets = false
+local function ForceUnstuck(char)
     pcall(function()
         char:SetAttribute("Immobile", nil)
         char:SetAttribute("immobile", nil)
@@ -8856,12 +8799,12 @@ local function KYS_ForceUnstuck(char)
         end
     end)
 end
-function KYS_BlockPalletDrop()
+function BlockPalletDrop()
     if not VD.KILLER_BlockPalletDrop or GetRole() ~= "Killer" then return end
-    if getgenv().KYS_IsBlockingPallets then return end
+    if getgenv().IsBlockingPallets then return end
     local now = tick()
-    if now - getgenv().KYS_LastPalletBlockDropTime < 4 then return end
-    getgenv().KYS_LastPalletBlockDropTime = now
+    if now - getgenv().LastPalletBlockDropTime < 4 then return end
+    getgenv().LastPalletBlockDropTime = now
     local char = LocalPlayer.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     if not root then return end
@@ -8892,7 +8835,7 @@ function KYS_BlockPalletDrop()
                     end
                 end
             end
-            for _, pal in ipairs(KYS_Cache.Pallets or {}) do
+            for _, pal in ipairs(Cache.Pallets or {}) do
                 local palModel = pal.model
                 if palModel and palModel.Parent then
                     local target = palModel:FindFirstChild("PalletPointSlide") or palModel:FindFirstChild("PalletPoint") or pal.part
@@ -8906,7 +8849,7 @@ function KYS_BlockPalletDrop()
         end
         local targets = collectTargets()
         if #targets == 0 then return end
-        getgenv().KYS_IsBlockingPallets = true
+        getgenv().IsBlockingPallets = true
         local hum = char:FindFirstChildOfClass("Humanoid")
         local origWalkSpeed = hum and hum.WalkSpeed or 16
         task.spawn(function()
@@ -8925,7 +8868,7 @@ function KYS_BlockPalletDrop()
                             destroySingle:FireServer(target)
                         end
                         task.wait(0.12)
-                        KYS_ForceUnstuck(char)
+                        ForceUnstuck(char)
                     end)
                 end
                 for _, target in ipairs(targets) do
@@ -8933,7 +8876,7 @@ function KYS_BlockPalletDrop()
                 end
                 task.wait(0.1)
                 pcall(function() root.CFrame = originalCF end)
-                KYS_ForceUnstuck(char)
+                ForceUnstuck(char)
                 task.wait(0.5)
                 local remaining = collectTargets()
                 if #remaining > 0 then
@@ -8945,7 +8888,7 @@ function KYS_BlockPalletDrop()
                     pcall(function() root.CFrame = originalCF end)
                 end
                 task.wait(0.1)
-                KYS_ForceUnstuck(char)
+                ForceUnstuck(char)
                 if hum then
                     pcall(function() hum.WalkSpeed = origWalkSpeed end)
                 end
@@ -8954,61 +8897,61 @@ function KYS_BlockPalletDrop()
                 for i = 1, 10 do
                     task.wait(0.1)
                     if char and char.Parent then
-                        KYS_ForceUnstuck(char)
+                        ForceUnstuck(char)
                         if hum and hum.WalkSpeed <= 0 then
                             pcall(function() hum.WalkSpeed = origWalkSpeed end)
                         end
                     end
                 end
             end)
-            getgenv().KYS_IsBlockingPallets = false
+            getgenv().IsBlockingPallets = false
         end)
     end)
 end
-getgenv().KYS_AbyssCooldownBypassConnection = nil
-getgenv().KYS_CorruptHandlerFunc = nil
-function KYS_StartAbyssCooldownBypass()
-    if not getgenv().KYS_CorruptHandlerFunc then
+getgenv().AbyssCooldownBypassConnection = nil
+getgenv().CorruptHandlerFunc = nil
+function StartAbyssCooldownBypass()
+    if not getgenv().CorruptHandlerFunc then
         for _, v in pairs(getgc(true)) do
             if type(v) == "function" and islclosure(v) then
                 local constants = debug.getconstants(v)
                 if table.find(constants, "corrupt") and table.find(constants, "Immobile") then
-                    getgenv().KYS_CorruptHandlerFunc = v
+                    getgenv().CorruptHandlerFunc = v
                     break
                 end
             end
         end
     end
-    if not getgenv().KYS_CorruptHandlerFunc then
+    if not getgenv().CorruptHandlerFunc then
         return
     end
-    if getgenv().KYS_AbyssCooldownBypassConnection then 
-        getgenv().KYS_AbyssCooldownBypassConnection:Disconnect() 
+    if getgenv().AbyssCooldownBypassConnection then 
+        getgenv().AbyssCooldownBypassConnection:Disconnect() 
     end
-    getgenv().KYS_AbyssCooldownBypassConnection = RunService.Heartbeat:Connect(function()
+    getgenv().AbyssCooldownBypassConnection = RunService.Heartbeat:Connect(function()
         if not VD.KILLER_BypassCooldown then return end
-        if getgenv().KYS_CorruptHandlerFunc then
-            local upvalues = debug.getupvalues(getgenv().KYS_CorruptHandlerFunc)
+        if getgenv().CorruptHandlerFunc then
+            local upvalues = debug.getupvalues(getgenv().CorruptHandlerFunc)
             for idx, val in pairs(upvalues) do
                 if type(val) == "boolean" then
                     if val == false then
-                        debug.setupvalue(getgenv().KYS_CorruptHandlerFunc, idx, true)
+                        debug.setupvalue(getgenv().CorruptHandlerFunc, idx, true)
                     end
                 end
             end
         end
     end)
 end
-function KYS_StopAbyssCooldownBypass()
-    if getgenv().KYS_AbyssCooldownBypassConnection then
-        getgenv().KYS_AbyssCooldownBypassConnection:Disconnect()
-        getgenv().KYS_AbyssCooldownBypassConnection = nil
+function StopAbyssCooldownBypass()
+    if getgenv().AbyssCooldownBypassConnection then
+        getgenv().AbyssCooldownBypassConnection:Disconnect()
+        getgenv().AbyssCooldownBypassConnection = nil
     end
 end
-getgenv().KYS_JeffCooldownBypassThread = nil
-function KYS_StartJeffCooldownBypass()
-    if getgenv().KYS_JeffCooldownBypassThread then return end
-    getgenv().KYS_JeffCooldownBypassThread = task.spawn(function()
+getgenv().JeffCooldownBypassThread = nil
+function StartJeffCooldownBypass()
+    if getgenv().JeffCooldownBypassThread then return end
+    getgenv().JeffCooldownBypassThread = task.spawn(function()
         local rs = game:GetService("RunService")
         local player = game:GetService("Players").LocalPlayer
         while task.wait() do
@@ -9022,10 +8965,10 @@ function KYS_StartJeffCooldownBypass()
                 end
             end)
         end
-        getgenv().KYS_JeffCooldownBypassThread = nil
+        getgenv().JeffCooldownBypassThread = nil
     end)
 end
-function KYS_StopJeffCooldownBypass()
+function StopJeffCooldownBypass()
     pcall(function()
         local player = game:GetService("Players").LocalPlayer
         local char = player.Character
@@ -9041,9 +8984,9 @@ function KYS_StopJeffCooldownBypass()
         end
     end)
 end
-getgenv().KYS_SlasherCooldownBypassThread = nil
-function KYS_StartSlasherCooldownBypass()
-    if getgenv().KYS_SlasherCooldownBypassThread then return end
+getgenv().SlasherCooldownBypassThread = nil
+function StartSlasherCooldownBypass()
+    if getgenv().SlasherCooldownBypassThread then return end
     pcall(function()
         local b = true
         local mt = debug.getmetatable(b)
@@ -9058,7 +9001,7 @@ function KYS_StartSlasherCooldownBypass()
         mt.__sub = function() return 0 end
         if setreadonly then setreadonly(mt, true) end
     end)
-    getgenv().KYS_SlasherCooldownBypassThread = task.spawn(function()
+    getgenv().SlasherCooldownBypassThread = task.spawn(function()
         local toggleFunc = nil
         local pursuitHandler = nil
         local function scanGCForSlasher()
@@ -9114,10 +9057,10 @@ function KYS_StartSlasherCooldownBypass()
                 end)
             end
         end
-        getgenv().KYS_SlasherCooldownBypassThread = nil
+        getgenv().SlasherCooldownBypassThread = nil
     end)
 end
-function KYS_StopSlasherCooldownBypass()
+function StopSlasherCooldownBypass()
     pcall(function()
         local rs = game:GetService("ReplicatedStorage")
         local jason = rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("Killers") and rs.Remotes.Killers:FindFirstChild("Jason")
@@ -9133,17 +9076,17 @@ function KYS_StopSlasherCooldownBypass()
         end
     end)
 end
-getgenv().KYS_FakeAttackThread = nil
-function KYS_ToggleFakeAttack(enabled)
+getgenv().FakeAttackThread = nil
+function ToggleFakeAttack(enabled)
     if not enabled then
-        if getgenv().KYS_FakeAttackThread then
-            task.cancel(getgenv().KYS_FakeAttackThread)
-            getgenv().KYS_FakeAttackThread = nil
+        if getgenv().FakeAttackThread then
+            task.cancel(getgenv().FakeAttackThread)
+            getgenv().FakeAttackThread = nil
         end
         return
     end
-    if getgenv().KYS_FakeAttackThread then return end
-    getgenv().KYS_FakeAttackThread = task.spawn(function()
+    if getgenv().FakeAttackThread then return end
+    getgenv().FakeAttackThread = task.spawn(function()
         local Players = game:GetService("Players")
         local LocalPlayer = Players.LocalPlayer
         while VD.KILLER_FakeAttack do
@@ -9179,12 +9122,12 @@ function KYS_ToggleFakeAttack(enabled)
             end
             task.wait(0.3)
         end
-        getgenv().KYS_FakeAttackThread = nil
+        getgenv().FakeAttackThread = nil
     end)
 end
-getgenv().KYS_CureFlaskLaserThread = nil
-getgenv().KYS_CureFlaskLaserPart = nil
-function KYS_UpdateCureFlaskLaser()
+getgenv().CureFlaskLaserThread = nil
+getgenv().CureFlaskLaserPart = nil
+function UpdateCureFlaskLaser()
     local char = game:GetService("Players").LocalPlayer.Character
     if not char then return end
     local targetPos = nil
@@ -9218,7 +9161,7 @@ function KYS_UpdateCureFlaskLaser()
         end
     end
     if originPos and targetPos and actionActive then
-        if not getgenv().KYS_CureFlaskLaserPart then
+        if not getgenv().CureFlaskLaserPart then
             local laser = Instance.new("Part")
             laser.Name = "FlaskSilentAimLaser"
             laser.Anchored = true
@@ -9229,42 +9172,42 @@ function KYS_UpdateCureFlaskLaser()
             laser.Color = Color3.fromRGB(0, 100, 255)
             laser.Transparency = 0
             laser.Parent = workspace
-            getgenv().KYS_CureFlaskLaserPart = laser
+            getgenv().CureFlaskLaserPart = laser
         end
         local dist = (targetPos - originPos).Magnitude
         if dist > 0.1 then
-            local laser = getgenv().KYS_CureFlaskLaserPart
+            local laser = getgenv().CureFlaskLaserPart
             laser.Size = Vector3.new(0.16, 0.16, dist)
             laser.CFrame = CFrame.new((originPos + targetPos) / 2, targetPos)
             laser.Transparency = 0
         end
     else
-        if getgenv().KYS_CureFlaskLaserPart then
-            getgenv().KYS_CureFlaskLaserPart.Transparency = 1
+        if getgenv().CureFlaskLaserPart then
+            getgenv().CureFlaskLaserPart.Transparency = 1
         end
     end
 end
-function KYS_StartCureFlaskLaser()
-    if getgenv().KYS_CureFlaskLaserThread then return end
-    getgenv().KYS_CureFlaskLaserThread = game:GetService("RunService").RenderStepped:Connect(function()
+function StartCureFlaskLaser()
+    if getgenv().CureFlaskLaserThread then return end
+    getgenv().CureFlaskLaserThread = game:GetService("RunService").RenderStepped:Connect(function()
         if not VD.KILLER_FlaskLaser then
-            if getgenv().KYS_CureFlaskLaserPart then
-                pcall(function() getgenv().KYS_CureFlaskLaserPart:Destroy() end)
-                getgenv().KYS_CureFlaskLaserPart = nil
+            if getgenv().CureFlaskLaserPart then
+                pcall(function() getgenv().CureFlaskLaserPart:Destroy() end)
+                getgenv().CureFlaskLaserPart = nil
             end
-            if getgenv().KYS_CureFlaskLaserThread then
-                getgenv().KYS_CureFlaskLaserThread:Disconnect()
-                getgenv().KYS_CureFlaskLaserThread = nil
+            if getgenv().CureFlaskLaserThread then
+                getgenv().CureFlaskLaserThread:Disconnect()
+                getgenv().CureFlaskLaserThread = nil
             end
             return
         end
-        pcall(KYS_UpdateCureFlaskLaser)
+        pcall(UpdateCureFlaskLaser)
     end)
 end
-getgenv().KYS_HiddenLeapBypassThread = nil
-function KYS_StartHiddenCooldownBypass()
-    if getgenv().KYS_HiddenLeapBypassThread then return end
-    getgenv().KYS_HiddenLeapBypassThread = task.spawn(function()
+getgenv().HiddenLeapBypassThread = nil
+function StartHiddenCooldownBypass()
+    if getgenv().HiddenLeapBypassThread then return end
+    getgenv().HiddenLeapBypassThread = task.spawn(function()
         local leapFunction, m2Function, toggleFunc, pursuitFunc
         local function scanGC()
             pcall(function()
@@ -9316,12 +9259,12 @@ function KYS_StartHiddenCooldownBypass()
                 end)
             end
         end
-        getgenv().KYS_HiddenLeapBypassThread = nil
+        getgenv().HiddenLeapBypassThread = nil
     end)
 end
-function KYS_StopHiddenCooldownBypass()
+function StopHiddenCooldownBypass()
 end
-function KYS_FlingNearest()
+function FlingNearest()
     if not VD.FLING_Enabled then return end
     local root = Root
     if not root then return end
@@ -9353,7 +9296,7 @@ function KYS_FlingNearest()
         end
     end
 end
-function KYS_FlingAll()
+function FlingAll()
     if not VD.FLING_Enabled then return end
     local root = Root
     if not root then return end
@@ -9375,7 +9318,7 @@ function KYS_FlingAll()
     root.Velocity    = Vector3.zero
     root.RotVelocity = Vector3.zero
 end
-local function KYS_BeatGameSurvivor()
+local function BeatGameSurvivor()
     if not VD.BEAT_Survivor or GetRole() ~= "Survivor" then return end
     local root = Root
     if not root then return end
@@ -9406,9 +9349,9 @@ local function KYS_BeatGameSurvivor()
                 if finishPart then exitPos = finishPart.Position else exitPos = Vector3.new(1546.12, 152.21, -796.72) end
                 return
             end
-            if KYS_Cache and KYS_Cache.ExitPos then
-                exitPos = KYS_Cache.ExitPos
-                finishPart = KYS_Cache.ExitPart
+            if Cache and Cache.ExitPos then
+                exitPos = Cache.ExitPos
+                finishPart = Cache.ExitPart
                 return
             end
         end)
@@ -9455,7 +9398,7 @@ local function KYS_BeatGameSurvivor()
         end
     end)
 end
-local function KYS_BeatGameKiller()
+local function BeatGameKiller()
     if not VD.BEAT_Killer then
         VD._KillerTarget = nil; return
     end
@@ -9522,7 +9465,7 @@ local function KYS_BeatGameKiller()
     end)
 end
 local IsAutoHooking = false
-local function KYS_AutoHook()
+local function AutoHook()
     if not VD.KILLER_AutoHook or GetRole() ~= "Killer" then return end
     if IsAutoHooking then return end
     local root = Root
@@ -9544,7 +9487,7 @@ local function KYS_AutoHook()
             end
         end
         local closestHook, hDist = nil, math.huge
-        for _, h in ipairs(KYS_Cache.Hooks or {}) do
+        for _, h in ipairs(Cache.Hooks or {}) do
             if h.part then
                 local isOccupied = false
                 for _, occPos in ipairs(occupiedPositions) do
@@ -9597,8 +9540,8 @@ local function KYS_AutoHook()
                 local pct = (hum.MaxHealth > 0) and (hum.Health / hum.MaxHealth) or 0
                 if pct <= 0.25 and pct > 0 then
                     local isHooked = false
-                    if KYS_Cache and KYS_Cache.Hooks then
-                        for _, hh in ipairs(KYS_Cache.Hooks) do
+                    if Cache and Cache.Hooks then
+                        for _, hh in ipairs(Cache.Hooks) do
                             if hh.part and (hh.part.Position - tr.Position).Magnitude < 4.5 then
                                 isHooked = true; break
                             end
@@ -9626,7 +9569,7 @@ local function KYS_AutoHook()
             end
         end
         local closestHook, hDist = nil, math.huge
-        for _, h in ipairs(KYS_Cache.Hooks or {}) do
+        for _, h in ipairs(Cache.Hooks or {}) do
             if h.part then
                 local isOccupied = false
                 for _, occPos in ipairs(occupiedPositions) do
@@ -9689,9 +9632,9 @@ local function KYS_AutoHook()
 end
 task.spawn(function()
     while not VD.Destroyed do
-        if Root and KYS_Cache.Hooks and #KYS_Cache.Hooks > 0 then
+        if Root and Cache.Hooks and #Cache.Hooks > 0 then
             local closest, closestDist = nil, math.huge
-            for _, hook in ipairs(KYS_Cache.Hooks) do
+            for _, hook in ipairs(Cache.Hooks) do
                 if hook.part then
                     local d = (hook.part.Position - Root.Position).Magnitude
                     if d < closestDist then
@@ -9699,23 +9642,23 @@ task.spawn(function()
                     end
                 end
             end
-            KYS_Cache.ClosestHook = closest
+            Cache.ClosestHook = closest
         end
         task.wait(0.5)
     end
 end)
 task.spawn(function()
     while not VD.Destroyed do
-        pcall(KYS_AutoAttack)
-        pcall(KYS_UpdateHitboxes)
-        pcall(KYS_DestroyAllPallets)
-        pcall(KYS_AutoBreakGene)
-        pcall(KYS_BlockAllVaults)
-        pcall(KYS_BlockAllPalletDrops)
-        pcall(KYS_BlockPalletDrop)
-        pcall(KYS_BeatGameSurvivor)
-        pcall(KYS_BeatGameKiller)
-        pcall(KYS_AutoHook)
+        pcall(AutoAttack)
+        pcall(UpdateHitboxes)
+        pcall(DestroyAllPallets)
+        pcall(AutoBreakGene)
+        pcall(BlockAllVaults)
+        pcall(BlockAllPalletDrops)
+        pcall(BlockPalletDrop)
+        pcall(BeatGameSurvivor)
+        pcall(BeatGameKiller)
+        pcall(AutoHook)
         task.wait(0.12)
     end
 end)
@@ -9725,8 +9668,7 @@ local State  = { AimTarget = nil, AimHolding = false }
 function Aimbot.GetClosestTarget(cam)
     if not cam then return nil end
     if GetRole() ~= "Survivor" then return nil end
-    local root = Root
-    if not root then return nil end
+    local root = Root    if not root then return nil end
     local closestPlayer = nil
     local closestDist   = math.huge
     for _, player in ipairs(Players:GetPlayers()) do
@@ -9899,7 +9841,7 @@ function UpdateSpearAim()
         end
     end
 end
-local function KYS_IsTouchOnAttackButton(input)
+local function IsTouchOnAttackButton(input)
     local pos = input.Position
     local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
     if not playerGui then return false end
@@ -9920,7 +9862,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         if input.UserInputType == Enum.UserInputType.MouseButton2 then
             State.AimHolding = true
         elseif input.UserInputType == Enum.UserInputType.Touch and not gpe then
-            if KYS_IsTouchOnAttackButton(input) then
+            if IsTouchOnAttackButton(input) then
                 State.AimHolding = true
             end
         end
@@ -9977,9 +9919,9 @@ do
             end
         end)
     end })
-    tpMapSection:AddButton({ Name = "TP to Gen", Callback = function() pcall(function() KYS_TeleportToGenerator(1) end) end })
-    tpMapSection:AddButton({ Name = "TP to Gate", Callback = function() pcall(KYS_TeleportToGate) end })
-    tpMapSection:AddButton({ Name = "TP to Hook", Callback = function() pcall(KYS_TeleportToHook) end })
+    tpMapSection:AddButton({ Name = "TP to Gen", Callback = function() pcall(function() TeleportToGenerator(1) end) end })
+    tpMapSection:AddButton({ Name = "TP to Gate", Callback = function() pcall(TeleportToGate) end })
+    tpMapSection:AddButton({ Name = "TP to Hook", Callback = function() pcall(TeleportToHook) end })
 end
 do 
     local radarTab = MappingFeatureTabs.Radar
@@ -10074,7 +10016,7 @@ getgenv().PinatHub_KillerRunning = false
 function SetupPinatHubKillerIndicator()
     if getgenv().PinatHub_KillerGui then pcall(function() getgenv().PinatHub_KillerGui:Destroy() end) end
     getgenv().PinatHub_KillerGui = nil
-    KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Waiting...")
+    SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Waiting...")
 end
 function StartPinatHubKiller()
     if getgenv().PinatHub_KillerRunning then return end
@@ -10092,9 +10034,9 @@ function StartPinatHubKiller()
             end)
             local nk = playersList[1]
             if nk then
-                KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Killer: " .. (nk == LocalPlayer and "YOU" or nk.DisplayName or nk.Name))
+                SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Killer: " .. (nk == LocalPlayer and "YOU" or nk.DisplayName or nk.Name))
             else
-                KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Killer: None")
+                SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Killer: None")
             end
             task.wait(2)
         end
@@ -10106,17 +10048,17 @@ function StopPinatHubKiller()
         pcall(function() getgenv().PinatHub_KillerGui:Destroy() end)
         getgenv().PinatHub_KillerGui = nil
     end
-    KYS_SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Off")
+    SetMainInfoPanelText("PinatHubKiller", "Killer Display", "Off")
 end
-if getgenv().KYS_SpectatorCounterGui then
-    pcall(function() getgenv().KYS_SpectatorCounterGui:Destroy() end)
+if getgenv().SpectatorCounterGui then
+    pcall(function() getgenv().SpectatorCounterGui:Destroy() end)
 end
-getgenv().KYS_SpectatorCounterGui = nil
-getgenv().KYS_SpectatorCounterRunning = false
+getgenv().SpectatorCounterGui = nil
+getgenv().SpectatorCounterRunning = false
 function SetupSpectatorCounter()
-    if getgenv().KYS_SpectatorCounterGui then pcall(function() getgenv().KYS_SpectatorCounterGui:Destroy() end) end
+    if getgenv().SpectatorCounterGui then pcall(function() getgenv().SpectatorCounterGui:Destroy() end) end
     local sg = Instance.new("ScreenGui")
-    sg.Name = "KYS_SpectatorCounterGui"
+    sg.Name = "SpectatorCounterGui"
     sg.ResetOnSpawn = false
     local frame = Instance.new("Frame")
     frame.Name = "CounterFrame"
@@ -10126,7 +10068,7 @@ function SetupSpectatorCounter()
     frame.BackgroundTransparency = 0.18
     frame.BorderSizePixel = 0
     frame.Parent = sg
-    KYS_MakeDraggable(frame)
+    MakeDraggable(frame)
     Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 9)
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(125, 125, 125)
@@ -10158,7 +10100,7 @@ function SetupSpectatorCounter()
     label.Parent = frame
     local pg = GetSafeGuiParent()
     if pg then
-        local oldGui = pg:FindFirstChild("KYS_SpectatorCounterGui")
+        local oldGui = pg:FindFirstChild("SpectatorCounterGui")
         if oldGui then pcall(function() oldGui:Destroy() end) end
         sg.Parent = pg
     else
@@ -10167,16 +10109,16 @@ function SetupSpectatorCounter()
             if pgui then sg.Parent = pgui end
         end)
     end
-    getgenv().KYS_SpectatorCounterGui = sg
+    getgenv().SpectatorCounterGui = sg
 end
 function StartSpectatorCounter()
-    if getgenv().KYS_SpectatorCounterRunning then return end
-    getgenv().KYS_SpectatorCounterRunning = true
+    if getgenv().SpectatorCounterRunning then return end
+    getgenv().SpectatorCounterRunning = true
     SetupSpectatorCounter()
     task.spawn(function()
         local _genv = getgenv()
-        while _genv.VD and _genv.VD.VIS_SpectatorCounter and _genv.KYS_SpectatorCounterRunning and getgenv().KYS_SpectatorCounterGui do
-            local sg = getgenv().KYS_SpectatorCounterGui
+        while _genv.VD and _genv.VD.VIS_SpectatorCounter and _genv.SpectatorCounterRunning and getgenv().SpectatorCounterGui do
+            local sg = getgenv().SpectatorCounterGui
             if not sg or not sg.Parent then break end
             local count = 0
             for _, player in ipairs(Players:GetPlayers()) do
@@ -10193,21 +10135,21 @@ function StartSpectatorCounter()
     end)
 end
 function StopSpectatorCounter()
-    getgenv().KYS_SpectatorCounterRunning = false
-    if getgenv().KYS_SpectatorCounterGui then
-        pcall(function() getgenv().KYS_SpectatorCounterGui:Destroy() end)
-        getgenv().KYS_SpectatorCounterGui = nil
+    getgenv().SpectatorCounterRunning = false
+    if getgenv().SpectatorCounterGui then
+        pcall(function() getgenv().SpectatorCounterGui:Destroy() end)
+        getgenv().SpectatorCounterGui = nil
     end
 end
 do 
-if getgenv().KYS_KillerPerksGui then
-    pcall(function() getgenv().KYS_KillerPerksGui:Destroy() end)
+if getgenv().KillerPerksGui then
+    pcall(function() getgenv().KillerPerksGui:Destroy() end)
 end
-getgenv().KYS_KillerPerksGui = nil
-local KYS_KillerPerksCollapsed = false
-local KYS_KillerPerksLocked = false
-getgenv().KYS_KillerPerksRunning = false
-local KYS_KillerPerkNames = {
+getgenv().KillerPerksGui = nil
+local KillerPerksCollapsed = false
+local KillerPerksLocked = false
+getgenv().KillerPerksRunning = false
+local KillerPerkNames = {
     PinatHubInLine = "PinatHub in Line",
     ["PinatHub in Line"] = "PinatHub in Line",
     EchoLocation = "Echo Location",
@@ -10216,16 +10158,16 @@ local KYS_KillerPerkNames = {
     KingScourge = "King's Scourge",
     ["King's Scourge"] = "King's Scourge",
 }
-function KYS_EscapeRichText(text)
+function EscapeRichText(text)
     text = tostring(text or "")
     text = text:gsub("&", "&amp;")
     text = text:gsub("<", "&lt;")
     text = text:gsub(">", "&gt;")
     return text
 end
-local function KYS_FormatPerkName(name)
+local function FormatPerkName(name)
     name = tostring(name or "")
-    if KYS_KillerPerkNames[name] then return KYS_KillerPerkNames[name] end
+    if KillerPerkNames[name] then return KillerPerkNames[name] end
     local clean = name:gsub("_", " "):gsub("-", " ")
     clean = clean:gsub("(%l)(%u)", "%1 %2")
     clean = clean:gsub("(%a)(%d)", "%1 %2")
@@ -10233,7 +10175,7 @@ local function KYS_FormatPerkName(name)
     clean = clean:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
     return clean ~= "" and clean or "Unknown Perk"
 end
-local function KYS_GetKillerPlayer()
+local function GetKillerPlayer()
     for _, player in ipairs(Players:GetPlayers()) do
         local teamName = player.Team and player.Team.Name
         if teamName and teamName:lower():find("killer") then
@@ -10242,7 +10184,7 @@ local function KYS_GetKillerPlayer()
     end
     return nil
 end
-local function KYS_AddWorkspacePerk(result, seen, rawName, displayName, level)
+local function AddWorkspacePerk(result, seen, rawName, displayName, level)
     if not rawName then return end
     rawName = tostring(rawName)
     if rawName == "" or rawName == "nil" then return end
@@ -10251,11 +10193,11 @@ local function KYS_AddWorkspacePerk(result, seen, rawName, displayName, level)
     seen[rawName] = true
     table.insert(result, {
         Raw = rawName,
-        Name = displayName and tostring(displayName) or KYS_FormatPerkName(rawName),
+        Name = displayName and tostring(displayName) or FormatPerkName(rawName),
         Level = level and tostring(level) or nil,
     })
 end
-local function KYS_IsPerkContainer(inst)
+local function IsPerkContainer(inst)
     local name = inst.Name:lower()
     return name == "perks"
         or name == "killerperks"
@@ -10264,7 +10206,7 @@ local function KYS_IsPerkContainer(inst)
         or name:find("perkfolder") ~= nil
         or name:find("perklist") ~= nil
 end
-local function KYS_ParseWorkspacePerkName(name)
+local function ParseWorkspacePerkName(name)
     name = tostring(name or "")
     local perkName, level = name:match("^(.+)%s+(%d+)$")
     if not perkName then return nil end
@@ -10284,7 +10226,7 @@ local function KYS_ParseWorkspacePerkName(name)
     if excluded[lower] then return nil end
     return perkName, level
 end
-local function KYS_ReadPerksFromWorkspace(killer)
+local function ReadPerksFromWorkspace(killer)
     if not killer then return {} end
     local char = killer.Character or Workspace:FindFirstChild(killer.Name) or Workspace:FindFirstChild(killer.DisplayName)
     if not char then return {} end
@@ -10297,13 +10239,13 @@ local function KYS_ReadPerksFromWorkspace(killer)
             local lowerKey = tostring(key):lower()
             if lowerKey:find("perk") then
                 if type(value) == "string" then
-                    KYS_AddWorkspacePerk(result, seen, value)
+                    AddWorkspacePerk(result, seen, value)
                 elseif value == true then
-                    KYS_AddWorkspacePerk(result, seen, key)
+                    AddWorkspacePerk(result, seen, key)
                 elseif type(value) == "number" and lowerKey:find("level") then
                     local baseName = tostring(key):gsub("[Ll]evel", ""):gsub("[Pp]erk", "")
                     if baseName ~= "" then
-                        KYS_AddWorkspacePerk(result, seen, baseName, nil, value)
+                        AddWorkspacePerk(result, seen, baseName, nil, value)
                     end
                 end
             end
@@ -10321,36 +10263,36 @@ local function KYS_ReadPerksFromWorkspace(killer)
     end
     scanAttributes(char)
     for _, child in ipairs(char:GetChildren()) do
-        local perkName, level = KYS_ParseWorkspacePerkName(child.Name)
+        local perkName, level = ParseWorkspacePerkName(child.Name)
         if perkName then
-            KYS_AddWorkspacePerk(result, seen, child.Name, perkName, level)
+            AddWorkspacePerk(result, seen, child.Name, perkName, level)
         end
     end
     for _, inst in ipairs(char:GetDescendants()) do
         scanAttributes(inst)
-        if KYS_IsPerkContainer(inst) then
+        if IsPerkContainer(inst) then
             for _, child in ipairs(inst:GetChildren()) do
                 local value, level = readValueObject(child)
-                KYS_AddWorkspacePerk(result, seen, value or child.Name, nil, level)
+                AddWorkspacePerk(result, seen, value or child.Name, nil, level)
             end
         else
             local lowerName = inst.Name:lower()
             if lowerName:find("perk") then
                 local value, level = readValueObject(inst)
-                KYS_AddWorkspacePerk(result, seen, value or inst.Name, nil, level)
+                AddWorkspacePerk(result, seen, value or inst.Name, nil, level)
             end
         end
     end
     table.sort(result, function(a, b) return tostring(a.Name) < tostring(b.Name) end)
     return result
 end
-local function KYS_BuildKillerPerksText()
-    local killer = KYS_GetKillerPlayer()
+local function BuildKillerPerksText()
+    local killer = GetKillerPlayer()
     local killerName = killer and (killer.DisplayName or killer.Name) or "Unknown"
-    local perks = KYS_ReadPerksFromWorkspace(killer)
+    local perks = ReadPerksFromWorkspace(killer)
     if #perks == 0 then
         for _, player in ipairs(Players:GetPlayers()) do
-            local candidatePerks = KYS_ReadPerksFromWorkspace(player)
+            local candidatePerks = ReadPerksFromWorkspace(player)
             if #candidatePerks > 0 then
                 killer = player
                 killerName = player.DisplayName or player.Name
@@ -10360,7 +10302,7 @@ local function KYS_BuildKillerPerksText()
         end
     end
     local lines = {
-        'Killer Perks [<font color="rgb(255,80,80)">' .. KYS_EscapeRichText(killerName) .. '</font>]',
+        'Killer Perks [<font color="rgb(255,80,80)">' .. EscapeRichText(killerName) .. '</font>]',
     }
     if #perks == 0 then
         table.insert(lines, '<font color="rgb(255,204,80)">- Waiting for perk data...</font>')
@@ -10368,58 +10310,58 @@ local function KYS_BuildKillerPerksText()
         for i = 1, math.min(#perks, 4) do
             local perk = perks[i]
             local levelText = perk.Level and (" lvl " .. tostring(perk.Level)) or ""
-            table.insert(lines, '<font color="rgb(255,204,80)">- ' .. KYS_EscapeRichText(perk.Name) .. KYS_EscapeRichText(levelText) .. '</font>')
+            table.insert(lines, '<font color="rgb(255,204,80)">- ' .. EscapeRichText(perk.Name) .. EscapeRichText(levelText) .. '</font>')
         end
     end
     return table.concat(lines, "\n"), #perks
 end
 local function SetupKillerPerksDisplay()
-    if getgenv().KYS_KillerPerksGui then pcall(function() getgenv().KYS_KillerPerksGui:Destroy() end) end
-    getgenv().KYS_KillerPerksGui = nil
-    KYS_SetMainInfoPanelText("KillerPerks", "Spectate Killer Perks", "Waiting for perk data...")
+    if getgenv().KillerPerksGui then pcall(function() getgenv().KillerPerksGui:Destroy() end) end
+    getgenv().KillerPerksGui = nil
+    SetMainInfoPanelText("KillerPerks", "Spectate Killer Perks", "Waiting for perk data...")
 end
 function StartKillerPerksDisplay()
-    if getgenv().KYS_KillerPerksRunning then return end
-    getgenv().KYS_KillerPerksRunning = true
+    if getgenv().KillerPerksRunning then return end
+    getgenv().KillerPerksRunning = true
     SetupKillerPerksDisplay()
     task.spawn(function()
         local _genv = getgenv()
-        while _genv.VD and _genv.VD.VIS_KillerPerks and _genv.KYS_KillerPerksRunning do
-            local text = KYS_BuildKillerPerksText()
-            KYS_SetMainInfoPanelText("KillerPerks", "Spectate Killer Perks", text)
+        while _genv.VD and _genv.VD.VIS_KillerPerks and _genv.KillerPerksRunning do
+            local text = BuildKillerPerksText()
+            SetMainInfoPanelText("KillerPerks", "Spectate Killer Perks", text)
             task.wait(1)
         end
     end)
 end
 function StopKillerPerksDisplay()
-    getgenv().KYS_KillerPerksRunning = false
-    if getgenv().KYS_KillerPerksGui then
-        pcall(function() getgenv().KYS_KillerPerksGui:Destroy() end)
-        getgenv().KYS_KillerPerksGui = nil
+    getgenv().KillerPerksRunning = false
+    if getgenv().KillerPerksGui then
+        pcall(function() getgenv().KillerPerksGui:Destroy() end)
+        getgenv().KillerPerksGui = nil
     end
-    KYS_SetMainInfoPanelText("KillerPerks", "Spectate Killer Perks", "Off")
+    SetMainInfoPanelText("KillerPerks", "Spectate Killer Perks", "Off")
 end
 end 
 do 
-if getgenv().KYS_PredictMapGui then
-    pcall(function() getgenv().KYS_PredictMapGui:Destroy() end)
+if getgenv().PredictMapGui then
+    pcall(function() getgenv().PredictMapGui:Destroy() end)
 end
-if getgenv().KYS_PredictMapConnections then
-    for _, conn in ipairs(getgenv().KYS_PredictMapConnections) do
+if getgenv().PredictMapConnections then
+    for _, conn in ipairs(getgenv().PredictMapConnections) do
         pcall(function() conn:Disconnect() end)
     end
 end
-getgenv().KYS_PredictMapGui = nil
-getgenv().KYS_PredictMapConnections = {}
-getgenv().KYS_PredictMapRunning = false
-local KYS_PredictMapState = {
+getgenv().PredictMapGui = nil
+getgenv().PredictMapConnections = {}
+getgenv().PredictMapRunning = false
+local PredictMapState = {
     Name = "Unknown",
     Desc = "Waiting for map data...",
     Source = "Idle",
     Phase = "",
     TimeLeft = nil,
 }
-local function KYS_MapStringFromValue(value)
+local function MapStringFromValue(value)
     if type(value) == "string" then
         return value
     elseif typeof and typeof(value) == "Instance" then
@@ -10438,20 +10380,20 @@ local function KYS_MapStringFromValue(value)
     end
     return nil
 end
-local function KYS_MapDescFromValue(value)
+local function MapDescFromValue(value)
     if type(value) ~= "table" then return nil end
     return value.Desc or value.desc or value.Description or value.description
 end
-local function KYS_SetPredictedMap(name, desc, source)
-    name = KYS_MapStringFromValue(name) or name
+local function SetPredictedMap(name, desc, source)
+    name = MapStringFromValue(name) or name
     if not name or tostring(name) == "" then return end
-    KYS_PredictMapState.Name = tostring(name)
+    PredictMapState.Name = tostring(name)
     if desc and tostring(desc) ~= "" then
-        KYS_PredictMapState.Desc = tostring(desc)
+        PredictMapState.Desc = tostring(desc)
     end
-    KYS_PredictMapState.Source = source or "Detected"
+    PredictMapState.Source = source or "Detected"
 end
-local function KYS_ReadCurrentWorkspaceMap()
+local function ReadCurrentWorkspaceMap()
     local map = Workspace:FindFirstChild("Map")
     if not map then return nil end
     local camScene = map:FindFirstChild("Camerascene1", true)
@@ -10468,7 +10410,7 @@ local function KYS_ReadCurrentWorkspaceMap()
     end
     return map.Name ~= "Map" and map.Name or "Map Loaded", nil
 end
-local function KYS_TryPredictMapRemote()
+local function TryPredictMapRemote()
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
     local mechanics = remotes and remotes:FindFirstChild("Mechanics")
     local chat = mechanics and mechanics:FindFirstChild("Chat")
@@ -10485,21 +10427,21 @@ local function KYS_TryPredictMapRemote()
             return getMapData:InvokeServer(table.unpack(args))
         end)
         if ok and data ~= nil then
-            local name = KYS_MapStringFromValue(data)
-            local desc = KYS_MapDescFromValue(data)
+            local name = MapStringFromValue(data)
+            local desc = MapDescFromValue(data)
             if name then
-                KYS_SetPredictedMap(name, desc, "Predicted")
+                SetPredictedMap(name, desc, "Predicted")
                 return true
             end
         end
     end
     return false
 end
-local function KYS_PredictMapText()
-    local name = KYS_EscapeRichText(KYS_PredictMapState.Name or "Unknown")
-    local source = KYS_EscapeRichText(KYS_PredictMapState.Source or "Idle")
-    local phase = tostring(KYS_PredictMapState.Phase or "")
-    local timeLeft = KYS_PredictMapState.TimeLeft
+local function PredictMapText()
+    local name = EscapeRichText(PredictMapState.Name or "Unknown")
+    local source = EscapeRichText(PredictMapState.Source or "Idle")
+    local phase = tostring(PredictMapState.Phase or "")
+    local timeLeft = PredictMapState.TimeLeft
     local timerText = ""
     if timeLeft then
         timerText = " [" .. phase .. " " .. tostring(timeLeft) .. "s]"
@@ -10513,95 +10455,95 @@ local function KYS_PredictMapText()
     return table.concat(lines, "\n")
 end
 local function SetupPredictMapGui()
-    if getgenv().KYS_PredictMapGui then pcall(function() getgenv().KYS_PredictMapGui:Destroy() end) end
-    getgenv().KYS_PredictMapGui = nil
-    KYS_SetMainInfoPanelText("PredictMap", "Predict Map", KYS_PredictMapText())
+    if getgenv().PredictMapGui then pcall(function() getgenv().PredictMapGui:Destroy() end) end
+    getgenv().PredictMapGui = nil
+    SetMainInfoPanelText("PredictMap", "Predict Map", PredictMapText())
 end
-local function KYS_BindPredictMapEvents()
-    local conns = getgenv().KYS_PredictMapConnections
+local function BindPredictMapEvents()
+    local conns = getgenv().PredictMapConnections
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
     if not remotes then return end
     local messages = remotes:FindFirstChild("Messages")
     local mapInfo = messages and messages:FindFirstChild("Mapinfo")
     if mapInfo and mapInfo:IsA("RemoteEvent") then
         table.insert(conns, mapInfo.OnClientEvent:Connect(function(a, b, c)
-            local name = KYS_MapStringFromValue(a) or KYS_MapStringFromValue(b) or KYS_MapStringFromValue(c)
-            local desc = KYS_MapDescFromValue(a) or KYS_MapDescFromValue(b) or KYS_MapDescFromValue(c)
+            local name = MapStringFromValue(a) or MapStringFromValue(b) or MapStringFromValue(c)
+            local desc = MapDescFromValue(a) or MapDescFromValue(b) or MapDescFromValue(c)
             if name then
-                KYS_SetPredictedMap(name, desc, "Predicted")
+                SetPredictedMap(name, desc, "Predicted")
             end
         end))
     end
     local timeEvent = remotes:FindFirstChild("TimeUpdateEvent")
     if timeEvent and timeEvent:IsA("RemoteEvent") then
         table.insert(conns, timeEvent.OnClientEvent:Connect(function(phase, timeLeft)
-            KYS_PredictMapState.Phase = tostring(phase or "")
-            KYS_PredictMapState.TimeLeft = tonumber(timeLeft)
+            PredictMapState.Phase = tostring(phase or "")
+            PredictMapState.TimeLeft = tonumber(timeLeft)
             if tostring(phase) == "Intermission" and tonumber(timeLeft) and tonumber(timeLeft) <= 20 then
-                pcall(KYS_TryPredictMapRemote)
+                pcall(TryPredictMapRemote)
             end
         end))
     end
     table.insert(conns, Workspace.ChildAdded:Connect(function(child)
         if child and child.Name == "Map" then
             task.delay(0.25, function()
-                local name, desc = KYS_ReadCurrentWorkspaceMap()
-                if name then KYS_SetPredictedMap(name, desc, "Confirmed") end
+                local name, desc = ReadCurrentWorkspaceMap()
+                if name then SetPredictedMap(name, desc, "Confirmed") end
             end)
         end
     end))
 end
 function StartPredictMap()
-    if getgenv().KYS_PredictMapRunning then return end
-    getgenv().KYS_PredictMapRunning = true
+    if getgenv().PredictMapRunning then return end
+    getgenv().PredictMapRunning = true
     SetupPredictMapGui()
-    KYS_BindPredictMapEvents()
+    BindPredictMapEvents()
     task.spawn(function()
-        while VD and VD.VIS_PredictMap and getgenv().KYS_PredictMapRunning do
-            local currentName, currentDesc = KYS_ReadCurrentWorkspaceMap()
+        while VD and VD.VIS_PredictMap and getgenv().PredictMapRunning do
+            local currentName, currentDesc = ReadCurrentWorkspaceMap()
             if currentName then
-                KYS_SetPredictedMap(currentName, currentDesc, "Confirmed")
+                SetPredictedMap(currentName, currentDesc, "Confirmed")
             else
-                pcall(KYS_TryPredictMapRemote)
+                pcall(TryPredictMapRemote)
             end
-            KYS_SetMainInfoPanelText("PredictMap", "Predict Map", KYS_PredictMapText())
+            SetMainInfoPanelText("PredictMap", "Predict Map", PredictMapText())
             task.wait(1)
         end
     end)
 end
 function StopPredictMap()
-    getgenv().KYS_PredictMapRunning = false
-    if getgenv().KYS_PredictMapGui then
-        pcall(function() getgenv().KYS_PredictMapGui:Destroy() end)
-        getgenv().KYS_PredictMapGui = nil
+    getgenv().PredictMapRunning = false
+    if getgenv().PredictMapGui then
+        pcall(function() getgenv().PredictMapGui:Destroy() end)
+        getgenv().PredictMapGui = nil
     end
-    if getgenv().KYS_PredictMapConnections then
-        for _, conn in ipairs(getgenv().KYS_PredictMapConnections) do
+    if getgenv().PredictMapConnections then
+        for _, conn in ipairs(getgenv().PredictMapConnections) do
             pcall(function() conn:Disconnect() end)
         end
     end
-    getgenv().KYS_PredictMapConnections = {}
-    KYS_SetMainInfoPanelText("PredictMap", "Predict Map", "Off")
+    getgenv().PredictMapConnections = {}
+    SetMainInfoPanelText("PredictMap", "Predict Map", "Off")
 end
 end 
-getgenv().KYS_OriginalFOV          = nil
-getgenv().KYS_OriginalCameraType   = nil
-getgenv().KYS_OriginalCameraOffset = nil
-getgenv().KYS_ThirdPersonWasActive = false
-getgenv().KYS_FOVWasActive         = false
+getgenv().OriginalFOV          = nil
+getgenv().OriginalCameraType   = nil
+getgenv().OriginalCameraOffset = nil
+getgenv().ThirdPersonWasActive = false
+getgenv().FOVWasActive         = false
 function UpdateCameraFOV()
     local cam = workspace.CurrentCamera
     if not cam then return end
     if VD.CAM_FOVEnabled then
-        if not getgenv().KYS_FOVWasActive then
-            getgenv().KYS_OriginalFOV = cam.FieldOfView
-            getgenv().KYS_FOVWasActive = true
+        if not getgenv().FOVWasActive then
+            getgenv().OriginalFOV = cam.FieldOfView
+            getgenv().FOVWasActive = true
         end
         cam.FieldOfView = VD.CAM_FOV or 90
-    elseif getgenv().KYS_FOVWasActive then
-        if getgenv().KYS_OriginalFOV then cam.FieldOfView = getgenv().KYS_OriginalFOV end
-        getgenv().KYS_OriginalFOV = nil
-        getgenv().KYS_FOVWasActive = false
+    elseif getgenv().FOVWasActive then
+        if getgenv().OriginalFOV then cam.FieldOfView = getgenv().OriginalFOV end
+        getgenv().OriginalFOV = nil
+        getgenv().FOVWasActive = false
     end
 end
 function UpdateThirdPerson()
@@ -10609,29 +10551,29 @@ function UpdateThirdPerson()
     if not cam then return end
     local shouldBeActive = VD.CAM_ThirdPerson and GetRole() == "Killer"
     if shouldBeActive then
-        if not getgenv().KYS_ThirdPersonWasActive then
-            getgenv().KYS_OriginalCameraType = cam.CameraType
+        if not getgenv().ThirdPersonWasActive then
+            getgenv().OriginalCameraType = cam.CameraType
             local char = LocalPlayer.Character
             local hum = char and char:FindFirstChildOfClass("Humanoid")
-            getgenv().KYS_OriginalCameraOffset = hum and hum.CameraOffset or Vector3.new(0, 0, 0)
+            getgenv().OriginalCameraOffset = hum and hum.CameraOffset or Vector3.new(0, 0, 0)
         end
         cam.CameraType = Enum.CameraType.Custom
         local char     = LocalPlayer.Character
         local hum      = char and char:FindFirstChildOfClass("Humanoid")
         if hum then hum.CameraOffset = Vector3.new(2, 1, 8) end
-        getgenv().KYS_ThirdPersonWasActive = true
-    elseif getgenv().KYS_ThirdPersonWasActive then
-        if getgenv().KYS_OriginalCameraType then
-            cam.CameraType = getgenv().KYS_OriginalCameraType; getgenv().KYS_OriginalCameraType = nil
+        getgenv().ThirdPersonWasActive = true
+    elseif getgenv().ThirdPersonWasActive then
+        if getgenv().OriginalCameraType then
+            cam.CameraType = getgenv().OriginalCameraType; getgenv().OriginalCameraType = nil
         end
         local char = LocalPlayer.Character
         local hum  = char and char:FindFirstChildOfClass("Humanoid")
-        if hum then hum.CameraOffset = getgenv().KYS_OriginalCameraOffset or Vector3.new(0, 0, 0) end
-        getgenv().KYS_OriginalCameraOffset = nil
-        getgenv().KYS_ThirdPersonWasActive = false
+        if hum then hum.CameraOffset = getgenv().OriginalCameraOffset or Vector3.new(0, 0, 0) end
+        getgenv().OriginalCameraOffset = nil
+        getgenv().ThirdPersonWasActive = false
     end
 end
-getgenv().KYS_shiftLockWasActive = false
+getgenv().shiftLockWasActive = false
 function UpdateShiftLock()
     local char = LocalPlayer.Character
     local hum  = char and char:FindFirstChildOfClass("Humanoid")
@@ -10640,28 +10582,28 @@ function UpdateShiftLock()
     if VD.CAM_ShiftLock then
         if not char or not root or not cam then return end
         if hum then hum.AutoRotate = false end
-        getgenv().KYS_shiftLockWasActive = true
+        getgenv().shiftLockWasActive = true
         local flatLook = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
         if flatLook.Magnitude > 0.001 then
             local lookUnit = flatLook.Unit
             root.CFrame = CFrame.new(root.Position, root.Position + lookUnit)
         end
     else
-        if getgenv().KYS_shiftLockWasActive then
+        if getgenv().shiftLockWasActive then
             if hum then hum.AutoRotate = true end
-            getgenv().KYS_shiftLockWasActive = false
+            getgenv().shiftLockWasActive = false
         end
     end
 end
-getgenv().KYS_FogCache = {}
+getgenv().FogCache = {}
 function RemoveFog()
     pcall(function()
         local map = Workspace:FindFirstChild("Map")
         if map then
             for _, obj in ipairs(map:GetDescendants()) do
                 if obj.Name:lower():find("fog") or obj:IsA("Atmosphere") or obj:IsA("BloomEffect") or obj:IsA("BlurEffect") or obj:IsA("ColorCorrectionEffect") then
-                    if not getgenv().KYS_FogCache[obj] then
-                        getgenv().KYS_FogCache[obj] = {
+                    if not getgenv().FogCache[obj] then
+                        getgenv().FogCache[obj] = {
                             enabled = obj:IsA("PostEffect") and obj.Enabled or true,
                             parent =
                                 obj.Parent
@@ -10676,7 +10618,7 @@ function RemoveFog()
         local lt = game:GetService("Lighting")
         for _, obj in ipairs(lt:GetChildren()) do
             if obj:IsA("Atmosphere") or obj.Name:lower():find("fog") then
-                if not getgenv().KYS_FogCache[obj] then getgenv().KYS_FogCache[obj] = { enabled = true, parent = obj.Parent } end
+                if not getgenv().FogCache[obj] then getgenv().FogCache[obj] = { enabled = true, parent = obj.Parent } end
                 if obj:IsA("Atmosphere") then obj.Density = 0 else obj.Parent = nil end
             end
         end
@@ -10686,12 +10628,12 @@ function RemoveFog()
 end
 function RestoreFog()
     pcall(function()
-        for obj, data in pairs(getgenv().KYS_FogCache) do
+        for obj, data in pairs(getgenv().FogCache) do
             if obj and data.parent then
                 if obj:IsA("PostEffect") then obj.Enabled = data.enabled else obj.Parent = data.parent end
             end
         end
-        getgenv().KYS_FogCache = {}
+        getgenv().FogCache = {}
         game:GetService("Lighting").FogEnd = 1000
     end)
 end
@@ -10703,8 +10645,8 @@ function UpdateNoSlowdown()
     if hum and hum.WalkSpeed < 16 then hum.WalkSpeed = VD.SPEED_Value or 16 end
 end
 function SetupAntiStunSlowdown()
-    if getgenv().KYS_AntiStunHooked then return end
-    getgenv().KYS_AntiStunHooked = true
+    if getgenv().AntiStunHooked then return end
+    getgenv().AntiStunHooked = true
     pcall(function()
         local ok, mt = pcall(function() return getrawmetatable(game) end)
         if ok and mt and setreadonly then
@@ -10746,8 +10688,8 @@ end
 local fakeBindable = Instance.new("BindableEvent")
 local fakeRemote = Instance.new("RemoteEvent")
 function SetupNoCutsceneHook()
-    if getgenv().KYS_NoCutsceneHooked then return end
-    getgenv().KYS_NoCutsceneHooked = true
+    if getgenv().NoCutsceneHooked then return end
+    getgenv().NoCutsceneHooked = true
     pcall(function()
         local ok, mt = pcall(function() return getrawmetatable(game) end)
         if ok and mt and setreadonly then
@@ -10779,7 +10721,7 @@ function SetupNoCutsceneHook()
         end
     end)
 end
-function KYS_SetupNoCutsceneListeners()
+function SetupNoCutsceneListeners()
     task.spawn(function()
         local gameFolder = ReplicatedStorage:WaitForChild("Remotes", 10):WaitForChild("Game", 10)
         if not gameFolder then return end
@@ -10824,7 +10766,7 @@ function KYS_SetupNoCutsceneListeners()
     end)
 end
 task.spawn(SetupNoCutsceneHook)
-task.spawn(KYS_SetupNoCutsceneListeners)
+task.spawn(SetupNoCutsceneListeners)
 function OnRenderStep()
     if VD.Destroyed then
         if DrawingAvailable then
@@ -10857,12 +10799,12 @@ function OnRenderStep()
         end
     end
 end
-getgenv().KYS_MobileGui = getgenv().KYS_MobileGui or { AimBtn=nil, FOVFrame=nil, FOVStroke=nil }
+getgenv().MobileGui = getgenv().MobileGui or { AimBtn=nil, FOVFrame=nil, FOVStroke=nil }
 function CreateMobileUI()
     local pg = GetSafeGuiParent()
     if not pg then return end
     local sg = Instance.new("ScreenGui")
-    sg.Name           = "KYS_MobileUI"
+    sg.Name           = "MobileUI"
     sg.ResetOnSpawn   = false
     sg.IgnoreGuiInset = true
     sg.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -10880,9 +10822,9 @@ function CreateMobileUI()
     local fovStk = Instance.new("UIStroke")
     fovStk.Color = Color3.fromRGB(220,70,70); fovStk.Thickness = 1.5; fovStk.Transparency = 0.2
     fovStk.Parent = fovF
-    getgenv().KYS_MobileGui.FOVFrame = fovF; getgenv().KYS_MobileGui.FOVStroke = fovStk
+    getgenv().MobileGui.FOVFrame = fovF; getgenv().MobileGui.FOVStroke = fovStk
     local aimSG = Instance.new("ScreenGui")
-    aimSG.Name           = "KYS_AimBtn"
+    aimSG.Name           = "AimBtn"
     aimSG.ResetOnSpawn   = false
     aimSG.IgnoreGuiInset = true
     aimSG.ZIndexBehavior = Enum.ZIndexBehavior.AlwaysOnTop
@@ -10917,7 +10859,7 @@ function CreateMobileUI()
             aStk.Color = Color3.fromRGB(255,100,100)
         end
     end)
-    getgenv().KYS_MobileGui.AimBtn = btn
+    getgenv().MobileGui.AimBtn = btn
 end
 SpearBtnData = {
     UI = nil,
@@ -11083,14 +11025,14 @@ task.spawn(function()
     setupSpearAimbotBtn()
 end)
 function UpdateMobileFOV()
-    if not getgenv().KYS_MobileGui.FOVFrame then return end
+    if not getgenv().MobileGui.FOVFrame then return end
     if VD.AIM_Enabled and VD.AIM_ShowFOV then
         local r = (VD.AIM_FOV or 120)
-        getgenv().KYS_MobileGui.FOVFrame.Size = UDim2.new(0, r*2, 0, r*2)
-        getgenv().KYS_MobileGui.FOVStroke.Color = State.AimTarget and Color3.fromRGB(90,220,120) or Color3.fromRGB(220,70,70)
-        getgenv().KYS_MobileGui.FOVFrame.Visible = true
+        getgenv().MobileGui.FOVFrame.Size = UDim2.new(0, r*2, 0, r*2)
+        getgenv().MobileGui.FOVStroke.Color = State.AimTarget and Color3.fromRGB(90,220,120) or Color3.fromRGB(220,70,70)
+        getgenv().MobileGui.FOVFrame.Visible = true
     else
-        getgenv().KYS_MobileGui.FOVFrame.Visible = false
+        getgenv().MobileGui.FOVFrame.Visible = false
     end
 end
 task.spawn(function()
@@ -11107,7 +11049,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
     if VD.Destroyed then return end
     local cam = workspace.CurrentCamera
     if not cam then return end
-    if not DrawingAvailable and (not getgenv().KYS_MobileGui.FOVFrame or not getgenv().KYS_MobileGui.FOVFrame.Parent) then
+    if not DrawingAvailable and (not getgenv().MobileGui.FOVFrame or not getgenv().MobileGui.FOVFrame.Parent) then
         pcall(CreateMobileUI)
     end
     if not DrawingAvailable then
@@ -11121,7 +11063,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
         pcall(function() Aimbot.Update(cam, sc, Vector2.new(sc.X/2, sc.Y/2)) end)
     end
     if not DrawingAvailable then
-        if getgenv().KYS_MobileGui.AimBtn then getgenv().KYS_MobileGui.AimBtn.Visible = VD.AIM_Enabled end
+        if getgenv().MobileGui.AimBtn then getgenv().MobileGui.AimBtn.Visible = VD.AIM_Enabled end
         pcall(UpdateMobileFOV)
     end
     if SpearBtnData and SpearBtnData.Button then
@@ -11139,7 +11081,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
     pcall(VD_UpdateMoonwalk, deltaTime)
     pcall(VD_UpdateRemovePalletwrong)
 end)
-getgenv().KYS_SyncLoadedFeatures = function()
+getgenv().SyncLoadedFeatures = function()
     if type(SetupAntiBlind) == "function" then pcall(SetupAntiBlind) end
     if type(SetupNoPalletStun) == "function" then pcall(SetupNoPalletStun) end
     if type(VD_UpdateCrosshair) == "function" then pcall(VD_UpdateCrosshair) end
@@ -11163,26 +11105,26 @@ getgenv().KYS_SyncLoadedFeatures = function()
     else
         pcall(StopPredictMap)
     end
-    if getgenv().KYS_SetHideSurvivorIcon then
-        pcall(getgenv().KYS_SetHideSurvivorIcon, VD.VIS_HideSurvivorIcon)
+    if getgenv().SetHideSurvivorIcon then
+        pcall(getgenv().SetHideSurvivorIcon, VD.VIS_HideSurvivorIcon)
     end
-    if getgenv().KYS_SetShowPingFPS then
-        pcall(getgenv().KYS_SetShowPingFPS, VD.VIS_ShowPingFPS)
+    if getgenv().SetShowPingFPS then
+        pcall(getgenv().SetShowPingFPS, VD.VIS_ShowPingFPS)
     end
-    if getgenv().KYS_SetShowHookCounter then
-        pcall(getgenv().KYS_SetShowHookCounter, VD.VIS_ShowHookCounter)
+    if getgenv().SetShowHookCounter then
+        pcall(getgenv().SetShowHookCounter, VD.VIS_ShowHookCounter)
     end
-    if getgenv().KYS_SetToFSilentAim then
-        pcall(getgenv().KYS_SetToFSilentAim, VD.TOF_SilentAim)
+    if getgenv().SetToFSilentAim then
+        pcall(getgenv().SetToFSilentAim, VD.TOF_SilentAim)
     end
-    if getgenv().KYS_SetFlashlightSilentAim then
-        pcall(getgenv().KYS_SetFlashlightSilentAim, VD.FLASH_SilentAim)
+    if getgenv().SetFlashlightSilentAim then
+        pcall(getgenv().SetFlashlightSilentAim, VD.FLASH_SilentAim)
     end
     if getgenv().VD_SetMoonwalkButtonVisible then
         pcall(getgenv().VD_SetMoonwalkButtonVisible, VD.MoonwalkButton)
     end
     if VD.KILLER_BypassLeap then
-        pcall(KYS_StartHiddenCooldownBypass)
+        pcall(StartHiddenCooldownBypass)
     end
 end
 ;(function()
@@ -11205,23 +11147,23 @@ local function readConfigElementValue(flagName)
     if ok then return value end
     return nil
 end
-getgenv().KYS_SyncUILibraryConfigRuntime = function()
+getgenv().SyncUILibraryConfigRuntime = function()
     local tofValue = readConfigElementValue("Silent Aim Twist Of Fate")
-    if type(tofValue) == "boolean" and tofValue ~= VD.TOF_SilentAim and getgenv().KYS_SetToFSilentAim then
-        pcall(getgenv().KYS_SetToFSilentAim, tofValue)
+    if type(tofValue) == "boolean" and tofValue ~= VD.TOF_SilentAim and getgenv().SetToFSilentAim then
+        pcall(getgenv().SetToFSilentAim, tofValue)
     elseif type(tofValue) == "boolean" then
         VD.TOF_SilentAim = tofValue
-        if tofValue and getgenv().KYS_SetToFSilentAim then
-            pcall(getgenv().KYS_SetToFSilentAim, true)
+        if tofValue and getgenv().SetToFSilentAim then
+            pcall(getgenv().SetToFSilentAim, true)
         end
     end
     local flashValue = readConfigElementValue("Silent Aim Flashlight")
-    if type(flashValue) == "boolean" and flashValue ~= VD.FLASH_SilentAim and getgenv().KYS_SetFlashlightSilentAim then
-        pcall(getgenv().KYS_SetFlashlightSilentAim, flashValue)
+    if type(flashValue) == "boolean" and flashValue ~= VD.FLASH_SilentAim and getgenv().SetFlashlightSilentAim then
+        pcall(getgenv().SetFlashlightSilentAim, flashValue)
     elseif type(flashValue) == "boolean" then
         VD.FLASH_SilentAim = flashValue
-        if flashValue and getgenv().KYS_SetFlashlightSilentAim then
-            pcall(getgenv().KYS_SetFlashlightSilentAim, true)
+        if flashValue and getgenv().SetFlashlightSilentAim then
+            pcall(getgenv().SetFlashlightSilentAim, true)
         end
     end
 end
@@ -11232,16 +11174,16 @@ task.spawn(function()
         local flashValue = readConfigElementValue("Silent Aim Flashlight")
         if type(tofValue) == "boolean" and tofValue ~= lastToF then
             lastToF = tofValue
-            if getgenv().KYS_SetToFSilentAim then
-                pcall(getgenv().KYS_SetToFSilentAim, tofValue)
+            if getgenv().SetToFSilentAim then
+                pcall(getgenv().SetToFSilentAim, tofValue)
             else
                 VD.TOF_SilentAim = tofValue
             end
         end
         if type(flashValue) == "boolean" and flashValue ~= lastFlash then
             lastFlash = flashValue
-            if getgenv().KYS_SetFlashlightSilentAim then
-                pcall(getgenv().KYS_SetFlashlightSilentAim, flashValue)
+            if getgenv().SetFlashlightSilentAim then
+                pcall(getgenv().SetFlashlightSilentAim, flashValue)
             else
                 VD.FLASH_SilentAim = flashValue
             end
